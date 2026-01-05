@@ -63,9 +63,9 @@ if (savedTheme) {
   document.documentElement.setAttribute("data-theme", savedTheme);
 }
 
-/* ===============================
-   QURAN PAGE LOGIC
-================================ */
+let currentAudio = null;
+let currentPlayBtn = null;
+
 function initQuranPage() {
   const surahListEl = document.getElementById("surah-list");
   const ayahViewEl = document.getElementById("ayah-view");
@@ -74,23 +74,48 @@ function initQuranPage() {
 
   if (!surahListEl) return; // not on Quran page
 
-  // Fetch Surah list
+  /* ===============================
+     FETCH SURAH LIST
+  ================================ */
   fetch("https://api.alquran.cloud/v1/surah")
     .then(res => res.json())
     .then(data => {
       surahListEl.innerHTML = "";
 
       data.data.forEach(surah => {
-        const btn = document.createElement("button");
-        btn.className = "surah-item";
-        btn.textContent = `${surah.number}. ${surah.englishName} (${surah.name})`;
+        const row = document.createElement("div");
+        row.className = "surah-row";
 
-        btn.onclick = () => loadSurah(surah.number);
-        surahListEl.appendChild(btn);
+        /* Surah info (LEFT) */
+        const info = document.createElement("div");
+        info.className = "surah-info";
+        info.innerHTML = `
+          <span class="surah-name">
+            ${surah.number}. ${surah.englishName}
+          </span>
+          <span class="surah-ar">${surah.name}</span>
+        `;
+        info.onclick = () => loadSurah(surah.number);
+
+        /* Play button (RIGHT) */
+        const playBtn = document.createElement("button");
+        playBtn.className = "surah-play";
+        playBtn.textContent = "▶";
+
+        playBtn.onclick = async (e) => {
+          e.stopPropagation();
+          await playSurahAudio(surah.number, playBtn);
+        };
+
+        row.appendChild(info);
+        row.appendChild(playBtn);
+        surahListEl.appendChild(row);
       });
     });
 
-  // Load Surah with translations
+  /* ===============================
+     LOAD SURAH AYAH
+  ================================ */
   function loadSurah(number) {
     surahListEl.classList.add("hidden");
     ayahViewEl.classList.remove("hidden");
@@ -98,30 +123,74 @@ function initQuranPage() {
 
     Promise.all([
       fetch(`https://api.alquran.cloud/v1/surah/${number}/ar`).then(r => r.json()),
-      fetch(`https://api.alquran.cloud/v1/surah/${number}/en.asad`).then(r => r.json()),
-      fetch(`https://api.alquran.cloud/v1/surah/${number}/bn.bengali`).then(r => r.json())
-    ])
-      .then(([ar, en, bn]) => {
-        ayahListEl.innerHTML = "";
+      fetch(`https://api.alquran.cloud/v1/surah/${number}/bn.bengali`).then(r => r.json()),
+      fetch(`https://api.alquran.cloud/v1/surah/${number}/en.asad`).then(r => r.json())
+    ]).then(([ar, bn, en]) => {
+      ayahListEl.innerHTML = "";
 
-        ar.data.ayahs.forEach((ayah, i) => {
-          const div = document.createElement("div");
-          div.className = "ayah";
-
-          div.innerHTML = `
-            <p class="ayah-ar">${ayah.text}</p>
-            <p class="ayah-bn">${bn.data.ayahs[i].text}</p>
-            <p class="ayah-en">${en.data.ayahs[i].text}</p>
-          `;
-
-          ayahListEl.appendChild(div);
-        });
+      ar.data.ayahs.forEach((ayah, i) => {
+        const div = document.createElement("div");
+        div.className = "ayah";
+        div.innerHTML = `
+          <p class="ayah-ar">${ayah.text}</p>
+          <p class="ayah-bn">${bn.data.ayahs[i].text}</p>
+          <p class="ayah-en">${en.data.ayahs[i].text}</p>
+        `;
+        ayahListEl.appendChild(div);
       });
+    });
   }
 
-  // Back button
+  /* ===============================
+     BACK BUTTON
+  ================================ */
   backBtn.onclick = () => {
     ayahViewEl.classList.add("hidden");
     surahListEl.classList.remove("hidden");
+  };
+}
+
+/* ===============================
+   SURAH AUDIO (OFFLINE CACHED)
+================================ */
+async function playSurahAudio(number, btn) {
+  const url =
+    `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${number}.mp3`;
+
+  // Stop previous audio
+  if (currentAudio) {
+    currentAudio.pause();
+    currentPlayBtn.textContent = "▶";
+  }
+
+  // Toggle same button
+  if (currentPlayBtn === btn) {
+    currentAudio = null;
+    currentPlayBtn = null;
+    return;
+  }
+
+  const audio = new Audio();
+  const cache = await caches.open("quran-audio-v1");
+  const cached = await cache.match(url);
+
+  if (cached) {
+    const blob = await cached.blob();
+    audio.src = URL.createObjectURL(blob);
+  } else {
+    audio.src = url;
+    fetch(url).then(res => cache.put(url, res.clone()));
+  }
+
+  audio.play();
+  btn.textContent = "⏸";
+
+  currentAudio = audio;
+  currentPlayBtn = btn;
+
+  audio.onended = () => {
+    btn.textContent = "▶";
+    currentAudio = null;
+    currentPlayBtn = null;
   };
 }
