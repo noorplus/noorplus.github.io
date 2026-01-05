@@ -38,8 +38,9 @@
   --bg: #f8faf7;
   /* soft, calm off-white */
   /* soft, calm off-white */
-  --surface: rgba(238, 242, 238, 0.85);
-  /* glassmorphism surface */
+  /* soft, calm off-white */
+  --surface: #eef2ee;
+  /* subtle green-tinted surface */
 
   --text-primary: #0f172a;
   /* deep charcoal */
@@ -72,8 +73,9 @@
   --bg: #0e1412;
   /* deep night green-black */
   /* deep night green-black */
-  --surface: rgba(21, 31, 28, 0.85);
-  /* calm elevated surface (glass) */
+  /* deep night green-black */
+  --surface: #151f1c;
+  /* calm elevated surface */
 
   --text-primary: #e6f0ec;
   /* soft mint-white */
@@ -137,8 +139,6 @@ body {
 
   border-radius: var(--radius-pill);
   box-shadow: var(--shadow-nav);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   z-index: 1000;
 }
 
@@ -191,8 +191,6 @@ body {
 
   border-radius: var(--radius-pill);
   box-shadow: var(--shadow-nav);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   z-index: 1000;
 }
 
