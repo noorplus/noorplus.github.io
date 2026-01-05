@@ -35,19 +35,24 @@
      COLORS — ISLAMIC LIGHT THEME
      =============================== */
 
-  --bg: #f8faf7;              /* soft, calm off-white */
-  --surface: #eef2ee;         /* subtle green-tinted surface */
+  --bg: #f8faf7;
+  /* soft, calm off-white */
+  --surface: #eef2ee;
+  /* subtle green-tinted surface */
 
-  --text-primary: #0f172a;    /* deep charcoal */
-  --text-secondary: #475569;  /* muted slate */
+  --text-primary: #0f172a;
+  /* deep charcoal */
+  --text-secondary: #475569;
+  /* muted slate */
 
   /* Accent */
-  --accent: #1f7a63;          /* dignified Islamic green */
+  --accent: #1f7a63;
+  /* dignified Islamic green */
 
   /* Radius */
-   --radius-pill: 999px;
-   --radius-round: 50%;
-   --radius-corner: 12px;
+  --radius-pill: 999px;
+  --radius-round: 50%;
+  --radius-corner: 12px;
 
   /* Shadows */
   --shadow-nav: 0 10px 28px rgba(15, 23, 42, 0.18);
@@ -63,11 +68,15 @@
    DARK MODE — ISLAMIC NIGHT THEME
 ========================================================= */
 [data-theme="dark"] {
-  --bg: #0e1412;              /* deep night green-black */
-  --surface: #151f1c;         /* calm elevated surface */
+  --bg: #0e1412;
+  /* deep night green-black */
+  --surface: #151f1c;
+  /* calm elevated surface */
 
-  --text-primary: #e6f0ec;    /* soft mint-white */
-  --text-secondary: #9fbab1;  /* muted sage */
+  --text-primary: #e6f0ec;
+  /* soft mint-white */
+  --text-secondary: #9fbab1;
+  /* muted sage */
 
   --accent: #3cb89b;
 
@@ -91,6 +100,8 @@
 ========================================================= */
 html {
   font-size: var(--font-size-base);
+  height: 100%;
+  /* Required for body height: 100% */
 }
 
 body {
@@ -98,6 +109,10 @@ body {
   line-height: var(--line-height);
   background: var(--bg);
   color: var(--text-primary);
+
+  /* Fixed viewport for app-like experience */
+  height: 100%;
+  overflow: hidden;
 }
 
 /* =========================================================
@@ -133,6 +148,12 @@ body {
    APP MAIN
 ========================================================= */
 #app-main {
+  /* Scrollable container */
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scroll on iOS */
+
   padding-top: calc(var(--nav-height-top) + var(--space-6));
   padding-bottom: calc(var(--nav-height) + var(--space-6));
 }
