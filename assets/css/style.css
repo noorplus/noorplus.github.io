@@ -45,8 +45,8 @@
   --accent: #1f7a63;          /* dignified Islamic green */
 
   /* Radius */
-  --radius-pill: 999px;
-  --radius-round: 50%;
+   --radius-pill: 999px;
+   --radius-round: 50%;
    --radius-corner: 12px;
 
   /* Shadows */
@@ -94,16 +94,10 @@ html {
 }
 
 body {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-
   font-family: var(--font-sans);
   line-height: var(--line-height);
   background: var(--bg);
   color: var(--text-primary);
-
-  overflow: hidden; /* body never scrolls */
 }
 
 /* =========================================================
@@ -139,16 +133,8 @@ body {
    APP MAIN
 ========================================================= */
 #app-main {
-  flex: 1;
-
   padding-top: calc(var(--nav-height-top) + var(--space-6));
   padding-bottom: calc(var(--nav-height) + var(--space-6));
-
-  display: flex;
-  justify-content: center;
-
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Page container */
