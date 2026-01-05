@@ -134,17 +134,17 @@ body {
    APP MAIN
 ========================================================= */
 #app-main {
-  /* Full viewport minus fixed navs */
   height: calc(
-    100vh - var(--nav-height-top) - var(--nav-height)
+    100vh
+    - var(--nav-height-top)
+    - var(--nav-height)
+    - (var(--space-4) * 2)
   );
 
-  /* Push below top nav */
   margin-top: calc(var(--nav-height-top) + var(--space-4));
 
-  /* Internal spacing */
   padding-top: var(--space-4);
-  padding-bottom: calc(var(--space-6));
+  padding-bottom: var(--space-6);
 
   display: flex;
   justify-content: center;
