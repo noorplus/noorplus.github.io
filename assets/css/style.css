@@ -287,7 +287,7 @@ body {
    QURAN PAGE
 ========================================================= */
 
-.quran {
+.page.quran {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
@@ -306,8 +306,8 @@ body {
 }
 
 .quran-subtitle {
-  color: var(--text-secondary);
   font-size: 0.95rem;
+  color: var(--text-secondary);
 }
 
 /* Loading */
@@ -315,28 +315,61 @@ body {
   color: var(--text-secondary);
 }
 
-/* Surah List */
+/* Surah list */
 .surah-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
 
-.surah-item {
+/* Surah row */
+.surah-row {
   background: var(--surface);
-  border: none;
   border-radius: var(--radius-pill);
+  padding: var(--space-4);
 
-  padding: var(--space-5);
-  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
 
-  font-size: 0.95rem;
-  color: var(--text-primary);
-
+/* Surah info (left) */
+.surah-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   cursor: pointer;
 }
 
-/* Ayah View */
+.surah-name {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.surah-ar {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  direction: rtl;
+}
+
+/* Play button (right) */
+.surah-play {
+  width: 40px;
+  height: 40px;
+
+  border: none;
+  border-radius: var(--radius-round);
+
+  background: var(--accent);
+  color: #ffffff;
+
+  font-size: 0.9rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Ayah view */
 .ayah-view {
   display: flex;
   flex-direction: column;
@@ -352,9 +385,10 @@ body {
 
   border: none;
   border-radius: var(--radius-pill);
-  padding: var(--space-4) var(--space-5);
 
+  padding: var(--space-4) var(--space-5);
   cursor: pointer;
+
   font-size: 0.9rem;
 }
 
@@ -365,7 +399,7 @@ body {
   gap: var(--space-6);
 }
 
-/* Single Ayah */
+/* Single ayah */
 .ayah {
   background: var(--surface);
   border-radius: var(--radius-pill);
@@ -385,14 +419,14 @@ body {
 
 /* Bengali */
 .ayah-bn {
-  color: var(--text-primary);
   font-size: 0.95rem;
+  color: var(--text-primary);
 }
 
 /* English */
 .ayah-en {
-  color: var(--text-secondary);
   font-size: 0.9rem;
+  color: var(--text-secondary);
 }
 
 /* Utility */
