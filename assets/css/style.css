@@ -1,0 +1,401 @@
+/* ==========================================================================
+   Name          : Noor Plus
+   Tagline       : Light, Clarity, Direction
+   Description   :
+   Noor Plus is an Islamic life-guidance app designed to help users live
+   with certainty, faith, and inner peace through the light of the Qur’an
+   and Sunnah.
+
+   Philosophy    : Noor Plus is not just an app — it is a journey toward
+                   a life built on certainty.
+
+   Author        : Faruk islam
+   Version       : 1.0.0
+   License       : Proprietary
+   Last Updated  : 2026
+   ========================================================================== */
+
+/* =========================================================
+   DESIGN TOKENS
+========================================================= */
+:root {
+  /* Typography */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --font-size-base: 1rem;
+  --line-height: 1.6;
+
+  /* Spacing */
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+
+  /* ===============================
+     COLORS — ISLAMIC LIGHT THEME
+     =============================== */
+
+  --bg: #f8faf7;              /* soft, calm off-white */
+  --surface: #eef2ee;         /* subtle green-tinted surface */
+
+  --text-primary: #0f172a;    /* deep charcoal */
+  --text-secondary: #475569;  /* muted slate */
+
+  /* Accent */
+  --accent: #1f7a63;          /* dignified Islamic green */
+
+  /* Radius */
+  --radius-pill: 999px;
+  --radius-round: 50%;
+
+  /* Shadows */
+  --shadow-nav: 0 10px 28px rgba(15, 23, 42, 0.18);
+  --shadow-active: 0 8px 20px rgba(31, 122, 99, 0.45);
+
+  /* Navigation sizing */
+  --nav-width: min(92%, 420px);
+  --nav-height: 64px;
+  --nav-height-top: 56px;
+}
+
+/* =========================================================
+   DARK MODE — ISLAMIC NIGHT THEME
+========================================================= */
+[data-theme="dark"] {
+  --bg: #0e1412;              /* deep night green-black */
+  --surface: #151f1c;         /* calm elevated surface */
+
+  --text-primary: #e6f0ec;    /* soft mint-white */
+  --text-secondary: #9fbab1;  /* muted sage */
+
+  --accent: #3cb89b;
+
+  --shadow-nav: 0 10px 30px rgba(0, 0, 0, 0.6);
+  --shadow-active: 0 8px 22px rgba(60, 184, 155, 0.55);
+}
+
+/* =========================================================
+   RESET
+========================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* =========================================================
+   BASE
+========================================================= */
+html {
+  font-size: var(--font-size-base);
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  line-height: var(--line-height);
+  background: var(--bg);
+  color: var(--text-primary);
+}
+
+/* =========================================================
+   TOP NAVIGATION
+========================================================= */
+.top-nav {
+  position: fixed;
+  top: var(--space-4);
+  inset-inline: 0;
+  margin-inline: auto;
+
+  width: var(--nav-width);
+  height: var(--nav-height-top);
+
+  background: var(--surface);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-nav);
+  z-index: 1000;
+}
+
+.app-title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* =========================================================
+   APP MAIN
+========================================================= */
+#app-main {
+  min-height: 100vh;
+
+  padding-top: calc(var(--nav-height-top) + var(--space-6));
+  padding-bottom: calc(var(--nav-height) + var(--space-6));
+
+  display: flex;
+  justify-content: center;
+}
+
+/* Page container */
+.page {
+  width: var(--nav-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* =========================================================
+   BOTTOM NAVIGATION
+========================================================= */
+.bottom-nav {
+  position: fixed;
+  bottom: var(--space-4);
+  inset-inline: 0;
+  margin-inline: auto;
+
+  width: var(--nav-width);
+  height: var(--nav-height);
+
+  background: var(--surface);
+
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-nav);
+  z-index: 1000;
+}
+
+/* Nav buttons */
+.bottom-nav button {
+  justify-self: center;
+
+  width: 44px;
+  height: 44px;
+
+  background: none;
+  border: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.375rem;
+  color: var(--text-secondary);
+
+  border-radius: var(--radius-round);
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+}
+
+/* ACTIVE STATE (only one button) */
+.bottom-nav button.active {
+  width: 54px;
+  height: 54px;
+
+  background: var(--accent);
+  color: #ffffff;
+
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-active);
+}
+
+/* =========================================================
+   MENU PAGE
+========================================================= */
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.menu-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Menu item row */
+.menu-item {
+  background: var(--surface);
+  border-radius: var(--radius-pill);
+  padding: var(--space-5);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Label */
+.menu-label {
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+/* Toggle button */
+.toggle-btn {
+  width: 44px;
+  height: 24px;
+
+  background: var(--text-secondary);
+  border: none;
+  border-radius: var(--radius-pill);
+
+  position: relative;
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+/* Toggle thumb */
+.toggle-thumb {
+  width: 18px;
+  height: 18px;
+
+  background: var(--bg);
+  border-radius: var(--radius-round);
+
+  position: absolute;
+  top: 3px;
+  left: 3px;
+
+  transition: transform 0.2s ease;
+}
+
+/* DARK STATE (driven by attribute) */
+[data-theme="dark"] .toggle-btn {
+  background: var(--accent);
+}
+
+[data-theme="dark"] .toggle-thumb {
+  transform: translateX(20px);
+}
+
+/* =========================================================
+   QURAN PAGE
+========================================================= */
+
+.quran {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Header */
+.quran-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.quran-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.quran-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* Loading */
+.quran-loading {
+  color: var(--text-secondary);
+}
+
+/* Surah List */
+.surah-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.surah-item {
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius-pill);
+
+  padding: var(--space-5);
+  text-align: left;
+
+  font-size: 0.95rem;
+  color: var(--text-primary);
+
+  cursor: pointer;
+}
+
+/* Ayah View */
+.ayah-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Back button */
+.back-btn {
+  align-self: flex-start;
+
+  background: var(--surface);
+  color: var(--text-primary);
+
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: var(--space-4) var(--space-5);
+
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* Ayah list */
+.ayah-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Single Ayah */
+.ayah {
+  background: var(--surface);
+  border-radius: var(--radius-pill);
+  padding: var(--space-5);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Arabic */
+.ayah-ar {
+  font-size: 1.25rem;
+  line-height: 2;
+  text-align: right;
+}
+
+/* Bengali */
+.ayah-bn {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+/* English */
+.ayah-en {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Utility */
+.hidden {
+  display: none;
+}
