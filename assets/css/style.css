@@ -94,13 +94,13 @@ html {
 }
 
 body {
-  height: auto;              /* 🔑 NOT min-height */
-  min-height: auto;          /* 🔑 remove viewport lock */
-  font-family: var(--font-sans);
-  line-height: var(--line-height);
-  background: var(--bg);
-  color: var(--text-primary);
-  overflow-y: auto;          /* allow scroll */
+   min-height: 100vh;
+   display: flex;
+   flex-direction: column;
+   font-family: var(--font-sans);
+   line-height: var(--line-height);
+   background: var(--bg);
+   color: var(--text-primary);
 }
 
 /* =========================================================
@@ -140,6 +140,7 @@ body {
   padding-bottom: calc(var(--nav-height) + var(--space-6));
   display: flex;
   justify-content: center;
+   flex: 1;
 }
 
 /* Page container */
