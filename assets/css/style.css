@@ -319,7 +319,7 @@ body {
 /* Surah row */
 .surah-row {
   background: var(--surface);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-corner);
   padding: var(--space-4);
 
   display: flex;
