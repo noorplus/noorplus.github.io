@@ -134,21 +134,11 @@ body {
    APP MAIN
 ========================================================= */
 #app-main {
-  height: calc(
-    100vh
-    - var(--nav-height-top)
-    - var(--nav-height)
-    - (var(--space-4) * 2)
-  );
-
   margin-top: calc(var(--nav-height-top) + var(--space-4));
-
   padding-top: var(--space-4);
   padding-bottom: var(--space-6);
-
   display: flex;
   justify-content: center;
-
   overflow-y: auto;
   overflow-x: hidden;
 }
