@@ -93,12 +93,13 @@ html {
 }
 
 body {
-  min-height: 100vh;
+  height: auto;              /* 🔑 NOT min-height */
+  min-height: auto;          /* 🔑 remove viewport lock */
   font-family: var(--font-sans);
   line-height: var(--line-height);
   background: var(--bg);
   color: var(--text-primary);
-  overflow-y: auto;
+  overflow-y: auto;          /* allow scroll */
 }
 
 /* =========================================================
@@ -134,11 +135,8 @@ body {
    APP MAIN
 ========================================================= */
 #app-main {
-  min-height: 100vh;
-
   padding-top: calc(var(--nav-height-top) + var(--space-6));
   padding-bottom: calc(var(--nav-height) + var(--space-6));
-
   display: flex;
   justify-content: center;
 }
