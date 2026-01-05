@@ -98,7 +98,7 @@ body {
   line-height: var(--line-height);
   background: var(--bg);
   color: var(--text-primary);
-   overflow: hidden;
+  overflow-y: auto;
 }
 
 /* =========================================================
