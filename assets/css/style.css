@@ -396,7 +396,7 @@ body {
 /* Single ayah */
 .ayah {
   background: var(--surface);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-corner);
   padding: var(--space-5);
 
   display: flex;
