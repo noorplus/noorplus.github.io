@@ -207,18 +207,11 @@ async function playSurahAudio(number, btn) {
 }
 
 /* ===============================
-   HOME DASHBOARD LOGIC
+   HOME DASHBOARD LOGIC (REDESIGN)
  ================================ */
 function initHomePage() {
-  const dateEl = document.getElementById("current-date");
-  const locEl = document.getElementById("current-location");
-  if (!dateEl) return;
-
-  // Set Date
-  const now = new Date();
-  dateEl.textContent = now.toLocaleDateString('en-US', {
-    day: 'numeric', month: 'long', year: 'numeric'
-  });
+  const hijriEl = document.getElementById("hijri-date");
+  if (!hijriEl) return;
 
   // Get Location & Fetch Times
   if (navigator.geolocation) {
@@ -238,38 +231,46 @@ async function fetchPrayerTimes(lat, lon) {
     const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`);
     const data = await res.json();
     const timings = data.data.timings;
-    const meta = data.data.meta;
+    const hijri = data.data.date.hijri;
 
-    const locEl = document.getElementById("current-location");
-    if (locEl) {
-      locEl.textContent = meta.timezone.split('/')[1] || "My Location";
+    // Set Hijri Date
+    const hijriEl = document.getElementById("hijri-date");
+    if (hijriEl) {
+      hijriEl.textContent = `${hijri.day} ${hijri.month.en} ${hijri.year}`;
     }
 
-    // Update Schedule List
+    // Update Horizontal List
     const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
     prayers.forEach(p => {
-      const el = document.getElementById(`time-${p}`);
-      if (el) el.textContent = timings[p];
+      const el = document.getElementById(`val-${p}`);
+      if (el) el.textContent = formatTime(timings[p]);
     });
 
-    // Suhur/Iftar (Approximate)
-    const suhurEl = document.getElementById("suhur-time");
-    const iftarEl = document.getElementById("iftar-time");
-    if (suhurEl) suhurEl.textContent = timings.Imsak;
-    if (iftarEl) iftarEl.textContent = timings.Maghrib;
+    // Suhur/Iftar
+    const suhurEl = document.getElementById("suhur-val");
+    const iftarEl = document.getElementById("iftar-val");
+    if (suhurEl) suhurEl.textContent = formatTime(timings.Imsak);
+    if (iftarEl) iftarEl.textContent = formatTime(timings.Maghrib);
 
-    startPrayerCountdown(timings);
+    startImprovedCountdown(timings);
   } catch (err) {
     console.error("Failed to fetch prayers", err);
   }
 }
 
-function startPrayerCountdown(timings) {
+function formatTime(time24) {
+  if (!time24) return "--:--";
+  const [h, m] = time24.split(':').map(Number);
+  const period = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2, '0')} ${period}`;
+}
+
+function startImprovedCountdown(timings) {
   if (prayerTimer) clearInterval(prayerTimer);
 
   const prayers = [
     { name: "Fajr", time: timings.Fajr },
-    { name: "Sunrise", time: timings.Sunrise },
     { name: "Dhuhr", time: timings.Dhuhr },
     { name: "Asr", time: timings.Asr },
     { name: "Maghrib", time: timings.Maghrib },
@@ -280,30 +281,33 @@ function startPrayerCountdown(timings) {
     const now = new Date();
     const currentTimeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-    // Find current and next prayer
-    let currentIdx = -1;
+    // Find NEXT prayer
+    let nextIdx = 0;
     for (let i = 0; i < prayers.length; i++) {
-      if (currentTimeStr >= prayers[i].time) {
-        currentIdx = i;
+      if (currentTimeStr < prayers[i].time) {
+        nextIdx = i;
+        break;
       }
+      if (i === prayers.length - 1) nextIdx = 0; // Wrap to Fajr
     }
 
-    // Default to last prayer of yesterday if before Fajr
-    const currentP = currentIdx === -1 ? prayers[prayers.length - 1] : prayers[currentIdx];
-    const nextP = prayers[(currentIdx + 1) % prayers.length];
+    const nextP = prayers[nextIdx];
+    const prevP = prayers[(nextIdx + prayers.length - 1) % prayers.length];
 
-    // Update UI
-    const nowPName = document.getElementById("now-p-name");
-    if (nowPName) {
-      nowPName.textContent = currentP.name;
-      const startEl = document.getElementById("now-p-start");
-      const endEl = document.getElementById("now-p-end");
-      if (startEl) startEl.textContent = currentP.time;
-      if (endEl) endEl.textContent = nextP.time;
+    // UI Update: Hero Card
+    const nameEl = document.getElementById("next-prayer-name");
+    const targetValEl = document.getElementById("target-time-val");
+    const targetPeriodEl = document.getElementById("target-time-period");
 
-      // Update active state in list
-      document.querySelectorAll(".prayer-row").forEach(row => {
-        row.classList.toggle("active", row.dataset.prayer === currentP.name);
+    if (nameEl) {
+      nameEl.textContent = nextP.name;
+      const t = formatTime(nextP.time).split(' ');
+      targetValEl.textContent = t[0];
+      targetPeriodEl.textContent = t[1];
+
+      // Update Horizontal Active
+      document.querySelectorAll(".p-item").forEach(item => {
+        item.classList.toggle("active", item.dataset.prayer === prevP.name);
       });
 
       // Countdown Calculation
@@ -317,17 +321,15 @@ function startPrayerCountdown(timings) {
       const diffM = Math.floor((diffSec % 3600) / 60);
       const diffS = diffSec % 60;
 
-      const remainingEl = document.getElementById("remaining-time");
-      if (remainingEl) {
-        remainingEl.textContent =
-          `${String(diffH).padStart(2, '0')}:${String(diffM).padStart(2, '0')}:${String(diffS).padStart(2, '0')}`;
-      }
+      document.getElementById("remaining-hms").textContent =
+        `${String(diffH).padStart(2, '0')}:${String(diffM).padStart(2, '0')}:${String(diffS).padStart(2, '0')}`;
 
-      // Progress Circle
-      const circle = document.getElementById("progress-circle");
-      if (circle) {
+      // Progress Circle & Dot
+      const ring = document.getElementById("progress-ring-top");
+      const dot = document.getElementById("progress-dot");
+      if (ring && dot) {
         const startTime = new Date();
-        const [sh, sm] = currentP.time.split(':').map(Number);
+        const [sh, sm] = prevP.time.split(':').map(Number);
         startTime.setHours(sh, sm, 0, 0);
         if (startTime > now) startTime.setDate(startTime.getDate() - 1);
 
@@ -335,10 +337,13 @@ function startPrayerCountdown(timings) {
         const elapsed = (now - startTime) / 1000;
         const progress = Math.min(Math.max(elapsed / totalDuration, 0), 1);
 
-        const radius = circle.r.baseVal.value;
-        const circumference = radius * 2 * Math.PI;
-        circle.style.strokeDasharray = `${circumference} ${circumference}`;
-        circle.style.strokeDashoffset = circumference - (progress * circumference);
+        const circumference = 60 * 2 * Math.PI; // Radius is 60
+        ring.style.strokeDasharray = `${circumference} ${circumference}`;
+        ring.style.strokeDashoffset = circumference - (progress * circumference);
+
+        // Rotate Dot
+        const angle = progress * 360;
+        dot.style.transform = `rotate(${angle}deg)`;
       }
     }
   }

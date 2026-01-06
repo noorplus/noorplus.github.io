@@ -1,83 +1,87 @@
 <section class="page home">
 
-    <!-- Header: Date & Location -->
-    <header class="dashboard-header">
-        <div class="today-date" id="current-date">-- --, ----</div>
-        <div class="location-box">
-            <i data-lucide="map-pin"></i>
-            <span id="current-location">Loading...</span>
-        </div>
-    </header>
+    <!-- Main Hero Card -->
+    <div class="prayer-hero-card">
+        <div class="mosque-bg"></div> <!-- Glassmorphic mosque background -->
 
-    <!-- Current Prayer Dashboard -->
-    <div class="prayer-status-grid">
-        <!-- Left: Prayer Info -->
-        <div class="prayer-info-card">
-            <div class="now-label">Now Prayer</div>
-            <h2 class="current-prayer-name" id="now-p-name">--</h2>
-            <div class="prayer-meta">
-                <div class="meta-row">
-                    <span>Start:</span>
-                    <span id="now-p-start">--:--</span>
+        <div class="hero-top">
+            <div class="hero-header">
+                <div class="hijri-date" id="hijri-date">5 Ramadan 1445</div>
+                <div class="next-prayer-label">
+                    Next Prayer : <span id="next-prayer-name">--</span>
+                    <span class="status-dot"></span>
                 </div>
-                <div class="meta-row">
-                    <span>End:</span>
-                    <span id="now-p-end">--:--</span>
+                <div class="target-time">
+                    <span id="target-time-val">--:--</span>
+                    <small id="target-time-period">AM</small>
+                    <span class="type-label">(Start time)</span>
                 </div>
-                <div class="meta-row highlight">
-                    <span>Suhur:</span>
-                    <span id="suhur-time">--:--</span>
-                </div>
-                <div class="meta-row highlight">
-                    <span>Iftar:</span>
-                    <span id="iftar-time">--:--</span>
+            </div>
+
+            <div class="hero-countdown">
+                <div class="circular-progress">
+                    <svg class="progress-svg" width="140" height="140">
+                        <defs>
+                            <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#FF7A00" />
+                                <stop offset="100%" stop-color="#48B572" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="ring-bg" cx="70" cy="70" r="60" />
+                        <circle id="progress-ring-top" class="ring-fill" cx="70" cy="70" r="60"
+                            stroke="url(#ring-gradient)" />
+                    </svg>
+                    <div class="countdown-center">
+                        <span class="label">Time</span>
+                        <span id="remaining-hms">00:00:00</span>
+                        <span class="label">Left</span>
+                    </div>
+                    <div id="progress-dot" class="progress-dot"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Right: Countdown Circle -->
-        <div class="countdown-container">
-            <div class="circle-box">
-                <svg class="progress-ring" width="120" height="120">
-                    <circle class="progress-ring__circle-bg" stroke="var(--divider)" stroke-width="8" fill="transparent"
-                        r="52" cx="60" cy="60" />
-                    <circle id="progress-circle" class="progress-ring__circle" stroke="var(--primary)" stroke-width="8"
-                        stroke-linecap="round" fill="transparent" r="52" cx="60" cy="60" />
-                </svg>
-                <div class="countdown-text">
-                    <span id="remaining-time">--:--</span>
-                    <small>remaining</small>
-                </div>
+        <div class="hero-bottom-meta">
+            <div class="meta-item">
+                <span>Suhur:</span>
+                <strong id="suhur-val">--:-- AM</strong>
+            </div>
+            <div class="meta-item">
+                <span>Iftar:</span>
+                <strong id="iftar-val">--:-- PM</strong>
             </div>
         </div>
-    </div>
 
-    <!-- Prayer Times List -->
-    <div class="prayer-list" id="prayer-schedule">
-        <!-- Fajr -->
-        <div class="prayer-row" data-prayer="Fajr">
-            <span class="p-name">Fajr</span>
-            <span class="p-time" id="time-Fajr">--:--</span>
-        </div>
-        <!-- Dhuhr -->
-        <div class="prayer-row" data-prayer="Dhuhr">
-            <span class="p-name">Dhuhr</span>
-            <span class="p-time" id="time-Dhuhr">--:--</span>
-        </div>
-        <!-- Asr -->
-        <div class="prayer-row" data-prayer="Asr">
-            <span class="p-name">Asr</span>
-            <span class="p-time" id="time-Asr">--:--</span>
-        </div>
-        <!-- Maghrib -->
-        <div class="prayer-row" data-prayer="Maghrib">
-            <span class="p-name">Maghrib</span>
-            <span class="p-time" id="time-Maghrib">--:--</span>
-        </div>
-        <!-- Isha -->
-        <div class="prayer-row" data-prayer="Isha">
-            <span class="p-name">Isha</span>
-            <span class="p-time" id="time-Isha">--:--</span>
+        <!-- Divider -->
+        <div class="hero-divider"></div>
+
+        <!-- Horizontal Prayer List -->
+        <div class="horizontal-prayer-list">
+            <div class="p-item" data-prayer="Fajr">
+                <div class="p-dot"></div>
+                <span class="p-label">Fajr</span>
+                <span class="p-time" id="val-Fajr">--:-- AM</span>
+            </div>
+            <div class="p-item" data-prayer="Dhuhr">
+                <div class="p-dot"></div>
+                <span class="p-label">Dhuhr</span>
+                <span class="p-time" id="val-Dhuhr">--:-- PM</span>
+            </div>
+            <div class="p-item" data-prayer="Asr">
+                <div class="p-dot"></div>
+                <span class="p-label">Asr</span>
+                <span class="p-time" id="val-Asr">--:-- PM</span>
+            </div>
+            <div class="p-item" data-prayer="Maghrib">
+                <div class="p-dot"></div>
+                <span class="p-label">Maghrib</span>
+                <span class="p-time" id="val-Maghrib">--:-- PM</span>
+            </div>
+            <div class="p-item" data-prayer="Isha">
+                <div class="p-dot"></div>
+                <span class="p-label">Isha</span>
+                <span class="p-time" id="val-Isha">--:-- PM</span>
+            </div>
         </div>
     </div>
 
