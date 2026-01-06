@@ -13,26 +13,41 @@ function formatTo12h(time24) {
 }
 
 function loadPage(page) {
+  console.log("Loading Page:", page);
   if (window.prayerTimer) {
     clearInterval(window.prayerTimer);
     window.prayerTimer = null;
   }
 
   fetch(`pages/${page}.html`)
-    .then(res => res.text())
+    .then(res => {
+      if (!res.ok) throw new Error("Page not found: " + page);
+      return res.text();
+    })
     .then(html => {
       main.classList.remove("page-fade-in");
       void main.offsetWidth;
       main.innerHTML = html;
       main.classList.add("page-fade-in");
 
+      // Update active nav button
       buttons.forEach(btn => btn.classList.remove("active"));
-      document.querySelector(`[data-page="${page}"]`)?.classList.add("active");
+      const activeBtn = document.querySelector(`.bottom-nav button[data-page="${page}"]`);
+      if (activeBtn) activeBtn.classList.add("active");
 
+      // Re-init modules
       if (window.lucide) lucide.createIcons();
       initThemeToggle();
       initQuranPage();
       initHomePage();
+    })
+    .catch(err => {
+      console.error("Navigation Error:", err);
+      main.innerHTML = `<div style="padding:40px; text-align:center; color:var(--alert);">
+        <h3>Load Failed</h3>
+        <p>${err.message}</p>
+        <button onclick="location.reload()" style="margin-top:10px; padding:10px 20px; border-radius:10px; background:var(--primary); color:white; border:none;">Retry</button>
+      </div>`;
     });
 }
 
@@ -55,22 +70,29 @@ function restorePreferences() {
   document.documentElement.setAttribute("data-theme", savedTheme);
 }
 
-restorePreferences();
-loadPage("home");
+// Global initialization
+(function startup() {
+  try {
+    restorePreferences();
+    loadPage("home");
 
-document.addEventListener("click", (e) => {
-  const target = e.target.closest("[data-page]");
-  if (target) loadPage(target.getAttribute("data-page"));
-});
+    document.addEventListener("click", (e) => {
+      const target = e.target.closest("[data-page]");
+      if (target) {
+        const page = target.getAttribute("data-page");
+        loadPage(page);
+      }
+    });
+
+    console.log("NoorPlus StartUp Complete");
+  } catch (err) {
+    console.error("Critical Startup Failure:", err);
+  }
+})();
 
 /* ===============================
-   LOAD SAVED THEME (GLOBAL)
+   GLOBAL QURAN MODULE
 ================================ */
-const savedTheme = localStorage.getItem("theme");
-if (savedTheme) {
-  document.documentElement.setAttribute("data-theme", savedTheme);
-}
-
 let currentAudio = null;
 let currentPlayBtn = null;
 
@@ -80,147 +102,90 @@ function initQuranPage() {
   const ayahListEl = document.getElementById("ayah-list");
   const backBtn = document.getElementById("back-to-surah");
 
-  if (!surahListEl) return; // not on Quran page
+  if (!surahListEl) return;
 
-  /* ===============================
-     FETCH SURAH LIST
-  ================================ */
   fetch("https://api.alquran.cloud/v1/surah")
     .then(res => res.json())
     .then(data => {
       surahListEl.innerHTML = "";
-
       data.data.forEach(surah => {
         const row = document.createElement("div");
         row.className = "surah-row";
-
-        /* Surah info (LEFT) */
-        const info = document.createElement("div");
-        info.className = "surah-info";
-        info.innerHTML = `
-          <span class="surah-name">
-            ${surah.number}. ${surah.englishName}
-          </span>
-          <span class="surah-ar">${surah.name}</span>
+        row.innerHTML = `
+          <div class="surah-info" onclick="window.loadSurah(${surah.number})">
+            <span class="surah-name">${surah.number}. ${surah.englishName}</span>
+            <span class="surah-ar">${surah.name}</span>
+          </div>
+          <button class="surah-play" onclick="playSurahAudio(${surah.number}, this)">
+            <i data-lucide="play"></i>
+          </button>
         `;
-        info.onclick = () => loadSurah(surah.number);
-
-        /* Play button (RIGHT) */
-        const playBtn = document.createElement("button");
-        playBtn.className = "surah-play";
-        playBtn.innerHTML = \`<i data-lucide="play"></i>\`;
-
-        playBtn.onclick = async (e) => {
-          e.stopPropagation();
-          await playSurahAudio(surah.number, playBtn);
-        };
-
-        row.appendChild(info);
-        row.appendChild(playBtn);
         surahListEl.appendChild(row);
       });
-
-      // Re-init icons for dynamic elements
       if (window.lucide) lucide.createIcons();
     });
 
-  /* ===============================
-     LOAD SURAH AYAH
-  ================================ */
-  function loadSurah(number) {
+  window.loadSurah = function (number) {
     surahListEl.classList.add("hidden");
     ayahViewEl.classList.remove("hidden");
-    ayahListEl.innerHTML = "<p>Loading Ayahs…</p>";
+    ayahListEl.innerHTML = "<p>Loading Ayahs...</p>";
 
     Promise.all([
-      fetch(\`https://api.alquran.cloud/v1/surah/\${number}/ar\`).then(r => r.json()),
-      fetch(\`https://api.alquran.cloud/v1/surah/\${number}/bn.bengali\`).then(r => r.json()),
-      fetch(\`https://api.alquran.cloud/v1/surah/\${number}/en.asad\`).then(r => r.json())
+      fetch(`https://api.alquran.cloud/v1/surah/${number}/ar`).then(r => r.json()),
+      fetch(`https://api.alquran.cloud/v1/surah/${number}/bn.bengali`).then(r => r.json()),
+      fetch(`https://api.alquran.cloud/v1/surah/${number}/en.asad`).then(r => r.json())
     ]).then(([ar, bn, en]) => {
       ayahListEl.innerHTML = "";
-
       ar.data.ayahs.forEach((ayah, i) => {
         const div = document.createElement("div");
         div.className = "ayah";
         div.innerHTML = `
-          < p class="ayah-ar" >\${ ayah.text }</p >
-          <p class="ayah-bn">\${bn.data.ayahs[i].text}</p>
-          <p class="ayah-en">\${en.data.ayahs[i].text}</p>
+          <p class="ayah-ar">${ayah.text}</p>
+          <p class="ayah-bn">${bn.data.ayahs[i].text}</p>
+          <p class="ayah-en">${en.data.ayahs[i].text}</p>
         `;
         ayahListEl.appendChild(div);
       });
     });
-  }
-
-  /* ===============================
-     BACK BUTTON
-  ================================ */
-  backBtn.onclick = () => {
-    ayahViewEl.classList.add("hidden");
-    surahListEl.classList.remove("hidden");
   };
+
+  if (backBtn) {
+    backBtn.onclick = () => {
+      ayahViewEl.classList.add("hidden");
+      surahListEl.classList.remove("hidden");
+    };
+  }
 }
 
-/* ===============================
-   SURAH AUDIO (OFFLINE CACHED)
-================================ */
 async function playSurahAudio(number, btn) {
-  const url =
-    \`https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/\${number}.mp3\`;
-
-  // Stop previous audio
+  const url = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${number}.mp3`;
   if (currentAudio) {
     currentAudio.pause();
-    currentPlayBtn.innerHTML = \`<i data-lucide="play"></i>\`;
+    currentPlayBtn.innerHTML = `<i data-lucide="play"></i>`;
     if (window.lucide) lucide.createIcons();
   }
-
-  // Toggle same button
   if (currentPlayBtn === btn) {
     currentAudio = null;
     currentPlayBtn = null;
     return;
   }
-
-  const audio = new Audio();
-  const cache = await caches.open("quran-audio-v1");
-  const cached = await cache.match(url);
-
-  if (cached) {
-    const blob = await cached.blob();
-    audio.src = URL.createObjectURL(blob);
-  } else {
-    audio.src = url;
-    fetch(url).then(res => cache.put(url, res.clone()));
-  }
-
+  const audio = new Audio(url);
   audio.play();
-  btn.innerHTML = \`<i data-lucide="pause"></i>\`;
+  btn.innerHTML = `<i data-lucide="pause"></i>`;
   if (window.lucide) lucide.createIcons();
-
   currentAudio = audio;
   currentPlayBtn = btn;
-
-  audio.onended = () => {
-    btn.innerHTML = \`<i data-lucide="play"></i>\`;
-    if (window.lucide) lucide.createIcons();
-    currentAudio = null;
-    currentPlayBtn = null;
-  };
 }
 
 /* ===============================
-   ADVANCED DASHBOARD LOGIC
- ================================ */
+   ADVANCED DASHBOARD MODULE
+================================ */
 function initHomePage() {
   const dateEl = document.getElementById("adv-date");
   if (!dateEl) return;
 
   const now = new Date();
-  dateEl.textContent = now.toLocaleDateString("en-GB", {
-    day: "2-digit", month: "short", year: "numeric"
-  });
-
+  dateEl.textContent = now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
   renderTracker();
 
   if (navigator.geolocation) {
@@ -234,7 +199,6 @@ function initHomePage() {
 
   document.querySelectorAll(".t-btn").forEach(btn => {
     btn.onclick = () => {
-      // Logic: Only allow clicking if NOT missed and NOT upcoming (current or same-day logic)
       if (btn.classList.contains("upcoming") || btn.classList.contains("missed")) return;
       toggleTracker(btn.dataset.p);
     };
@@ -243,28 +207,27 @@ function initHomePage() {
 
 async function fetchAdvPrayerTimes(lat, lon) {
   try {
-    const res = await fetch(\`https://api.aladhan.com/v1/timings?latitude=\${lat}&longitude=\${lon}&method=2\`);
-    const data = await res.json();
-    const timings = data.data.timings;
-    const meta = data.data.meta;
+    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`);
+    const json = await res.json();
+    const timings = json.data.timings;
+    const meta = json.data.meta;
 
     const locEl = document.getElementById("adv-location");
-    if (locEl) locEl.textContent = meta.timezone.split("/")[1]?.replace('_', ' ') || "Dhaka";
+    if (locEl) locEl.textContent = meta.timezone.split("/")[1]?.replace(/_/g, " ") || "Dhaka";
 
     const suhurEl = document.getElementById("adv-suhur");
     const iftarEl = document.getElementById("adv-iftar");
     if (suhurEl) suhurEl.textContent = formatTo12h(timings.Imsak);
     if (iftarEl) iftarEl.textContent = formatTo12h(timings.Maghrib);
 
-    const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
-    prayers.forEach(p => {
-      const el = document.getElementById(\`s-\${p}\`);
+    ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"].forEach(p => {
+      const el = document.getElementById(`s-${p}`);
       if (el) el.textContent = formatTo12h(timings[p]);
     });
 
     startAdvCountdown(timings);
   } catch (err) {
-    console.error("Dashboard Load Failed", err);
+    console.error("API Fetch Error:", err);
   }
 }
 
@@ -281,16 +244,16 @@ function startAdvCountdown(timings) {
 
   function update() {
     const now = new Date();
-    const nowTimeStr = \`\${String(now.getHours()).padStart(2, "0")}:\${String(now.getMinutes()).padStart(2, "0")}\`;
+    const nowStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
     let currentIdx = -1;
     for (let i = 0; i < schedule.length; i++) {
-      if (nowTimeStr >= schedule[i].time) currentIdx = i;
+      if (nowStr >= schedule[i].time) currentIdx = i;
     }
     if (currentIdx === -1) currentIdx = schedule.length - 1;
 
     const currentP = schedule[currentIdx];
-    const nextP = schedule[(currentIdx + 1) % schedule.length];
+    const nextP = schedule[(currentIdx + 1) % 5];
 
     document.getElementById("adv-p-now").textContent = currentP.name;
     document.getElementById("adv-p-start").textContent = formatTo12h(currentP.time);
@@ -308,7 +271,7 @@ function startAdvCountdown(timings) {
     const h = Math.floor(diff / 3600);
     const m = Math.floor((diff % 3600) / 60);
     const s = diff % 60;
-    document.getElementById("adv-timer").textContent = \`\${String(h).padStart(2, "0")}:\${String(m).padStart(2, "0")}:\${String(s).padStart(2, "0")}\`;
+    document.getElementById("adv-timer").textContent = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 
     const ring = document.getElementById("adv-ring-fill");
     if (ring) {
@@ -316,45 +279,32 @@ function startAdvCountdown(timings) {
       const [sh, sm] = currentP.time.split(":").map(Number);
       start.setHours(sh, sm, 0, 0);
       if (start > now) start.setDate(start.getDate() - 1);
-
-      const totalLen = (target - start) / 1000;
-      const elapsed = (now - start) / 1000;
-      const prog = Math.min(Math.max(elapsed / totalLen, 0), 1);
+      const total = (target - start) / 1000;
+      const progress = Math.min(Math.max((now - start) / 1000 / total, 0), 1);
       const circ = 54 * 2 * Math.PI;
-      ring.style.strokeDasharray = \`\${circ} \${circ}\`;
-      ring.style.strokeDashoffset = circ - (prog * circ);
+      ring.style.strokeDashoffset = circ - (progress * circ);
+      ring.style.strokeDasharray = `${circ} ${circ}`;
     }
-
-    updateTrackerStates(timings, nowTimeStr);
+    updateTrackerStates(timings, nowStr);
   }
-
   update();
   window.prayerTimer = setInterval(update, 1000);
 }
 
-/* ===============================
-   STRICT TRACKER LOGIC
- ================================ */
-function getTrackerData() {
-  const data = localStorage.getItem("noorplus_tracker_strict");
-  return data ? JSON.parse(data) : {};
-}
-
 function renderTracker() {
+  const data = JSON.parse(localStorage.getItem("noorplus_tracker_strict") || "{}");
   const today = new Date().toISOString().split("T")[0];
-  const data = getTrackerData();
   const todayData = data[today] || {};
 
   document.querySelectorAll(".t-btn").forEach(btn => {
-    const p = btn.dataset.p;
     btn.classList.remove("done", "missed", "upcoming");
-    if (todayData[p] === "done") btn.classList.add("done");
+    if (todayData[btn.dataset.p] === "done") btn.classList.add("done");
   });
 }
 
 function toggleTracker(pName) {
+  const data = JSON.parse(localStorage.getItem("noorplus_tracker_strict") || "{}");
   const today = new Date().toISOString().split("T")[0];
-  const data = getTrackerData();
   if (!data[today]) data[today] = {};
   data[today][pName] = (data[today][pName] === "done") ? "" : "done";
   localStorage.setItem("noorplus_tracker_strict", JSON.stringify(data));
@@ -362,28 +312,17 @@ function toggleTracker(pName) {
 }
 
 function updateTrackerStates(timings, nowStr) {
+  const data = JSON.parse(localStorage.getItem("noorplus_tracker_strict") || "{}");
   const today = new Date().toISOString().split("T")[0];
-  const data = getTrackerData();
   const todayData = data[today] || {};
 
   document.querySelectorAll(".t-btn").forEach(btn => {
     const p = btn.dataset.p;
-    const pStartStr = timings[p];
-
     btn.classList.remove("missed", "upcoming");
-
-    // Logic: 
-    // 1. If it's before prayer start -> Upcoming
-    // 2. If it's after (or during) and NOT done -> Missed (Strict past check)
-    if (nowStr < pStartStr) {
+    if (nowStr < timings[p]) {
       btn.classList.add("upcoming");
-    } else {
-      // It's either the current prayer or a past one
-      // If it's NOT done, and it's PAST the current period... 
-      // Actually, user said 'past' = red. Let's make anything past-current red if not done.
-      if (todayData[p] !== "done") {
-        btn.classList.add("missed");
-      }
+    } else if (todayData[p] !== "done") {
+      btn.classList.add("missed");
     }
   });
 }
