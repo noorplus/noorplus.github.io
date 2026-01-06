@@ -1,0 +1,269 @@
+/* ==========================================================================
+   DESIGN SYSTEM
+   ========================================================================== */
+
+:root {
+  /* Colors */
+  --primary: #10b981;
+  --primary-dark: #059669;
+  --accent: #f59e0b;
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --nav-bg: rgba(255, 255, 255, 0.8);
+
+  /* Spacing & Radius */
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --radius: 12px;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  /* Typography */
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-ar: 'Amiri', serif;
+}
+
+/* Dark Mode Variables */
+[data-theme="dark"] {
+  --bg-color: #0f172a;
+  --card-bg: #1e293b;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --nav-bg: rgba(15, 23, 42, 0.8);
+}
+
+/* ==========================================================================
+   RESET & BASE
+   ========================================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.5;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+  padding-top: 60px;
+  /* Header height */
+  padding-bottom: 70px;
+  /* Nav height */
+}
+
+/* ==========================================================================
+   LAYOUT SHELL
+   ========================================================================== */
+
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: var(--nav-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.app-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background-color: var(--nav-bg);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 10px;
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bottom-nav button.active {
+  color: var(--primary);
+  transform: translateY(-4px);
+}
+
+.bottom-nav button.home {
+  font-size: 2rem;
+  color: var(--primary);
+}
+
+#app-main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  min-height: calc(100vh - 130px);
+}
+
+/* ==========================================================================
+   UI COMPONENTS
+   ========================================================================== */
+
+.card {
+  background-color: var(--card-bg);
+  border-radius: var(--radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s ease;
+}
+
+.card:active {
+  transform: scale(0.98);
+}
+
+h1,
+h2,
+h3 {
+  margin-bottom: var(--spacing-sm);
+  font-weight: 700;
+}
+
+p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   QURAN PAGE STYLES
+   ========================================================================== */
+
+.surah-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background-color: var(--card-bg);
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+.surah-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.surah-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.surah-ar {
+  font-family: var(--font-ar);
+  font-size: 1.2rem;
+  color: var(--primary);
+  text-align: right;
+}
+
+.surah-play {
+  background: var(--primary);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--spacing-md);
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+
+.ayah {
+  padding: var(--spacing-lg) 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ayah-ar {
+  font-family: var(--font-ar);
+  font-size: 1.8rem;
+  text-align: right;
+  line-height: 2.5;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-main);
+}
+
+.ayah-bn,
+.ayah-en {
+  font-size: 1rem;
+  margin-bottom: var(--spacing-sm);
+  line-height: 1.6;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#back-to-surah {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-md);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#app-main>* {
+  animation: fadeIn 0.4s ease-out forwards;
+}
