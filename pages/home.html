@@ -1,161 +1,140 @@
 <section class="page home">
 
-    <!-- Simple Header (Restored) -->
-    <header class="page-header home-header">
-        <h1 class="page-title home-title">Assalamu Alaikum</h1>
-        <p class="page-subtitle home-subtitle">
-            Build your life on certainty, faith, and remembrance of Allah.
-        </p>
+    <!-- 1. Header: Date (L) & Location (R) -->
+    <header class="adv-header">
+        <div class="h-date" id="adv-date">-- ---, ----</div>
+        <div class="h-loc" id="adv-location">Detecting...</div>
     </header>
 
-    <!-- Main Hero Card -->
-    <div class="prayer-hero-card">
-        <div class="mosque-bg"></div> <!-- Glassmorphic mosque background -->
-
-        <div class="hero-top">
-            <div class="hero-header">
-                <div class="hijri-date" id="hijri-date">5 Ramadan 1445</div>
-                <div class="next-prayer-label">
-                    Next Prayer : <span id="next-prayer-name">--</span>
-                    <span class="status-dot"></span>
-                </div>
-                <div class="target-time">
-                    <span id="target-time-val">--:--</span>
-                    <small id="target-time-period">AM</small>
-                    <span class="type-label">(Start time)</span>
-                </div>
+    <!-- 2. Hero Dashboard -->
+    <div class="hero-dash">
+        <!-- Left: Data -->
+        <div class="hero-left">
+            <div class="h-item">
+                <span class="h-label">Now</span>
+                <span class="h-val" id="adv-p-now">--</span>
             </div>
-
-            <div class="dashboard-right">
-                <div class="lite-circle-box">
-                    <svg width="100" height="100">
-                        <circle class="ring-lite-bg" cx="50" cy="50" r="44" />
-                        <circle id="ring-lite-fill" class="ring-lite-fill" cx="50" cy="50" r="44" />
-                    </svg>
-                    <div class="lite-countdown-text">
-                        <small>Time</small>
-                        <span id="lite-timer-hms">00:02:37</span>
-                        <small>Left</small>
-                    </div>
-                    <div id="lite-dot" class="lite-progress-dot"></div>
+            <div class="h-item">
+                <span class="h-label">Time</span>
+                <span class="h-val" id="adv-p-start">--:--</span>
+            </div>
+            <div class="h-meta-row">
+                <div class="h-mini">
+                    <span class="h-label">Suhur</span>
+                    <span class="h-val-small" id="adv-suhur">--:--</span>
+                </div>
+                <div class="h-mini">
+                    <span class="h-label">Iftar</span>
+                    <span class="h-val-small" id="adv-iftar">--:--</span>
                 </div>
             </div>
         </div>
 
-        <!-- Horizontal Prayer Mini-Schedule -->
-        <div class="mini-schedule">
-            <div class="ms-item" data-prayer="Fajr">
-                <div class="ms-dot"></div>
-                <span class="ms-name">Fajr</span>
-                <span class="ms-time" id="sh-Fajr">5:22 AM</span>
-            </div>
-            <div class="ms-item" data-prayer="Dhuhr">
-                <div class="ms-dot"></div>
-                <span class="ms-name">Dhuhr</span>
-                <span class="ms-time" id="sh-Dhuhr">12:05 PM</span>
-            </div>
-            <div class="ms-item" data-prayer="Asr">
-                <div class="ms-dot"></div>
-                <span class="ms-name">Asr</span>
-                <span class="ms-time" id="sh-Asr">3:50 PM</span>
-            </div>
-            <div class="ms-item" data-prayer="Maghrib">
-                <div class="ms-dot"></div>
-                <span class="ms-name">Maghrib</span>
-                <span class="ms-time" id="sh-Maghrib">5:26 PM</span>
-            </div>
-            <div class="ms-item" data-prayer="Isha">
-                <div class="ms-dot"></div>
-                <span class="ms-name">Isha</span>
-                <span class="ms-time" id="sh-Isha">6:46 PM</span>
+        <!-- Right: Animated Circle -->
+        <div class="hero-right">
+            <div class="adv-circle-box">
+                <svg width="120" height="120">
+                    <circle class="c-bg" cx="60" cy="60" r="54" />
+                    <circle id="adv-ring-fill" class="c-fill" cx="60" cy="60" r="54" />
+                </svg>
+                <div class="c-text">
+                    <span id="adv-timer">00:00:00</span>
+                    <small>Remaining</small>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="lite-divider"></div>
+    <!-- 3. Horizontal Schedule (5 Prayers) -->
+    <div class="adv-schedule">
+        <div class="s-item" data-prayer="Fajr">
+            <span class="s-name">Fajr</span>
+            <span class="s-time" id="s-Fajr">--:--</span>
+        </div>
+        <div class="s-item" data-prayer="Dhuhr">
+            <span class="s-name">Dhuhr</span>
+            <span class="s-time" id="s-Dhuhr">--:--</span>
+        </div>
+        <div class="s-item" data-prayer="Asr">
+            <span class="s-name">Asr</span>
+            <span class="s-time" id="s-Asr">--:--</span>
+        </div>
+        <div class="s-item" data-prayer="Maghrib">
+            <span class="s-name">Maghrib</span>
+            <span class="s-time" id="s-Maghrib">--:--</span>
+        </div>
+        <div class="s-item" data-prayer="Isha">
+            <span class="s-name">Isha</span>
+            <span class="s-time" id="s-Isha">--:--</span>
+        </div>
+    </div>
 
-        <!-- Feature Grid (4x3) -->
-        <div class="feature-grid">
-            <div class="feat-item" data-page="quran">
-                <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/clock.png" alt="Prayer Time" />
-                </div>
-                <span>Prayer Time</span>
-            </div>
-            <div class="feat-item" data-page="quran">
-                <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/quran.png" alt="Quran" /></div>
-                <span>Al-Quran</span>
-            </div>
-            <div class="feat-item">
-                <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/book.png" alt="Hadith" /></div>
-                <span>Hadith</span>
-            </div>
-            <div class="feat-item">
-                <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/praying-hands.png" alt="Dua" />
-                </div>
-                <span>Dua</span>
-            </div>
+    <div class="adv-divider"></div>
 
-            <div class="feat-item">
-                <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/kaaba.png" alt="Qibla" /></div>
-                <span>Qibla</span>
-            </div>
-            <div class="feat-item">
-                <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/tasbih.png" alt="Tasbih" />
-                </div>
-                <span>Tasbih</span>
-            </div>
-            <div class="feat-item">
-                <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/donation.png" alt="Zakat" />
-                </div>
-                <span>Zakat</span>
-            </div>
-            <div class="feat-item">
-                <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/calendar.png" alt="Hijri" />
-                </div>
-                <span>Hijri</span>
-            </div>
-
-            <div class="feat-item" data-page="community">
-                <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/group.png" alt="Community" />
-                </div>
-                <span>Community</span>
-            </div>
-            <div class="feat-item">
-                <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/mosque.png" alt="Mosque" />
-                </div>
-                <span>Mosque</span>
-            </div>
-            <div class="feat-item">
-                <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/books.png" alt="Kitab" /></div>
-                <span>Kitab</span>
-            </div>
-            <div class="feat-item">
-                <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/voluntary-work.png"
-                        alt="Donate" />
-                </div>
-                <span>Donate</span>
-            </div>
+    <!-- 4. Feature Grid (4x3 = 12 icons) -->
+    <div class="adv-grid">
+        <div class="g-item" data-page="quran">
+            <div class="g-icon"><img src="https://img.icons8.com/isometric/50/clock.png" alt="" /></div>
+            <span>Prayer Time</span>
+        </div>
+        <div class="g-item" data-page="quran">
+            <div class="g-icon"><img src="https://img.icons8.com/isometric/50/quran.png" alt="" /></div>
+            <span>Al-Quran</span>
+        </div>
+        <div class="g-item">
+            <div class="g-icon"><img src="https://img.icons8.com/isometric/50/book.png" alt="" /></div>
+            <span>Hadith</span>
+        </div>
+        <div class="g-item">
+            <div class="g-icon"><img src="https://img.icons8.com/isometric/50/praying-hands.png" alt="" /></div>
+            <span>Dua</span>
         </div>
 
-        <!-- Prayer Tracker -->
-        <div class="tracker-section">
-            <div class="tracker-header">Prayer Tracker</div>
-            <div class="tracker-bar">
-                <button class="tracker-btn">
-                    <i data-lucide="info"></i> Fajr
-                </button>
-                <button class="tracker-btn">
-                    <i data-lucide="info"></i> Duhr
-                </button>
-                <button class="tracker-btn">
-                    <i data-lucide="info"></i> Asr
-                </button>
-                <button class="tracker-btn">
-                    <i data-lucide="info"></i> Maghrib
-                </button>
-                <button class="tracker-btn">
-                    <i data-lucide="info"></i> Isha
-                </button>
-            </div>
+        <div class="g-item">
+            <div class="g-icon"><img src="https://img.icons8.com/isometric/50/kaaba.png" alt="" /></div>
+            <span>Qibla</span>
         </div>
+        <div class="g-item">
+            <div class="g-icon"><img src="https://img.icons8.com/isometric/50/tasbih.png" alt="" /></div>
+            <span>Tasbih</span>
+        </div>
+        <div class="g-item">
+            <div class="g-icon"><img src="https://img.icons8.com/isometric/50/donation.png" alt="" /></div>
+            <span>Zakat</span>
+        </div>
+        <div class="g-item">
+            <div class="g-icon"><img src="https://img.icons8.com/isometric/50/calendar.png" alt="" /></div>
+            <span>Hijri</span>
+        </div>
+
+        <div class="g-item" data-page="community">
+            <div class="g-icon"><img src="https://img.icons8.com/isometric/50/group.png" alt="" /></div>
+            <span>Community</span>
+        </div>
+        <div class="g-item">
+            <div class="g-icon"><img src="https://img.icons8.com/isometric/50/mosque.png" alt="" /></div>
+            <span>Mosque</span>
+        </div>
+        <div class="g-item">
+            <div class="g-icon"><img src="https://img.icons8.com/isometric/50/books.png" alt="" /></div>
+            <span>Kitab</span>
+        </div>
+        <div class="g-item">
+            <div class="g-icon"><img src="https://img.icons8.com/isometric/50/voluntary-work.png" alt="" /></div>
+            <span>Donate</span>
+        </div>
+    </div>
+
+    <!-- 5. Prayer Tracker -->
+    <div class="adv-tracker">
+        <div class="t-header">Prayer Tracker</div>
+        <div class="t-row">
+            <button class="t-btn" data-p="Fajr"><span></span>Fajr</button>
+            <button class="t-btn" data-p="Dhuhr"><span></span>Dhuhr</button>
+            <button class="t-btn" data-p="Asr"><span></span>Asr</button>
+            <button class="t-btn" data-p="Maghrib"><span></span>Maghrib</button>
+            <button class="t-btn" data-p="Isha"><span></span>Isha</button>
+        </div>
+    </div>
 
 </section>

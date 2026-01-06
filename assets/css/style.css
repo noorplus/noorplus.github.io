@@ -424,131 +424,102 @@ body {
 }
 
 /* ===================================== */
-/*        LITE THEME FACELIFT (NEW)      */
+/*        ADVANCED DASHBOARD STYLES       */
 /* ===================================== */
 
-.lite-header {
+.adv-header {
   display: flex;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 12px 20px;
   background: var(--bg);
+  border-bottom: 1px solid var(--divider);
   position: sticky;
   top: 0;
   z-index: 100;
-  transition: background var(--transition-normal);
 }
 
-.header-date,
-.header-location {
-  color: var(--text-secondary);
+.h-date,
+.h-loc {
   font-weight: 700;
-  font-size: 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
-/* Lite Dashboard - Theme Fixed */
-.lite-dashboard {
+/* Hero Dashboard */
+.hero-dash {
   background: var(--surface);
-  border-radius: 16px;
+  margin: 16px;
+  border-radius: 20px;
   padding: 24px;
   display: grid;
-  grid-template-columns: 1fr 100px;
-  gap: 20px;
+  grid-template-columns: 1fr 120px;
+  gap: 16px;
   align-items: center;
-  margin: 16px;
   border: 1px solid var(--divider);
-  transition: background var(--transition-normal), border var(--transition-normal);
+  box-shadow: var(--shadow);
 }
 
-.status-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-#p-status-label {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.pulsing-dot {
-  width: 10px;
-  height: 10px;
-  background: var(--alert);
-  border-radius: 50%;
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 var(--alert);
-    opacity: 1;
-  }
-
-  70% {
-    transform: scale(1.1);
-    box-shadow: 0 0 0 10px rgba(225, 75, 75, 0);
-    opacity: 0.5;
-  }
-
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(225, 75, 75, 0);
-    opacity: 1;
-  }
-}
-
-.active-time-range {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.approx-countdown {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
-}
-
-.meta-lite {
+.hero-left {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 12px;
 }
 
-.m-row {
+.h-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.h-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.h-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.h-meta-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.h-val-small {
   font-size: 14px;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
-/* Circle Countdown (Lite) */
-.lite-circle-box {
+/* Circle Countdown */
+.adv-circle-box {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
 }
 
-.ring-lite-bg {
+.c-bg {
   fill: none;
   stroke: var(--divider);
-  stroke-width: 4;
+  stroke-width: 6;
 }
 
-.ring-lite-fill {
+.c-fill {
   fill: none;
   stroke: var(--primary);
-  stroke-width: 4;
+  stroke-width: 6;
   stroke-linecap: round;
   transform: rotate(-90deg);
   transform-origin: center;
   transition: stroke-dashoffset 1s linear;
 }
 
-.lite-countdown-text {
+.c-text {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -558,95 +529,76 @@ body {
   align-items: center;
 }
 
-.lite-countdown-text small {
+#adv-timer {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.c-text small {
   font-size: 9px;
   text-transform: uppercase;
   color: var(--text-muted);
-  font-weight: 700;
+  font-weight: 600;
 }
 
-#lite-timer-hms {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.lite-progress-dot {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background: var(--text-primary);
-  border: 2px solid var(--bg);
-  border-radius: 50%;
-  top: 6px;
-  left: 50%;
-  margin-left: -6px;
-  transform-origin: 6px 44px;
-}
-
-/* Mini Schedule */
-.mini-schedule {
+/* Horizontal Schedule */
+.adv-schedule {
   display: flex;
-  justify-content: space-around;
-  padding: 16px;
+  justify-content: space-between;
+  padding: 16px 20px;
   background: var(--surface);
   margin: 0 16px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid var(--divider);
 }
 
-.ms-item {
+.s-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
   opacity: 0.5;
-  transition: opacity var(--transition-normal);
+  transition: all var(--transition-normal);
 }
 
-.ms-item.active {
+.s-item.active {
   opacity: 1;
+  transform: translateY(-2px);
 }
 
-.ms-dot {
-  width: 6px;
-  height: 6px;
-  background: var(--divider);
-  border-radius: 50%;
-}
-
-.ms-item.active .ms-dot {
-  background: var(--primary);
-  box-shadow: 0 0 8px var(--primary-soft);
-}
-
-.ms-name {
+.s-name {
   font-size: 12px;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.ms-time {
+.s-time {
   font-size: 10px;
   color: var(--text-secondary);
 }
 
-.lite-divider {
-  height: 1px;
-  background: #EDF2F7;
-  margin: 20px 16px;
+.s-item.active .s-name {
+  color: var(--primary);
 }
 
-/* Feature Grid (4x3) */
-.feature-grid {
+.adv-divider {
+  height: 1px;
+  background: var(--divider);
+  margin: 24px 20px;
+}
+
+/* Feature Grid */
+.adv-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  padding: 0 16px;
+  gap: 16px;
+  padding: 0 20px;
   margin-bottom: 24px;
 }
 
-.feat-item {
+.g-item {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -654,11 +606,11 @@ body {
   cursor: pointer;
 }
 
-.feat-icon-box {
-  width: 60px;
-  height: 60px;
+.g-icon {
+  width: 54px;
+  height: 54px;
   background: var(--surface);
-  border-radius: 18px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -667,73 +619,107 @@ body {
   transition: transform 0.2s;
 }
 
-.feat-item:hover .feat-icon-box {
-  transform: translateY(-2px);
-  background: var(--surface-soft);
+.g-item:active .g-icon {
+  transform: scale(0.92);
 }
 
-.feat-icon-box img {
-  width: 40px;
-  height: 40px;
+.g-icon img {
+  width: 32px;
+  height: 32px;
 }
 
-.feat-item span {
-  font-size: 11px;
+.g-item span {
+  font-size: 10px;
   font-weight: 600;
   color: var(--text-secondary);
   text-align: center;
 }
 
 /* Prayer Tracker */
-.tracker-section {
-  margin: 16px;
+.adv-tracker {
+  margin: 16px 20px;
+  padding-bottom: 20px;
 }
 
-.tracker-header {
-  font-size: 16px;
+.t-header {
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
-  padding: 12px 16px;
-  background: var(--surface);
-  border-radius: 8px 8px 0 0;
-  margin-bottom: 8px;
-  border: 1px solid var(--divider);
+  margin-bottom: 12px;
 }
 
-.tracker-bar {
+.t-row {
   display: flex;
   justify-content: space-between;
   gap: 8px;
 }
 
-.tracker-btn {
+.t-btn {
   flex: 1;
-  background: var(--bg);
-  border: 1.5px solid var(--divider);
-  padding: 8px 4px;
-  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  padding: 10px 4px;
+  border-radius: 12px;
   font-size: 11px;
   font-weight: 700;
   color: var(--text-secondary);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 4px;
+  gap: 6px;
   transition: all var(--transition-fast);
 }
 
-.tracker-btn:hover {
-  background: var(--surface);
-  border-color: var(--primary-soft);
+.t-btn span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--divider);
 }
 
-.tracker-btn .lucide {
-  width: 14px;
-  height: 14px;
-  padding: 2px;
-  background: var(--text-primary);
-  color: var(--bg);
-  border-radius: 50%;
+/* Tracker States */
+.t-btn.done {
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.t-btn.done span {
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+}
+
+.t-btn.missed {
+  border-color: var(--alert);
+  color: var(--alert);
+}
+
+.t-btn.missed span {
+  background: var(--alert);
+  box-shadow: 0 0 8px var(--alert);
+}
+
+.t-btn.upcoming {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Force Bottom Nav Fixed */
+.bottom-nav {
+  position: fixed !important;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: rgba(var(--bg-rgb, 255, 255, 255), 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--divider);
+}
+
+/* Ensure body scroll doesn't hide content behind nav */
+#app-main {
+  padding-bottom: calc(var(--bottom-bar-height) + 20px);
 }
 
 
