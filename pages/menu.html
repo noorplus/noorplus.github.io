@@ -1,14 +1,22 @@
 <section class="page menu">
 
-  <h1 class="page-title menu-title">Menu</h1>
+  <header class="page-header menu-header">
+    <h1 class="page-title menu-title">Menu</h1>
+    <p class="page-subtitle">Personalize your experience</p>
+  </header>
 
-  <!-- Theme Toggle -->
-  <div class="menu-item">
-    <span class="menu-label">Dark Mode</span>
-
-    <button id="theme-toggle" class="toggle-btn" aria-label="Toggle theme">
-      <span class="toggle-thumb"></span>
-    </button>
+  <!-- Menu List -->
+  <div class="menu-list">
+    <div class="menu-item" id="theme-toggle">
+      <div class="menu-item-left">
+        <i data-lucide="moon" class="menu-icon"></i>
+        <div class="menu-info">
+          <span class="menu-label">Dark Mode</span>
+          <p class="menu-description">Adjust for better night viewing</p>
+        </div>
+      </div>
+      <div class="toggle-switch"></div>
+    </div>
   </div>
 
 </section>

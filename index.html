@@ -8,23 +8,41 @@
   <!-- Mobile-first viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
   <!-- CSS -->
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
 
-  <main id="app-main">
-    <!-- Content loads here -->
-  </main>
+  <div id="app-shell">
+    <main id="app-main">
+      <!-- Content loads here -->
+    </main>
 
-  <nav class="bottom-nav">
-    <button data-page="community">👥</button>
-    <button data-page="quran">📖</button>
-    <button data-page="home" class="home">🏠</button>
-    <button data-page="library">📚</button>
-    <button data-page="menu">☰</button>
-  </nav>
+    <nav class="bottom-nav">
+      <button data-page="community" aria-label="Community">
+        <i data-lucide="users"></i>
+      </button>
+      <button data-page="quran" aria-label="Quran">
+        <i data-lucide="book-open"></i>
+      </button>
+      <button data-page="home" class="home" aria-label="Home">
+        <i data-lucide="layout-grid"></i>
+      </button>
+      <button data-page="library" aria-label="Library">
+        <i data-lucide="library"></i>
+      </button>
+      <button data-page="menu" aria-label="Menu">
+        <i data-lucide="menu"></i>
+      </button>
+    </nav>
+  </div>
 
   <script src="assets/js/app.js"></script>
 </body>

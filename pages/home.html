@@ -7,8 +7,11 @@
 </header>
 
 <!-- Daily Reminder -->
-<article class="card">
-  <h2 class="card-title">Today’s Reminder</h2>
+<article class="card reminder-card">
+  <div class="card-header">
+    <i data-lucide="quote" class="card-icon"></i>
+    <h2 class="card-title">Today’s Reminder</h2>
+  </div>
   <p class="card-text">
     “Verily, in the remembrance of Allah do hearts find rest.”
   </p>
@@ -16,8 +19,14 @@
 
 <!-- Quick Actions -->
 <div class="home-actions">
-  <button class="action-btn">Read Qur’an</button>
-  <button class="action-btn">Daily Du’a</button>
+  <button class="action-btn" data-page="quran">
+    <i data-lucide="book"></i>
+    Read Qur’an
+  </button>
+  <button class="action-btn">
+    <i data-lucide="heart"></i>
+    Daily Du’a
+  </button>
 </div>
 
 </section>

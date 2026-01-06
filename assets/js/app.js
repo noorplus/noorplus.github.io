@@ -16,27 +16,31 @@ function loadPage(page) {
         .querySelector(`[data-page="${page}"]`)
         ?.classList.add("active");
 
+      // Initialize Icons
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+
       // 🔥 Re-bind page-specific JS
       initThemeToggle();
-      initQuranPage(); // ✅ ADD THIS LINE
+      initQuranPage();
     });
 }
 
 /* ===============================
-   THEME TOGGLE (SAFE)
-================================ */
+   THEME TOGGLE (PREMIUM)
+ ================================ */
 function initThemeToggle() {
   const toggleBtn = document.getElementById("theme-toggle");
-
   if (!toggleBtn) return;
 
   toggleBtn.addEventListener("click", () => {
     const root = document.documentElement;
-    const currentTheme = root.getAttribute("data-theme");
-
+    const currentTheme = root.getAttribute("data-theme") || "light";
     const nextTheme = currentTheme === "dark" ? "light" : "dark";
-    root.setAttribute("data-theme", nextTheme);
 
+    // Add immediate transition class if needed, but CSS handles it
+    root.setAttribute("data-theme", nextTheme);
     localStorage.setItem("theme", nextTheme);
   });
 }
@@ -100,7 +104,7 @@ function initQuranPage() {
         /* Play button (RIGHT) */
         const playBtn = document.createElement("button");
         playBtn.className = "surah-play";
-        playBtn.textContent = "▶";
+        playBtn.innerHTML = `<i data-lucide="play"></i>`;
 
         playBtn.onclick = async (e) => {
           e.stopPropagation();
@@ -111,6 +115,9 @@ function initQuranPage() {
         row.appendChild(playBtn);
         surahListEl.appendChild(row);
       });
+
+      // Re-init icons for dynamic elements
+      if (window.lucide) lucide.createIcons();
     });
 
   /* ===============================
@@ -160,7 +167,8 @@ async function playSurahAudio(number, btn) {
   // Stop previous audio
   if (currentAudio) {
     currentAudio.pause();
-    currentPlayBtn.textContent = "▶";
+    currentPlayBtn.innerHTML = `<i data-lucide="play"></i>`;
+    if (window.lucide) lucide.createIcons();
   }
 
   // Toggle same button
@@ -183,13 +191,15 @@ async function playSurahAudio(number, btn) {
   }
 
   audio.play();
-  btn.textContent = "⏸";
+  btn.innerHTML = `<i data-lucide="pause"></i>`;
+  if (window.lucide) lucide.createIcons();
 
   currentAudio = audio;
   currentPlayBtn = btn;
 
   audio.onended = () => {
-    btn.textContent = "▶";
+    btn.innerHTML = `<i data-lucide="play"></i>`;
+    if (window.lucide) lucide.createIcons();
     currentAudio = null;
     currentPlayBtn = null;
   };

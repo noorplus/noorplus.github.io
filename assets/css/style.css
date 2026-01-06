@@ -99,7 +99,7 @@
   --radius-pill: 999px;
 
   /* Typography */
-  --font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
 
   --font-xs: 11px;
   --font-sm: 13px;
@@ -129,24 +129,46 @@
 
 body {
   font-family: var(--font-family);
-  background-color: var(--bg);
+  background-color: var(--surface-soft);
+  /* Better contrast for mobile container */
   color: var(--text-primary);
   line-height: 1.5;
   transition: background-color var(--transition-normal), color var(--transition-normal);
   overflow-x: hidden;
-  padding-top: var(--top-bar-height);
-  padding-bottom: var(--bottom-bar-height);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
 }
 
-/* Layout */
+/* Fixed Mobile Container Shell */
+#app-shell {
+  width: 100%;
+  max-width: 480px;
+  /* Standard mobile width */
+  background-color: var(--bg);
+  min-height: 100vh;
+  position: relative;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
 #app-main {
-  max-width: 600px;
-  margin: 0 auto;
+  flex: 1;
   padding: var(--page-padding);
-  min-height: calc(100vh - var(--top-bar-height) - var(--bottom-bar-height));
+  padding-top: calc(var(--page-padding) + 10px);
+  padding-bottom: calc(var(--bottom-bar-height) + var(--page-padding));
+  overflow-y: auto;
 }
 
-/* Header (Implicitly top-nav or within pages) */
+/* Lucide Icon Base Styling */
+.lucide {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  stroke-width: 2px;
+}
+
+/* Header */
 .page-header {
   margin-bottom: var(--section-gap);
 }
@@ -165,7 +187,8 @@ body {
 
 /* Bottom Navigation */
 .bottom-nav {
-  position: fixed;
+  position: absolute;
+  /* Relative to app-shell */
   bottom: 0;
   left: 0;
   right: 0;
@@ -184,25 +207,30 @@ body {
 .bottom-nav button {
   background: none;
   border: none;
-  font-size: var(--icon-md);
   color: var(--icon-default);
   cursor: pointer;
-  padding: 8px;
+  padding: 12px;
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+}
+
+.bottom-nav button .lucide {
+  width: var(--icon-md);
+  height: var(--icon-md);
 }
 
 .bottom-nav button.active {
   color: var(--icon-active);
-  transform: translateY(-2px);
 }
 
-.bottom-nav button.home {
-  font-size: var(--icon-lg);
-  color: var(--primary);
+.bottom-nav button.home .lucide {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  stroke-width: 2.5px;
 }
 
 /* UI Components */
@@ -220,16 +248,136 @@ body {
   transform: scale(0.98);
 }
 
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.card-icon {
+  color: var(--primary);
+  width: 20px;
+  height: 20px;
+}
+
 .card-title {
   font-size: var(--font-lg);
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 8px;
 }
 
 .card-text {
   font-size: var(--font-md);
   color: var(--text-secondary);
+}
+
+/* Home Actions */
+.home-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: var(--section-gap);
+}
+
+.home-actions .action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background-color: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-lg);
+  font-weight: 500;
+  text-align: center;
+}
+
+.home-actions .action-btn .lucide {
+  color: var(--primary);
+  width: 24px;
+  height: 24px;
+}
+
+/* Menu List & Toggle */
+.menu-list {
+  background-color: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--divider);
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.menu-item:not(:last-child) {
+  border-bottom: 1px solid var(--divider);
+}
+
+.menu-item:active {
+  background-color: var(--surface-soft);
+}
+
+.menu-item-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.menu-icon {
+  color: var(--icon-default);
+}
+
+.menu-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-label {
+  font-weight: 600;
+  font-size: var(--font-md);
+}
+
+.menu-description {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+}
+
+.toggle-switch {
+  width: 44px;
+  height: 24px;
+  background-color: var(--progress-track);
+  border-radius: var(--radius-pill);
+  position: relative;
+  transition: background var(--transition-normal);
+}
+
+.toggle-switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  transition: transform var(--transition-normal);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .toggle-switch {
+  background-color: var(--primary);
+}
+
+[data-theme="dark"] .toggle-switch::after {
+  transform: translateX(20px);
 }
 
 /* Buttons */
@@ -262,7 +410,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  background-color: var(--surface-soft);
+  background-color: var(--surface);
   border-radius: var(--radius-md);
   margin-bottom: var(--card-gap);
   border: 1px solid var(--divider);
