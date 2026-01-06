@@ -1,32 +1,84 @@
-<!-- Simple Header -->
-<header class="page-header home-header">
-  <h1 class="page-title home-title">Assalamu Alaikum</h1>
-  <p class="page-subtitle home-subtitle">
-    Build your life on certainty, faith, and remembrance of Allah.
-  </p>
-</header>
+<section class="page home">
 
-<!-- Daily Reminder -->
-<article class="card reminder-card">
-  <div class="card-header">
-    <i data-lucide="quote" class="card-icon"></i>
-    <h2 class="card-title">Today’s Reminder</h2>
-  </div>
-  <p class="card-text">
-    “Verily, in the remembrance of Allah do hearts find rest.”
-  </p>
-</article>
+    <!-- Header: Date & Location -->
+    <header class="dashboard-header">
+        <div class="today-date" id="current-date">-- --, ----</div>
+        <div class="location-box">
+            <i data-lucide="map-pin"></i>
+            <span id="current-location">Loading...</span>
+        </div>
+    </header>
 
-<!-- Quick Actions -->
-<div class="home-actions">
-  <button class="action-btn" data-page="quran">
-    <i data-lucide="book"></i>
-    Read Qur’an
-  </button>
-  <button class="action-btn">
-    <i data-lucide="heart"></i>
-    Daily Du’a
-  </button>
-</div>
+    <!-- Current Prayer Dashboard -->
+    <div class="prayer-status-grid">
+        <!-- Left: Prayer Info -->
+        <div class="prayer-info-card">
+            <div class="now-label">Now Prayer</div>
+            <h2 class="current-prayer-name" id="now-p-name">--</h2>
+            <div class="prayer-meta">
+                <div class="meta-row">
+                    <span>Start:</span>
+                    <span id="now-p-start">--:--</span>
+                </div>
+                <div class="meta-row">
+                    <span>End:</span>
+                    <span id="now-p-end">--:--</span>
+                </div>
+                <div class="meta-row highlight">
+                    <span>Suhur:</span>
+                    <span id="suhur-time">--:--</span>
+                </div>
+                <div class="meta-row highlight">
+                    <span>Iftar:</span>
+                    <span id="iftar-time">--:--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Countdown Circle -->
+        <div class="countdown-container">
+            <div class="circle-box">
+                <svg class="progress-ring" width="120" height="120">
+                    <circle class="progress-ring__circle-bg" stroke="var(--divider)" stroke-width="8" fill="transparent"
+                        r="52" cx="60" cy="60" />
+                    <circle id="progress-circle" class="progress-ring__circle" stroke="var(--primary)" stroke-width="8"
+                        stroke-linecap="round" fill="transparent" r="52" cx="60" cy="60" />
+                </svg>
+                <div class="countdown-text">
+                    <span id="remaining-time">--:--</span>
+                    <small>remaining</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prayer Times List -->
+    <div class="prayer-list" id="prayer-schedule">
+        <!-- Fajr -->
+        <div class="prayer-row" data-prayer="Fajr">
+            <span class="p-name">Fajr</span>
+            <span class="p-time" id="time-Fajr">--:--</span>
+        </div>
+        <!-- Dhuhr -->
+        <div class="prayer-row" data-prayer="Dhuhr">
+            <span class="p-name">Dhuhr</span>
+            <span class="p-time" id="time-Dhuhr">--:--</span>
+        </div>
+        <!-- Asr -->
+        <div class="prayer-row" data-prayer="Asr">
+            <span class="p-name">Asr</span>
+            <span class="p-time" id="time-Asr">--:--</span>
+        </div>
+        <!-- Maghrib -->
+        <div class="prayer-row" data-prayer="Maghrib">
+            <span class="p-name">Maghrib</span>
+            <span class="p-time" id="time-Maghrib">--:--</span>
+        </div>
+        <!-- Isha -->
+        <div class="prayer-row" data-prayer="Isha">
+            <span class="p-name">Isha</span>
+            <span class="p-time" id="time-Isha">--:--</span>
+        </div>
+    </div>
 
 </section>
