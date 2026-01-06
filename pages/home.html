@@ -1,119 +1,150 @@
 <section class="page home">
 
-    <!-- Simple Header (Restored) -->
-    <header class="page-header home-header">
-        <h1 class="page-title home-title">Assalamu Alaikum</h1>
-        <p class="page-subtitle home-subtitle">
-            Build your life on certainty, faith, and remembrance of Allah.
-        </p>
+    <!-- Simple Header -->
+    <header class="lite-header">
+        <div class="header-date" id="lite-date">06 Jan, 2026</div>
+        <div class="header-location" id="lite-location">Dhaka</div>
     </header>
 
-    <!-- Main Hero Card -->
-    <div class="prayer-hero-card">
-        <div class="mosque-bg"></div> <!-- Glassmorphic mosque background -->
-
-        <div class="hero-top">
-            <div class="hero-header">
-                <div class="hijri-date" id="hijri-date">5 Ramadan 1445</div>
-                <div class="next-prayer-label">
-                    Next Prayer : <span id="next-prayer-name">--</span>
-                    <span class="status-dot"></span>
-                </div>
-                <div class="target-time">
-                    <span id="target-time-val">--:--</span>
-                    <small id="target-time-period">AM</small>
-                    <span class="type-label">(Start time)</span>
-                </div>
+    <!-- Lite Dashboard -->
+    <div class="lite-dashboard">
+        <div class="dashboard-left">
+            <div class="status-indicator">
+                <span id="p-status-label">Forbidden Time</span>
+                <span class="pulsing-dot"></span>
             </div>
-
-            <div class="hero-countdown">
-                <div class="circular-progress">
-                    <svg class="progress-svg" width="140" height="140">
-                        <defs>
-                            <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="#FF7A00" />
-                                <stop offset="100%" stop-color="#48B572" />
-                            </linearGradient>
-                        </defs>
-                        <circle class="ring-bg" cx="70" cy="70" r="60" />
-                        <circle id="progress-ring-top" class="ring-fill" cx="70" cy="70" r="60"
-                            stroke="url(#ring-gradient)" />
-                    </svg>
-                    <div class="countdown-center">
-                        <span class="label">Time</span>
-                        <span id="remaining-hms">00:00:00</span>
-                        <span class="label">Left</span>
-                    </div>
-                    <div id="progress-dot" class="progress-dot"></div>
-                </div>
+            <h2 class="active-time-range" id="p-time-range">5:11 PM - 5:26 PM</h2>
+            <div class="approx-countdown" id="p-approx-left">0 hour 2.37 min left (Approx)</div>
+            <div class="meta-lite">
+                <div class="m-row">Suhur: <span id="val-suhur">5:21 AM</span></div>
+                <div class="m-row">Iftar: <span id="val-iftar">5:26 PM</span></div>
             </div>
         </div>
 
-        <div class="hero-bottom-meta">
-            <div class="meta-item">
-                <span>Suhur:</span>
-                <strong id="suhur-val">--:-- AM</strong>
-            </div>
-            <div class="meta-item">
-                <span>Iftar:</span>
-                <strong id="iftar-val">--:-- PM</strong>
-            </div>
-        </div>
-
-        <!-- Divider -->
-        <div class="hero-divider"></div>
-
-        <!-- Horizontal Prayer List -->
-        <div class="horizontal-prayer-list">
-            <div class="p-item" data-prayer="Fajr">
-                <div class="p-dot"></div>
-                <span class="p-label">Fajr</span>
-                <span class="p-time" id="val-Fajr">--:-- AM</span>
-            </div>
-            <div class="p-item" data-prayer="Dhuhr">
-                <div class="p-dot"></div>
-                <span class="p-label">Dhuhr</span>
-                <span class="p-time" id="val-Dhuhr">--:-- PM</span>
-            </div>
-            <div class="p-item" data-prayer="Asr">
-                <div class="p-dot"></div>
-                <span class="p-label">Asr</span>
-                <span class="p-time" id="val-Asr">--:-- PM</span>
-            </div>
-            <div class="p-item" data-prayer="Maghrib">
-                <div class="p-dot"></div>
-                <span class="p-label">Maghrib</span>
-                <span class="p-time" id="val-Maghrib">--:-- PM</span>
-            </div>
-            <div class="p-item" data-prayer="Isha">
-                <div class="p-dot"></div>
-                <span class="p-label">Isha</span>
-                <span class="p-time" id="val-Isha">--:-- PM</span>
+        <div class="dashboard-right">
+            <div class="lite-circle-box">
+                <svg width="100" height="100">
+                    <circle class="ring-lite-bg" cx="50" cy="50" r="44" />
+                    <circle id="ring-lite-fill" class="ring-lite-fill" cx="50" cy="50" r="44" />
+                </svg>
+                <div class="lite-countdown-text">
+                    <small>Time</small>
+                    <span id="lite-timer-hms">00:02:37</span>
+                    <small>Left</small>
+                </div>
+                <div id="lite-dot" class="lite-progress-dot"></div>
             </div>
         </div>
     </div>
 
-    <!-- Daily Reminder (Restored) -->
-    <article class="card reminder-card">
-        <div class="card-header">
-            <i data-lucide="quote" class="card-icon"></i>
-            <h2 class="card-title">Today’s Reminder</h2>
+    <!-- Horizontal Prayer Mini-Schedule -->
+    <div class="mini-schedule">
+        <div class="ms-item" data-prayer="Fajr">
+            <div class="ms-dot"></div>
+            <span class="ms-name">Fajr</span>
+            <span class="ms-time" id="sh-Fajr">5:22 AM</span>
         </div>
-        <p class="card-text">
-            “Verily, in the remembrance of Allah do hearts find rest.”
-        </p>
-    </article>
+        <div class="ms-item" data-prayer="Dhuhr">
+            <div class="ms-dot"></div>
+            <span class="ms-name">Dhuhr</span>
+            <span class="ms-time" id="sh-Dhuhr">12:05 PM</span>
+        </div>
+        <div class="ms-item" data-prayer="Asr">
+            <div class="ms-dot"></div>
+            <span class="ms-name">Asr</span>
+            <span class="ms-time" id="sh-Asr">3:50 PM</span>
+        </div>
+        <div class="ms-item" data-prayer="Maghrib">
+            <div class="ms-dot"></div>
+            <span class="ms-name">Maghrib</span>
+            <span class="ms-time" id="sh-Maghrib">5:26 PM</span>
+        </div>
+        <div class="ms-item" data-prayer="Isha">
+            <div class="ms-dot"></div>
+            <span class="ms-name">Isha</span>
+            <span class="ms-time" id="sh-Isha">6:46 PM</span>
+        </div>
+    </div>
 
-    <!-- Quick Actions (Restored) -->
-    <div class="home-actions">
-        <button class="action-btn" data-page="quran">
-            <i data-lucide="book"></i>
-            Read Qur’an
-        </button>
-        <button class="action-btn">
-            <i data-lucide="heart"></i>
-            Daily Du’a
-        </button>
+    <div class="lite-divider"></div>
+
+    <!-- Feature Grid (4x3) -->
+    <div class="feature-grid">
+        <div class="feat-item" data-page="quran">
+            <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/clock.png" alt="Prayer Time" />
+            </div>
+            <span>Prayer Time</span>
+        </div>
+        <div class="feat-item" data-page="quran">
+            <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/quran.png" alt="Quran" /></div>
+            <span>Al-Quran</span>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/book.png" alt="Hadith" /></div>
+            <span>Hadith</span>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/praying-hands.png" alt="Dua" />
+            </div>
+            <span>Dua</span>
+        </div>
+
+        <div class="feat-item">
+            <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/kaaba.png" alt="Qibla" /></div>
+            <span>Qibla</span>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/tasbih.png" alt="Tasbih" /></div>
+            <span>Tasbih</span>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/donation.png" alt="Zakat" /></div>
+            <span>Zakat</span>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/calendar.png" alt="Hijri" /></div>
+            <span>Hijri</span>
+        </div>
+
+        <div class="feat-item" data-page="community">
+            <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/group.png" alt="Community" /></div>
+            <span>Community</span>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/mosque.png" alt="Mosque" /></div>
+            <span>Mosque</span>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/books.png" alt="Kitab" /></div>
+            <span>Kitab</span>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon-box"><img src="https://img.icons8.com/isometric/50/voluntary-work.png" alt="Donate" />
+            </div>
+            <span>Donate</span>
+        </div>
+    </div>
+
+    <!-- Prayer Tracker -->
+    <div class="tracker-section">
+        <div class="tracker-header">Prayer Tracker</div>
+        <div class="tracker-bar">
+            <button class="tracker-btn">
+                <i data-lucide="info"></i> Fajr
+            </button>
+            <button class="tracker-btn">
+                <i data-lucide="info"></i> Duhr
+            </button>
+            <button class="tracker-btn">
+                <i data-lucide="info"></i> Asr
+            </button>
+            <button class="tracker-btn">
+                <i data-lucide="info"></i> Maghrib
+            </button>
+            <button class="tracker-btn">
+                <i data-lucide="info"></i> Isha
+            </button>
+        </div>
     </div>
 
 </section>

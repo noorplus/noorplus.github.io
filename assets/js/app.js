@@ -5,10 +5,22 @@ const buttons = document.querySelectorAll(".bottom-nav button");
    LOAD PAGE
 ================================ */
 function loadPage(page) {
+  // Clear any existing intervals (like prayer countdown)
+  if (window.prayerTimer) {
+    clearInterval(window.prayerTimer);
+    window.prayerTimer = null;
+  }
+
   fetch(`pages/${page}.html`)
     .then(res => res.text())
     .then(html => {
+      // Apply fade-out effect if needed, but innerHTML change is abrupt
+      // We use a CSS class on the main container for fade-in
+      main.classList.remove("page-fade-in");
+      void main.offsetWidth; // trigger reflow
+
       main.innerHTML = html;
+      main.classList.add("page-fade-in");
 
       // Active nav state
       buttons.forEach(btn => btn.classList.remove("active"));
@@ -215,58 +227,62 @@ async function playSurahAudio(number, btn) {
 }
 
 /* ===============================
-   HOME DASHBOARD LOGIC (REDESIGN)
+   HOME DASHBOARD LOGIC (LITE THEME)
  ================================ */
 function initHomePage() {
-  const hijriEl = document.getElementById("hijri-date");
-  if (!hijriEl) return;
+  const liteDate = document.getElementById("lite-date");
+  if (!liteDate) return;
 
-  // Get Location & Fetch Times
+  // Set Current Date
+  const now = new Date();
+  liteDate.textContent = now.toLocaleDateString('en-GB', {
+    day: '2-digit', month: 'short', year: 'numeric'
+  });
+
+  // Get Location & Fetch
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      (pos) => fetchPrayerTimes(pos.coords.latitude, pos.coords.longitude),
-      () => fetchPrayerTimes(23.8103, 90.4125) // Fallback: Dhaka
+      (pos) => fetchLitePrayerTimes(pos.coords.latitude, pos.coords.longitude),
+      () => fetchLitePrayerTimes(23.8103, 90.4125) // Fallback: Dhaka
     );
   } else {
-    fetchPrayerTimes(23.8103, 90.4125);
+    fetchLitePrayerTimes(23.8103, 90.4125);
   }
 }
 
 let prayerTimer = null;
 
-async function fetchPrayerTimes(lat, lon) {
+async function fetchLitePrayerTimes(lat, lon) {
   try {
     const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`);
     const data = await res.json();
     const timings = data.data.timings;
-    const hijri = data.data.date.hijri;
+    const meta = data.data.meta;
 
-    // Set Hijri Date
-    const hijriEl = document.getElementById("hijri-date");
-    if (hijriEl) {
-      hijriEl.textContent = `${hijri.day} ${hijri.month.en} ${hijri.year}`;
-    }
+    // Set Location
+    const locEl = document.getElementById("lite-location");
+    if (locEl) locEl.textContent = meta.timezone.split('/')[1] || "Dhaka";
 
-    // Update Horizontal List
+    // Set Suhur/Iftar
+    const suhurEl = document.getElementById("val-suhur");
+    const iftarEl = document.getElementById("val-iftar");
+    if (suhurEl) suhurEl.textContent = formatTo12h(timings.Imsak);
+    if (iftarEl) iftarEl.textContent = formatTo12h(timings.Maghrib);
+
+    // Update Mini Schedule
     const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
     prayers.forEach(p => {
-      const el = document.getElementById(`val-${p}`);
-      if (el) el.textContent = formatTime(timings[p]);
+      const el = document.getElementById(`sh-${p}`);
+      if (el) el.textContent = formatTo12h(timings[p]);
     });
 
-    // Suhur/Iftar
-    const suhurEl = document.getElementById("suhur-val");
-    const iftarEl = document.getElementById("iftar-val");
-    if (suhurEl) suhurEl.textContent = formatTime(timings.Imsak);
-    if (iftarEl) iftarEl.textContent = formatTime(timings.Maghrib);
-
-    startImprovedCountdown(timings);
+    startLiteCountdown(timings);
   } catch (err) {
-    console.error("Failed to fetch prayers", err);
+    console.error("Home load failed", err);
   }
 }
 
-function formatTime(time24) {
+function formatTo12h(time24) {
   if (!time24) return "--:--";
   const [h, m] = time24.split(':').map(Number);
   const period = h >= 12 ? 'PM' : 'AM';
@@ -274,84 +290,89 @@ function formatTime(time24) {
   return `${h12}:${String(m).padStart(2, '0')} ${period}`;
 }
 
-function startImprovedCountdown(timings) {
+function startLiteCountdown(timings) {
   if (prayerTimer) clearInterval(prayerTimer);
 
-  const prayers = [
+  const schedule = [
     { name: "Fajr", time: timings.Fajr },
+    { name: "Sunrise", time: timings.Sunrise, forbidden: true },
     { name: "Dhuhr", time: timings.Dhuhr },
     { name: "Asr", time: timings.Asr },
-    { name: "Maghrib", time: timings.Maghrib },
+    { name: "Maghrib", time: timings.Maghrib, forbidden: true },
     { name: "Isha", time: timings.Isha }
   ];
 
   function update() {
     const now = new Date();
-    const currentTimeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const nowStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-    // Find NEXT prayer
+    // Find next event
     let nextIdx = 0;
-    for (let i = 0; i < prayers.length; i++) {
-      if (currentTimeStr < prayers[i].time) {
+    for (let i = 0; i < schedule.length; i++) {
+      if (nowStr < schedule[i].time) {
         nextIdx = i;
         break;
       }
-      if (i === prayers.length - 1) nextIdx = 0; // Wrap to Fajr
+      if (i === schedule.length - 1) nextIdx = 0;
     }
 
-    const nextP = prayers[nextIdx];
-    const prevP = prayers[(nextIdx + prayers.length - 1) % prayers.length];
+    const nextEvent = schedule[nextIdx];
+    const prevEvent = schedule[(nextIdx + schedule.length - 1) % schedule.length];
 
-    // UI Update: Hero Card
-    const nameEl = document.getElementById("next-prayer-name");
-    const targetValEl = document.getElementById("target-time-val");
-    const targetPeriodEl = document.getElementById("target-time-period");
+    // Status Determination
+    const statusLabel = document.getElementById("p-status-label");
+    const rangeEl = document.getElementById("p-time-range");
+    const approxEl = document.getElementById("p-approx-left");
 
-    if (nameEl) {
-      nameEl.textContent = nextP.name;
-      const t = formatTime(nextP.time).split(' ');
-      targetValEl.textContent = t[0];
-      targetPeriodEl.textContent = t[1];
-
-      // Update Horizontal Active
-      document.querySelectorAll(".p-item").forEach(item => {
-        item.classList.toggle("active", item.dataset.prayer === prevP.name);
-      });
-
-      // Countdown Calculation
+    if (statusLabel) {
+      // Logic: 15 mins before a "Forbidden" event like Sunrise or Maghrib
       const targetTime = new Date();
-      const [h, m] = nextP.time.split(':').map(Number);
-      targetTime.setHours(h, m, 0, 0);
+      const [th, tm] = nextEvent.time.split(':').map(Number);
+      targetTime.setHours(th, tm, 0, 0);
       if (targetTime < now) targetTime.setDate(targetTime.getDate() + 1);
 
       const diffSec = Math.floor((targetTime - now) / 1000);
-      const diffH = Math.floor(diffSec / 3600);
-      const diffM = Math.floor((diffSec % 3600) / 60);
-      const diffS = diffSec % 60;
+      const isForbidden = nextEvent.forbidden && (diffSec <= 900); // 15 mins
 
-      document.getElementById("remaining-hms").textContent =
-        `${String(diffH).padStart(2, '0')}:${String(diffM).padStart(2, '0')}:${String(diffS).padStart(2, '0')}`;
+      statusLabel.textContent = isForbidden ? "Forbidden Time" : `Next Prayer : ${nextEvent.name}`;
 
-      // Progress Circle & Dot
-      const ring = document.getElementById("progress-ring-top");
-      const dot = document.getElementById("progress-dot");
+      // Range show (e.g. 5:11 PM - 5:26 PM)
+      const rangeStart = new Date(targetTime.getTime() - 15 * 60000);
+      rangeEl.textContent = isForbidden
+        ? `${formatTo12h(rangeStart.getHours() + ':' + rangeStart.getMinutes())} - ${formatTo12h(nextEvent.time)}`
+        : formatTo12h(nextEvent.time);
+
+      // Approx Formatting: "0 hour 2.37 min left"
+      const hours = Math.floor(diffSec / 3600);
+      const mins = (diffSec % 3600) / 60;
+      approxEl.textContent = `${hours} hour ${mins.toFixed(2)} min left (Approx)`;
+
+      // HMS Timer
+      const hms = `${String(hours).padStart(2, '0')}:${String(Math.floor(mins)).padStart(2, '0')}:${String(diffSec % 60).padStart(2, '0')}`;
+      document.getElementById("lite-timer-hms").textContent = hms;
+
+      // Active state in schedule
+      document.querySelectorAll(".ms-item").forEach(item => {
+        item.classList.toggle("active", item.dataset.prayer === prevEvent.name);
+      });
+
+      // Circle Update
+      const ring = document.getElementById("ring-lite-fill");
+      const dot = document.getElementById("lite-dot");
       if (ring && dot) {
         const startTime = new Date();
-        const [sh, sm] = prevP.time.split(':').map(Number);
+        const [sh, sm] = prevEvent.time.split(':').map(Number);
         startTime.setHours(sh, sm, 0, 0);
         if (startTime > now) startTime.setDate(startTime.getDate() - 1);
 
-        const totalDuration = (targetTime - startTime) / 1000;
+        const total = (targetTime - startTime) / 1000;
         const elapsed = (now - startTime) / 1000;
-        const progress = Math.min(Math.max(elapsed / totalDuration, 0), 1);
+        const prog = Math.min(Math.max(elapsed / total, 0), 1);
 
-        const circumference = 60 * 2 * Math.PI; // Radius is 60
-        ring.style.strokeDasharray = `${circumference} ${circumference}`;
-        ring.style.strokeDashoffset = circumference - (progress * circumference);
-
-        // Rotate Dot
-        const angle = progress * 360;
-        dot.style.transform = `rotate(${angle}deg)`;
+        const circ = 44 * 2 * Math.PI;
+        ring.style.strokeDasharray = `${circ} ${circ}`;
+        ring.style.strokeDashoffset = circ - (prog * circ);
+        dot.style.transform = `rotate(${prog * 360}deg)`;
       }
     }
   }
