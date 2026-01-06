@@ -52,8 +52,16 @@ function initThemeToggle() {
 loadPage("home");
 
 /* ===============================
-   NAV CLICK
-================================ */
+   NAV CLICK & GLOBAL ROUTING
+ ================================ */
+document.addEventListener("click", e => {
+  const target = e.target.closest("[data-page]");
+  if (target) {
+    loadPage(target.dataset.page);
+  }
+});
+
+// (Keep bottom nav buttons for active state management)
 buttons.forEach(btn => {
   btn.addEventListener("click", () => {
     loadPage(btn.dataset.page);
