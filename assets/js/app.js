@@ -108,7 +108,7 @@ function initQuranPage() {
         /* Play button (RIGHT) */
         const playBtn = document.createElement("button");
         playBtn.className = "surah-play";
-        playBtn.innerHTML = `<i data-lucide="play"></i>`;
+        playBtn.innerHTML = \`<i data-lucide="play"></i>\`;
 
         playBtn.onclick = async (e) => {
           e.stopPropagation();
@@ -133,9 +133,9 @@ function initQuranPage() {
     ayahListEl.innerHTML = "<p>Loading Ayahs…</p>";
 
     Promise.all([
-      fetch(`https://api.alquran.cloud/v1/surah/${number}/ar`).then(r => r.json()),
-      fetch(`https://api.alquran.cloud/v1/surah/${number}/bn.bengali`).then(r => r.json()),
-      fetch(`https://api.alquran.cloud/v1/surah/${number}/en.asad`).then(r => r.json())
+      fetch(\`https://api.alquran.cloud/v1/surah/\${number}/ar\`).then(r => r.json()),
+      fetch(\`https://api.alquran.cloud/v1/surah/\${number}/bn.bengali\`).then(r => r.json()),
+      fetch(\`https://api.alquran.cloud/v1/surah/\${number}/en.asad\`).then(r => r.json())
     ]).then(([ar, bn, en]) => {
       ayahListEl.innerHTML = "";
 
@@ -143,9 +143,9 @@ function initQuranPage() {
         const div = document.createElement("div");
         div.className = "ayah";
         div.innerHTML = `
-          <p class="ayah-ar">${ayah.text}</p>
-          <p class="ayah-bn">${bn.data.ayahs[i].text}</p>
-          <p class="ayah-en">${en.data.ayahs[i].text}</p>
+          < p class="ayah-ar" >\${ ayah.text }</p >
+          <p class="ayah-bn">\${bn.data.ayahs[i].text}</p>
+          <p class="ayah-en">\${en.data.ayahs[i].text}</p>
         `;
         ayahListEl.appendChild(div);
       });
@@ -166,12 +166,12 @@ function initQuranPage() {
 ================================ */
 async function playSurahAudio(number, btn) {
   const url =
-    `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${number}.mp3`;
+    \`https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/\${number}.mp3\`;
 
   // Stop previous audio
   if (currentAudio) {
     currentAudio.pause();
-    currentPlayBtn.innerHTML = `<i data-lucide="play"></i>`;
+    currentPlayBtn.innerHTML = \`<i data-lucide="play"></i>\`;
     if (window.lucide) lucide.createIcons();
   }
 
@@ -195,14 +195,14 @@ async function playSurahAudio(number, btn) {
   }
 
   audio.play();
-  btn.innerHTML = `<i data-lucide="pause"></i>`;
+  btn.innerHTML = \`<i data-lucide="pause"></i>\`;
   if (window.lucide) lucide.createIcons();
 
   currentAudio = audio;
   currentPlayBtn = btn;
 
   audio.onended = () => {
-    btn.innerHTML = `<i data-lucide="play"></i>`;
+    btn.innerHTML = \`<i data-lucide="play"></i>\`;
     if (window.lucide) lucide.createIcons();
     currentAudio = null;
     currentPlayBtn = null;
@@ -243,7 +243,7 @@ function initHomePage() {
 
 async function fetchAdvPrayerTimes(lat, lon) {
   try {
-    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`);
+    const res = await fetch(\`https://api.aladhan.com/v1/timings?latitude=\${lat}&longitude=\${lon}&method=2\`);
     const data = await res.json();
     const timings = data.data.timings;
     const meta = data.data.meta;
@@ -258,7 +258,7 @@ async function fetchAdvPrayerTimes(lat, lon) {
 
     const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
     prayers.forEach(p => {
-      const el = document.getElementById(`s-${p}`);
+      const el = document.getElementById(\`s-\${p}\`);
       if (el) el.textContent = formatTo12h(timings[p]);
     });
 
@@ -281,7 +281,7 @@ function startAdvCountdown(timings) {
 
   function update() {
     const now = new Date();
-    const nowTimeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    const nowTimeStr = \`\${String(now.getHours()).padStart(2, "0")}:\${String(now.getMinutes()).padStart(2, "0")}\`;
 
     let currentIdx = -1;
     for (let i = 0; i < schedule.length; i++) {
@@ -308,7 +308,7 @@ function startAdvCountdown(timings) {
     const h = Math.floor(diff / 3600);
     const m = Math.floor((diff % 3600) / 60);
     const s = diff % 60;
-    document.getElementById("adv-timer").textContent = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    document.getElementById("adv-timer").textContent = \`\${String(h).padStart(2, "0")}:\${String(m).padStart(2, "0")}:\${String(s).padStart(2, "0")}\`;
 
     const ring = document.getElementById("adv-ring-fill");
     if (ring) {
@@ -321,7 +321,7 @@ function startAdvCountdown(timings) {
       const elapsed = (now - start) / 1000;
       const prog = Math.min(Math.max(elapsed / totalLen, 0), 1);
       const circ = 54 * 2 * Math.PI;
-      ring.style.strokeDasharray = `${circ} ${circ}`;
+      ring.style.strokeDasharray = \`\${circ} \${circ}\`;
       ring.style.strokeDashoffset = circ - (prog * circ);
     }
 
@@ -386,4 +386,4 @@ function updateTrackerStates(timings, nowStr) {
       }
     }
   });
-
+}
