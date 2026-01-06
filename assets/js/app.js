@@ -210,36 +210,33 @@ async function playSurahAudio(number, btn) {
 }
 
 /* ===============================
-   HOME DASHBOARD LOGIC (ADVANCED)
+   ADVANCED DASHBOARD LOGIC
  ================================ */
 function initHomePage() {
   const dateEl = document.getElementById("adv-date");
   if (!dateEl) return;
 
-  // 1. Set Date
   const now = new Date();
   dateEl.textContent = now.toLocaleDateString("en-GB", {
     day: "2-digit", month: "short", year: "numeric"
   });
 
-  // 2. Load Tracker State
   renderTracker();
 
-  // 3. Get Location & Times
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (pos) => fetchAdvPrayerTimes(pos.coords.latitude, pos.coords.longitude),
-      () => fetchAdvPrayerTimes(23.8103, 90.4125) // Fallback: Dhaka
+      () => fetchAdvPrayerTimes(23.8103, 90.4125)
     );
   } else {
     fetchAdvPrayerTimes(23.8103, 90.4125);
   }
 
-  // 4. Bind Tracker Clicks
   document.querySelectorAll(".t-btn").forEach(btn => {
     btn.onclick = () => {
-      const pName = btn.dataset.p;
-      toggleTracker(pName);
+      // Logic: Only allow clicking if NOT missed and NOT upcoming (current or same-day logic)
+      if (btn.classList.contains("upcoming") || btn.classList.contains("missed")) return;
+      toggleTracker(btn.dataset.p);
     };
   });
 }
@@ -251,17 +248,14 @@ async function fetchAdvPrayerTimes(lat, lon) {
     const timings = data.data.timings;
     const meta = data.data.meta;
 
-    // Set Location
     const locEl = document.getElementById("adv-location");
-    if (locEl) locEl.textContent = meta.timezone.split("/")[1] || "Dhaka";
+    if (locEl) locEl.textContent = meta.timezone.split("/")[1]?.replace('_', ' ') || "Dhaka";
 
-    // Set Suhur/Iftar
     const suhurEl = document.getElementById("adv-suhur");
     const iftarEl = document.getElementById("adv-iftar");
     if (suhurEl) suhurEl.textContent = formatTo12h(timings.Imsak);
     if (iftarEl) iftarEl.textContent = formatTo12h(timings.Maghrib);
 
-    // Update Schedule
     const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
     prayers.forEach(p => {
       const el = document.getElementById(`s-${p}`);
@@ -287,64 +281,51 @@ function startAdvCountdown(timings) {
 
   function update() {
     const now = new Date();
-    const nowStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    const nowTimeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
-    // Find CURRENT prayer
-    // It's the one that has passed but next hasn't.
     let currentIdx = -1;
     for (let i = 0; i < schedule.length; i++) {
-      if (nowStr >= schedule[i].time) {
-        currentIdx = i;
-      }
+      if (nowTimeStr >= schedule[i].time) currentIdx = i;
     }
-    // If it's before Fajr, current is Isha of yesterday (but we'll show Isha)
     if (currentIdx === -1) currentIdx = schedule.length - 1;
 
     const currentP = schedule[currentIdx];
     const nextP = schedule[(currentIdx + 1) % schedule.length];
 
-    // UI Updates
     document.getElementById("adv-p-now").textContent = currentP.name;
     document.getElementById("adv-p-start").textContent = formatTo12h(currentP.time);
 
-    // Dynamic Active State for Horizontal Schedule
     document.querySelectorAll(".s-item").forEach(item => {
       item.classList.toggle("active", item.dataset.prayer === currentP.name);
     });
 
-    // Countdown Logic (Time left in CURRENT prayer period)
-    const targetTime = new Date();
+    const target = new Date();
     const [th, tm] = nextP.time.split(":").map(Number);
-    targetTime.setHours(th, tm, 0, 0);
-    if (targetTime < now) targetTime.setDate(targetTime.getDate() + 1);
+    target.setHours(th, tm, 0, 0);
+    if (target < now) target.setDate(target.getDate() + 1);
 
-    const diffSec = Math.floor((targetTime - now) / 1000);
-    const h = Math.floor(diffSec / 3600);
-    const m = Math.floor((diffSec % 3600) / 60);
-    const s = diffSec % 60;
+    const diff = Math.floor((target - now) / 1000);
+    const h = Math.floor(diff / 3600);
+    const m = Math.floor((diff % 3600) / 60);
+    const s = diff % 60;
+    document.getElementById("adv-timer").textContent = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 
-    document.getElementById("adv-timer").textContent =
-      `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-
-    // Circle Update
     const ring = document.getElementById("adv-ring-fill");
     if (ring) {
-      const startTime = new Date();
+      const start = new Date();
       const [sh, sm] = currentP.time.split(":").map(Number);
-      startTime.setHours(sh, sm, 0, 0);
-      if (startTime > now) startTime.setDate(startTime.getDate() - 1);
+      start.setHours(sh, sm, 0, 0);
+      if (start > now) start.setDate(start.getDate() - 1);
 
-      const total = (targetTime - startTime) / 1000;
-      const elapsed = (now - startTime) / 1000;
-      const prog = Math.min(Math.max(elapsed / total, 0), 1);
-
+      const totalLen = (target - start) / 1000;
+      const elapsed = (now - start) / 1000;
+      const prog = Math.min(Math.max(elapsed / totalLen, 0), 1);
       const circ = 54 * 2 * Math.PI;
       ring.style.strokeDasharray = `${circ} ${circ}`;
       ring.style.strokeDashoffset = circ - (prog * circ);
     }
 
-    // Auto-update Tracker colors periodically
-    updateTrackerColors(timings, nowStr);
+    updateTrackerStates(timings, nowTimeStr);
   }
 
   update();
@@ -352,10 +333,10 @@ function startAdvCountdown(timings) {
 }
 
 /* ===============================
-   TRACKER PERSISTENCE
+   STRICT TRACKER LOGIC
  ================================ */
 function getTrackerData() {
-  const data = localStorage.getItem("noorplus_tracker");
+  const data = localStorage.getItem("noorplus_tracker_strict");
   return data ? JSON.parse(data) : {};
 }
 
@@ -375,35 +356,34 @@ function toggleTracker(pName) {
   const today = new Date().toISOString().split("T")[0];
   const data = getTrackerData();
   if (!data[today]) data[today] = {};
-
-  // If already done, we leave it (user said "cant click past prayer" usually implies marking)
-  // But let's allow toggling to "done"
-  data[today][pName] = data[today][pName] === "done" ? "" : "done";
-
-  localStorage.setItem("noorplus_tracker", JSON.stringify(data));
+  data[today][pName] = (data[today][pName] === "done") ? "" : "done";
+  localStorage.setItem("noorplus_tracker_strict", JSON.stringify(data));
   renderTracker();
 }
 
-function updateTrackerColors(timings, nowStr) {
+function updateTrackerStates(timings, nowStr) {
   const today = new Date().toISOString().split("T")[0];
   const data = getTrackerData();
   const todayData = data[today] || {};
 
   document.querySelectorAll(".t-btn").forEach(btn => {
     const p = btn.dataset.p;
-    const pTime = timings[p];
+    const pStartStr = timings[p];
 
-    // Reset upcoming state before re-evaluation
-    btn.classList.remove("upcoming");
+    btn.classList.remove("missed", "upcoming");
 
-    if (nowStr < pTime) {
+    // Logic: 
+    // 1. If it's before prayer start -> Upcoming
+    // 2. If it's after (or during) and NOT done -> Missed (Strict past check)
+    if (nowStr < pStartStr) {
       btn.classList.add("upcoming");
     } else {
-      // Past or Current
+      // It's either the current prayer or a past one
+      // If it's NOT done, and it's PAST the current period... 
+      // Actually, user said 'past' = red. Let's make anything past-current red if not done.
       if (todayData[p] !== "done") {
         btn.classList.add("missed");
       }
     }
   });
-}
 

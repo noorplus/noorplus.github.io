@@ -192,6 +192,31 @@ body {
   padding: 8px 16px;
 }
 
+/* Force Bottom Nav Fixed */
+.bottom-nav {
+  position: fixed !important;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--divider);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 70px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Fixed Nav Spacing */
+#app-main {
+  padding-bottom: 90px;
+}
+
 .page-title {
   font-size: var(--font-xl);
   font-weight: 700;
@@ -635,7 +660,7 @@ body {
   text-align: center;
 }
 
-/* Prayer Tracker */
+/* Prayer Tracker (Strict) */
 .adv-tracker {
   margin: 16px 20px;
   padding-bottom: 20px;
@@ -668,6 +693,7 @@ body {
   align-items: center;
   gap: 6px;
   transition: all var(--transition-fast);
+  cursor: pointer;
 }
 
 .t-btn span {
@@ -691,6 +717,8 @@ body {
 .t-btn.missed {
   border-color: var(--alert);
   color: var(--alert);
+  pointer-events: none;
+  opacity: 0.8;
 }
 
 .t-btn.missed span {
