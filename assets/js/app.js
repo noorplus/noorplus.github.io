@@ -231,10 +231,29 @@ async function fetchAdvPrayerTimes(lat, lon) {
   }
 }
 
+function getForbiddenTimes(timings) {
+  const sunrise = timings.Sunrise;
+  const dhuhr = timings.Dhuhr;
+  const maghrib = timings.Maghrib;
+
+  const addMins = (time, mins) => {
+    const [h, m] = time.split(":").map(Number);
+    const d = new Date();
+    d.setHours(h, m + mins, 0, 0);
+    return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  };
+
+  return [
+    { name: "Sunrise Forbidden", start: sunrise, end: addMins(sunrise, 15) },
+    { name: "Zawal Forbidden", start: addMins(dhuhr, -15), end: dhuhr },
+    { name: "Sunset Forbidden", start: addMins(maghrib, -15), end: maghrib }
+  ];
+}
+
 function startAdvCountdown(timings) {
   if (window.prayerTimer) clearInterval(window.prayerTimer);
 
-  const schedule = [
+  const prayerSchedule = [
     { name: "Fajr", time: timings.Fajr },
     { name: "Dhuhr", time: timings.Dhuhr },
     { name: "Asr", time: timings.Asr },
@@ -245,48 +264,100 @@ function startAdvCountdown(timings) {
   function update() {
     const now = new Date();
     const nowStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    const forbiddenList = getForbiddenTimes(timings);
 
-    let currentIdx = -1;
-    for (let i = 0; i < schedule.length; i++) {
-      if (nowStr >= schedule[i].time) currentIdx = i;
+    // 1. Detect Forbidden Time
+    const currentForbidden = forbiddenList.find(f => nowStr >= f.start && nowStr < f.end);
+    const statusLabel = document.getElementById("status-label");
+    const forbiddenDetails = document.getElementById("forbidden-details");
+
+    if (currentForbidden) {
+      statusLabel.textContent = "Forbidden Time";
+      document.querySelector(".status-dot")?.style.setProperty("display", "block");
+      forbiddenDetails.style.display = "flex";
+      document.getElementById("f-range").textContent = `${formatTo12h(currentForbidden.start)} – ${formatTo12h(currentForbidden.end)}`;
+
+      // Countdown for Forbidden End
+      const target = new Date();
+      const [eh, em] = currentForbidden.end.split(":").map(Number);
+      target.setHours(eh, em, 0, 0);
+      const diff = Math.floor((target - now) / 1000);
+      const h = Math.floor(diff / 3600);
+      const m = Math.floor((diff % 3600) / 60);
+      document.getElementById("f-countdown-text").textContent = `${h > 0 ? h + "h " : ""}${m}m left`;
+
+      // Circular Sync
+      updateCircular(now, currentForbidden.start, currentForbidden.end);
+    } else {
+      statusLabel.textContent = "Permissible Time";
+      document.querySelector(".status-dot")?.style.setProperty("display", "none");
+      forbiddenDetails.style.display = "none";
+
+      // 2. Identify Current & Next Prayer
+      let currentIdx = -1;
+      for (let i = 0; i < prayerSchedule.length; i++) {
+        if (nowStr >= prayerSchedule[i].time) currentIdx = i;
+      }
+      if (currentIdx === -1) currentIdx = prayerSchedule.length - 1;
+
+      const currentP = prayerSchedule[currentIdx];
+      const nextP = prayerSchedule[(currentIdx + 1) % 5];
+
+      document.querySelectorAll(".s-item").forEach(item => {
+        item.classList.toggle("active", item.dataset.prayer === currentP.name);
+      });
+
+      // Prayer Countdown
+      const target = new Date();
+      const [th, tm] = nextP.time.split(":").map(Number);
+      target.setHours(th, tm, 0, 0);
+      if (target < now) target.setDate(target.getDate() + 1);
+
+      updateCircular(now, currentP.time, nextP.time, true);
     }
-    if (currentIdx === -1) currentIdx = schedule.length - 1;
 
-    const currentP = schedule[currentIdx];
-    const nextP = schedule[(currentIdx + 1) % 5];
+    updateTrackerStates(timings, nowStr);
+  }
 
-    document.getElementById("adv-p-now").textContent = currentP.name;
-    document.getElementById("adv-p-start").textContent = formatTo12h(currentP.time);
-
-    document.querySelectorAll(".s-item").forEach(item => {
-      item.classList.toggle("active", item.dataset.prayer === currentP.name);
-    });
-
+  function updateCircular(now, startTime, endTime, isNextDay = false) {
     const target = new Date();
-    const [th, tm] = nextP.time.split(":").map(Number);
+    const [th, tm] = endTime.split(":").map(Number);
     target.setHours(th, tm, 0, 0);
-    if (target < now) target.setDate(target.getDate() + 1);
+    if (isNextDay && target < now) target.setDate(target.getDate() + 1);
 
     const diff = Math.floor((target - now) / 1000);
+    if (diff < 0) return;
+
     const h = Math.floor(diff / 3600);
     const m = Math.floor((diff % 3600) / 60);
     const s = diff % 60;
     document.getElementById("adv-timer").textContent = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 
     const ring = document.getElementById("adv-ring-fill");
+    const dot = document.getElementById("adv-dot");
     if (ring) {
       const start = new Date();
-      const [sh, sm] = currentP.time.split(":").map(Number);
+      const [sh, sm] = startTime.split(":").map(Number);
       start.setHours(sh, sm, 0, 0);
-      if (start > now) start.setDate(start.getDate() - 1);
+      if (isNextDay && start > now) start.setDate(start.getDate() - 1);
+
       const total = (target - start) / 1000;
       const progress = Math.min(Math.max((now - start) / 1000 / total, 0), 1);
       const circ = 54 * 2 * Math.PI;
       ring.style.strokeDashoffset = circ - (progress * circ);
       ring.style.strokeDasharray = `${circ} ${circ}`;
+
+      if (dot) {
+        const angle = (progress * 360) - 90;
+        const rad = (angle * Math.PI) / 180;
+        const x = 60 + 54 * Math.cos(rad);
+        const y = 60 + 54 * Math.sin(rad);
+        dot.setAttribute("cx", x);
+        dot.setAttribute("cy", y);
+      }
     }
-    updateTrackerStates(timings, nowStr);
   }
+
   update();
   window.prayerTimer = setInterval(update, 1000);
 }
@@ -318,11 +389,22 @@ function updateTrackerStates(timings, nowStr) {
 
   document.querySelectorAll(".t-btn").forEach(btn => {
     const p = btn.dataset.p;
-    btn.classList.remove("missed", "upcoming");
-    if (nowStr < timings[p]) {
+    btn.classList.remove("missed", "upcoming", "done");
+
+    // Reset icon
+    const icon = btn.querySelector("i");
+    if (icon) icon.setAttribute("data-lucide", "info");
+
+    if (todayData[p] === "done") {
+      btn.classList.add("done");
+      if (icon) icon.setAttribute("data-lucide", "check-circle");
+    } else if (nowStr < timings[p]) {
       btn.classList.add("upcoming");
-    } else if (todayData[p] !== "done") {
+      if (icon) icon.setAttribute("data-lucide", "clock");
+    } else {
       btn.classList.add("missed");
+      if (icon) icon.setAttribute("data-lucide", "alert-circle");
     }
   });
+  if (window.lucide) lucide.createIcons();
 }

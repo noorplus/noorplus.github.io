@@ -482,6 +482,79 @@ body {
   align-items: center;
   border: 1px solid var(--divider);
   box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Status Indicator */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.status-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  background-color: var(--alert);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--alert);
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(225, 75, 75, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(225, 75, 75, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(225, 75, 75, 0);
+  }
+}
+
+/* Forbidden Details */
+.forbidden-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.f-range {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.f-countdown {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.f-countdown small {
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
 .hero-left {
@@ -562,10 +635,17 @@ body {
 }
 
 .c-text small {
-  font-size: 9px;
+  font-size: 10px;
   text-transform: uppercase;
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.c-dot {
+  fill: var(--primary);
+  filter: drop-shadow(0 0 4px var(--primary));
+  transition: all 1s linear;
 }
 
 /* Horizontal Schedule */
@@ -583,8 +663,15 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  opacity: 0.5;
+  gap: 6px;
+  transition: all var(--transition-normal);
+}
+
+.s-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--divider);
   transition: all var(--transition-normal);
 }
 
@@ -601,7 +688,14 @@ body {
 
 .s-time {
   font-size: 10px;
+  font-weight: 700;
   color: var(--text-secondary);
+}
+
+.s-item.active .s-indicator {
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--primary);
+  transform: scale(1.2);
 }
 
 .s-item.active .s-name {
@@ -696,34 +790,19 @@ body {
   cursor: pointer;
 }
 
-.t-btn span {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--divider);
+.t-btn i {
+  font-size: 16px;
+  color: var(--alert);
 }
 
 /* Tracker States */
-.t-btn.done {
-  border-color: var(--success);
+.t-btn.done i {
   color: var(--success);
-}
-
-.t-btn.done span {
-  background: var(--success);
-  box-shadow: 0 0 8px var(--success);
 }
 
 .t-btn.missed {
   border-color: var(--alert);
   color: var(--alert);
-  pointer-events: none;
-  opacity: 0.8;
-}
-
-.t-btn.missed span {
-  background: var(--alert);
-  box-shadow: 0 0 8px var(--alert);
 }
 
 .t-btn.upcoming {
