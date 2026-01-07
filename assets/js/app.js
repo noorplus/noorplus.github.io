@@ -210,7 +210,8 @@ function initHomePage() {
 
 async function fetchAdvPrayerTimes(lat, lon) {
   try {
-    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`);
+    // Method 1: University of Islamic Sciences, Karachi (Standard for South Asia)
+    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=1`);
     const json = await res.json();
     const timings = json.data.timings;
     const meta = json.data.meta;
@@ -220,7 +221,7 @@ async function fetchAdvPrayerTimes(lat, lon) {
 
     const suhurEl = document.getElementById("adv-suhur");
     const iftarEl = document.getElementById("adv-iftar");
-    if (suhurEl) suhurEl.textContent = formatTo12h(timings.Imsak);
+    if (suhurEl) suhurEl.textContent = formatTo12h(timings.Fajr);
     if (iftarEl) iftarEl.textContent = formatTo12h(timings.Maghrib);
 
     ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"].forEach(p => {
@@ -245,6 +246,8 @@ function getForbiddenTimes(timings) {
     d.setHours(h, m + mins, 0, 0);
     return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   };
+
+  if (!sunrise || !dhuhr || !maghrib) return [];
 
   return [
     { name: "Sunrise Forbidden", start: sunrise, end: addMins(sunrise, 15) },
@@ -272,28 +275,29 @@ function startAdvCountdown(timings) {
     // 1. Detect Forbidden Time
     const currentForbidden = forbiddenList.find(f => nowStr >= f.start && nowStr < f.end);
     const statusLabel = document.getElementById("status-label");
-    const forbiddenDetails = document.getElementById("forbidden-details");
+    const statusDot = document.querySelector(".status-dot");
+    const fRangeEl = document.getElementById("f-range");
+    const fCountdownEl = document.getElementById("f-countdown-text");
 
     if (currentForbidden) {
       statusLabel.textContent = "Forbidden Time";
-      document.querySelector(".status-dot")?.style.setProperty("display", "block");
-      forbiddenDetails.style.display = "flex";
-      document.getElementById("f-range").textContent = `${formatTo12h(currentForbidden.start)} – ${formatTo12h(currentForbidden.end)}`;
+      if (statusDot) statusDot.style.display = "block";
+      if (fRangeEl) {
+        fRangeEl.style.display = "block";
+        fRangeEl.textContent = `${formatTo12h(currentForbidden.start)} – ${formatTo12h(currentForbidden.end)}`;
+      }
+      if (fCountdownEl) {
+        fCountdownEl.parentElement.style.display = "flex";
 
-      const pNowEl = document.getElementById("adv-p-now");
-      if (pNowEl) pNowEl.textContent = "Forbidden";
-
-      const pStartEl = document.getElementById("adv-p-start");
-      if (pStartEl) pStartEl.textContent = formatTo12h(currentForbidden.start);
-
-      // Countdown for Forbidden End (Exact Format: 0 hour 2.37 min left (Approx))
-      const target = new Date();
-      const [eh, em] = currentForbidden.end.split(":").map(Number);
-      target.setHours(eh, em, 0, 0);
-      const totalSeconds = Math.max(0, (target - now) / 1000);
-      const h = Math.floor(totalSeconds / 3600);
-      const m = ((totalSeconds % 3600) / 60).toFixed(2);
-      document.getElementById("f-countdown-text").textContent = `${h} hour ${m} min left (Approx)`;
+        // Countdown for Forbidden End (Exact Format: 0 hour 2.37 min left (Approx))
+        const target = new Date();
+        const [eh, em] = currentForbidden.end.split(":").map(Number);
+        target.setHours(eh, em, 0, 0);
+        const totalSeconds = Math.max(0, (target - now) / 1000);
+        const h = Math.floor(totalSeconds / 3600);
+        const m = ((totalSeconds % 3600) / 60).toFixed(2);
+        fCountdownEl.textContent = `${h} hour ${m} min left (Approx)`;
+      }
 
       // Circular Sync
       updateCircular(now, currentForbidden.start, currentForbidden.end);
@@ -302,8 +306,9 @@ function startAdvCountdown(timings) {
       document.querySelectorAll(".s-item").forEach(item => item.classList.remove("active"));
     } else {
       statusLabel.textContent = "Permissible Time";
-      document.querySelector(".status-dot")?.style.setProperty("display", "none");
-      forbiddenDetails.style.display = "none";
+      if (statusDot) statusDot.style.display = "none";
+      if (fRangeEl) fRangeEl.style.display = "none";
+      if (fCountdownEl) fCountdownEl.parentElement.style.display = "none";
 
       // 2. Identify Current & Next Prayer
       let currentIdx = -1;
