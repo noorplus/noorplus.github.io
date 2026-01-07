@@ -358,10 +358,10 @@ img {
   background: var(--surface);
   margin: var(--page-padding);
   border-radius: 20px;
-  padding: 24px;
+  padding: var(--page-padding);
   display: grid;
   grid-template-columns: 1fr 120px;
-  gap: 16px;
+  gap: var(--page-padding);
   align-items: center;
   border: 1px solid var(--divider);
   box-shadow: var(--shadow);
@@ -505,7 +505,7 @@ img {
 .adv-schedule {
   display: flex;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: var(--page-padding);
   background: var(--surface);
   margin: 0 16px;
   border-radius: 14px;
