@@ -357,7 +357,7 @@ img {
 .hero-dash {
   background: var(--surface);
   margin: var(--page-padding);
-  border-radius: 20px;
+  border-radius: var(--radius-sm);
   padding: var(--page-padding);
   display: grid;
   grid-template-columns: 1fr 120px;
@@ -507,8 +507,8 @@ img {
   justify-content: space-between;
   padding: var(--page-padding);
   background: var(--surface);
-  margin: 0 16px;
-  border-radius: 14px;
+  margin: var(--page-padding);
+  border-radius: var(--radius-md);
   border: 1px solid var(--divider);
 }
 
