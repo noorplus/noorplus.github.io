@@ -98,37 +98,49 @@ let currentPlayBtn = null;
 
 function initQuranPage() {
   const surahListEl = document.getElementById("surah-list");
+  const qMainViewEl = document.getElementById("quran-main-view");
   const ayahViewEl = document.getElementById("ayah-view");
   const ayahListEl = document.getElementById("ayah-list");
-  const backBtn = document.getElementById("back-to-surah");
+  const qBackBtn = document.getElementById("q-back-btn");
 
   if (!surahListEl) return;
+
+  // Handle Unified Header Back Button
+  if (qBackBtn) {
+    qBackBtn.onclick = () => {
+      if (!ayahViewEl.classList.contains("hidden")) {
+        ayahViewEl.classList.add("hidden");
+        qMainViewEl.classList.remove("hidden");
+      } else {
+        loadPage("home");
+      }
+    };
+  }
 
   fetch("https://api.alquran.cloud/v1/surah")
     .then(res => res.json())
     .then(data => {
       surahListEl.innerHTML = "";
       data.data.forEach(surah => {
-        const row = document.createElement("div");
-        row.className = "surah-row";
-        row.innerHTML = `
-          <div class="surah-info" onclick="window.loadSurah(${surah.number})">
-            <span class="surah-name">${surah.number}. ${surah.englishName}</span>
-            <span class="surah-ar">${surah.name}</span>
+        const item = document.createElement("div");
+        item.className = "q-item";
+        item.onclick = () => window.loadSurah(surah.number);
+        item.innerHTML = `
+          <div class="q-star-badge">${surah.number}</div>
+          <div class="q-item-info">
+            <span class="q-item-name">${surah.englishName}</span>
+            <span class="q-item-meta">Verses: ${surah.numberOfAyahs} | ${surah.revelationType}</span>
           </div>
-          <button class="surah-play" onclick="playSurahAudio(${surah.number}, this)">
-            <i data-lucide="play"></i>
-          </button>
+          <span class="q-item-ar">${surah.name}</span>
         `;
-        surahListEl.appendChild(row);
+        surahListEl.appendChild(item);
       });
-      if (window.lucide) lucide.createIcons();
     });
 
   window.loadSurah = function (number) {
-    surahListEl.classList.add("hidden");
+    qMainViewEl.classList.add("hidden");
     ayahViewEl.classList.remove("hidden");
-    ayahListEl.innerHTML = "<p>Loading Ayahs...</p>";
+    ayahListEl.innerHTML = '<p class="q-loading">Loading Ayahs...</p>';
 
     Promise.all([
       fetch(`https://api.alquran.cloud/v1/surah/${number}/ar`).then(r => r.json()),
@@ -148,13 +160,6 @@ function initQuranPage() {
       });
     });
   };
-
-  if (backBtn) {
-    backBtn.onclick = () => {
-      ayahViewEl.classList.add("hidden");
-      surahListEl.classList.remove("hidden");
-    };
-  }
 }
 
 async function playSurahAudio(number, btn) {

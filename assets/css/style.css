@@ -40,12 +40,20 @@
   --progress-track: #D4D9DE;
   --progress-fill: #000000;
 
-  /* --- Sizing & Spacing --- */
+  /* --- Sizing & Spacing Scale --- */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
   --top-bar-height: 56px;
-  --bottom-bar-height: 70px;
-  --page-padding: 16px;
-  --section-gap: 20px;
-  --card-gap: 14px;
+  --bottom-bar-height: 72px;
+  --page-padding: var(--space-md);
+  --section-gap: var(--space-lg);
+  --card-gap: var(--space-sm);
 
   /* --- Shapes & Radius --- */
   --radius-sm: 10px;
@@ -149,7 +157,7 @@ img {
 #app-main {
   flex: 1;
   padding: var(--page-padding);
-  padding-bottom: calc(var(--bottom-bar-height) + 20px);
+  padding-bottom: calc(var(--bottom-bar-height) + var(--space-lg));
   overflow-y: auto;
 }
 
@@ -208,7 +216,7 @@ img {
 .card {
   background-color: var(--surface);
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: var(--space-md);
   margin-bottom: var(--card-gap);
   border: 1px solid var(--divider);
   transition: transform var(--transition-fast);
@@ -222,8 +230,8 @@ img {
 .card-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
 }
 
 .card-icon {
@@ -250,7 +258,7 @@ img {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
+  padding: var(--space-md);
   cursor: pointer;
   transition: background var(--transition-fast);
 }
@@ -356,12 +364,12 @@ img {
 /* --- Hero Section --- */
 .hero-dash {
   background: var(--surface);
-  margin: var(--page-padding);
+  margin: var(--space-md);
   border-radius: 20px;
-  padding: 24px;
+  padding: var(--space-lg);
   display: grid;
   grid-template-columns: 1fr 120px;
-  gap: 16px;
+  gap: var(--space-md);
   align-items: center;
   border: 1px solid var(--divider);
   box-shadow: var(--shadow);
@@ -379,8 +387,8 @@ img {
 .h-now-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
 }
 
 .h-status-dot {
@@ -669,44 +677,192 @@ img {
 }
 
 /* 6. QURAN & MODULES */
-.surah-info {
+
+/* --- Quran Header --- */
+.q-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) 0;
+  margin-bottom: var(--space-xs);
 }
 
-.surah-name {
-  font-weight: 600;
-  font-size: var(--font-md);
+.q-header .icon-btn {
+  background: none;
+  border: none;
   color: var(--text-primary);
-}
-
-.surah-ar {
-  font-size: var(--font-lg);
-  color: var(--primary);
-  margin-top: 4px;
-}
-
-.surah-play {
-  background: var(--primary);
-  color: white;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-pill);
+  padding: var(--space-xs);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.q-title {
+  font-size: var(--font-lg);
+  font-weight: 800;
+  color: var(--text-primary);
+  flex: 1;
+  text-align: center;
+}
+
+.q-section {
+  padding: 0;
+  margin-bottom: var(--space-lg);
+}
+
+.q-section-title {
+  font-size: var(--font-md);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+/* --- Quick Access Grid --- */
+.q-quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.q-quick-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  border: 1px solid var(--divider);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  transition: transform 0.2s;
+}
+
+.q-quick-card:active {
+  transform: scale(0.96);
+}
+
+.q-card-label {
+  font-size: var(--font-md);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.q-card-val {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* --- Segmented Tabs --- */
+.q-tabs {
+  margin-bottom: var(--space-lg);
+}
+
+.q-tabs-track {
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  display: flex;
+  padding: var(--space-2xs);
+  gap: var(--space-2xs);
+}
+
+.q-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.q-tab.active {
+  background: var(--bg);
+  color: var(--text-primary);
+  border: 1px solid var(--divider);
+  box-shadow: var(--shadow);
+}
+
+/* --- Surah List --- */
+.q-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.q-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--divider);
+  cursor: pointer;
+}
+
+.q-star-badge {
+  width: 44px;
+  height: 44px;
+  background: var(--primary-soft);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  clip-path: polygon(50% 0%, 65% 15%, 85% 15%, 85% 35%, 100% 50%, 85% 65%, 85% 85%, 65% 85%, 50% 100%, 35% 85%, 15% 85%, 15% 65%, 0% 50%, 15% 35%, 15% 15%, 35% 15%);
+  flex-shrink: 0;
+}
+
+.q-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.q-item-name {
+  font-size: var(--font-md);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.q-item-meta {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.q-item-ar {
+  font-size: var(--font-xl);
+  font-family: 'Amiri', serif;
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.q-loading {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* --- Ayah View --- */
+.ayah-view {
+  padding-top: var(--space-md);
+}
+
 .ayah {
-  padding: 24px 0;
+  padding: var(--space-lg) 0;
   border-bottom: 1px solid var(--divider);
 }
 
 .ayah-ar {
   font-size: 24px;
   text-align: right;
-  line-height: 2;
-  margin-bottom: 16px;
+  line-height: 2.2;
+  margin-bottom: var(--space-md);
   color: var(--text-primary);
 }
 
@@ -715,21 +871,11 @@ img {
   font-size: var(--font-md);
   color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-xs);
 }
 
 .hidden {
   display: none !important;
-}
-
-.back-btn {
-  background-color: var(--surface-soft);
-  color: var(--primary);
-  padding: 8px 16px;
-  border-radius: var(--radius-md);
-  margin-bottom: 16px;
-  font-weight: 600;
-  border: 1px solid var(--divider);
 }
 
 /* 7. ANIMATIONS */

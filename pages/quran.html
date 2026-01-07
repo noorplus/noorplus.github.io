@@ -1,23 +1,46 @@
 <section class="page quran">
 
-  <!-- Header -->
-  <header class="page-header">
-    <h1 class="page-title">Al-Qur’an</h1>
-    <p class="page-subtitle">Read and listen with reflection</p>
+  <!-- 1. Custom Header -->
+  <header class="q-header">
+    <button class="icon-btn" id="q-back-btn"><i data-lucide="chevron-left"></i></button>
+    <h1 class="q-title">Al-Quran</h1>
+    <button class="icon-btn" id="q-search-btn"><i data-lucide="search"></i></button>
   </header>
 
-  <!-- Surah List -->
-  <div id="surah-list" class="surah-list">
-    <p class="quran-loading">Loading Surahs…</p>
+  <div id="quran-main-view">
+    <!-- 2. Quick Access -->
+    <div class="q-section">
+      <h3 class="q-section-title">Quick Access</h3>
+      <div class="q-quick-grid">
+        <div class="q-quick-card">
+          <span class="q-card-label">Pin ayah</span>
+          <span class="q-card-val">No data</span>
+        </div>
+        <div class="q-quick-card">
+          <span class="q-card-label">Bookmarks</span>
+          <span class="q-card-val">No data</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Tabs -->
+    <div class="q-tabs">
+      <div class="q-tabs-track">
+        <button class="q-tab active" data-tab="surah">Surah</button>
+        <button class="q-tab" data-tab="juz">Juz</button>
+        <button class="q-tab" data-tab="page">Page</button>
+        <button class="q-tab" data-tab="topic">Topic</button>
+      </div>
+    </div>
+
+    <!-- 4. Surah List -->
+    <div id="surah-list" class="q-list">
+      <p class="q-loading">Loading Surahs…</p>
+    </div>
   </div>
 
-  <!-- Ayah View -->
+  <!-- 5. Ayah View (Detailed Surah Container) -->
   <div id="ayah-view" class="ayah-view hidden">
-    <button id="back-to-surah" class="back-btn">
-      <i data-lucide="arrow-left"></i>
-      Back to Surahs
-    </button>
-
     <div id="ayah-list" class="ayah-list"></div>
   </div>
 
