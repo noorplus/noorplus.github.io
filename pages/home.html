@@ -10,17 +10,27 @@
     <div class="hero-dash">
         <!-- Left: Status & Info -->
         <div class="hero-left">
-            <div class="status-indicator">
-                <span class="status-label" id="status-label">Forbidden Time</span>
-                <span class="status-dot"></span>
+            <div class="h-now-row">
+                <span class="h-status-dot" id="adv-status-dot"></span>
+                <span class="h-label-sm">Now:</span>
+                <span class="h-val-md" id="adv-p-now">--</span>
             </div>
-            <div class="f-range" id="f-range">--:-- -- – --:-- --</div>
-            <div class="f-countdown">
-                <span id="f-countdown-text">-- hour -- min left (Approx)</span>
-            </div>
-            <div class="fasting-info">
-                <p>Suhur: <span id="adv-suhur">--:--</span></p>
-                <p>Iftar: <span id="adv-iftar">--:--</span></p>
+
+            <div class="f-range" id="f-range" style="display:none;">--:-- -- – --:-- --</div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Time:</span>
+                    <span class="info-val" id="adv-p-start">--:-- --</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Suhur:</span>
+                    <span class="info-val" id="adv-suhur">--:-- --</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Iftar:</span>
+                    <span class="info-val" id="adv-iftar">--:-- --</span>
+                </div>
             </div>
         </div>
 

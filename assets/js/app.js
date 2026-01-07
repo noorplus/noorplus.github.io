@@ -274,33 +274,22 @@ function startAdvCountdown(timings) {
 
     // 1. Detect Forbidden Time
     const currentForbidden = forbiddenList.find(f => nowStr >= f.start && nowStr < f.end);
-    const statusLabel = document.getElementById("status-label");
-    const statusDot = document.querySelector(".status-dot");
+    const statusDot = document.getElementById("adv-status-dot");
+    const pNowEl = document.getElementById("adv-p-now");
+    const pStartEl = document.getElementById("adv-p-start");
     const fRangeEl = document.getElementById("f-range");
     const fCountdownEl = document.getElementById("f-countdown-text");
 
     if (currentForbidden) {
-      statusLabel.textContent = "Forbidden Time";
-      if (statusDot) statusDot.style.display = "block";
+      if (pNowEl) pNowEl.textContent = "Forbidden";
+      if (statusDot) {
+        statusDot.className = "h-status-dot forbidden";
+      }
       if (fRangeEl) {
         fRangeEl.style.display = "block";
         fRangeEl.textContent = `${formatTo12h(currentForbidden.start)} – ${formatTo12h(currentForbidden.end)}`;
       }
-      if (fCountdownEl) {
-        fCountdownEl.parentElement.style.display = "flex";
-
-        // Format: 0 hour 2.37 min left (where 37 is seconds)
-        const target = new Date();
-        const [eh, em] = currentForbidden.end.split(":").map(Number);
-        target.setHours(eh, em, 0, 0);
-
-        const diffSecs = Math.max(0, Math.floor((target - now) / 1000));
-        const h = Math.floor(diffSecs / 3600);
-        const m = Math.floor((diffSecs % 3600) / 60);
-        const s = String(diffSecs % 60).padStart(2, "0");
-
-        fCountdownEl.textContent = `${h} hour ${m}.${s} min left (Approx)`;
-      }
+      if (pStartEl) pStartEl.textContent = formatTo12h(currentForbidden.start);
 
       // Circular Sync
       updateCircular(now, currentForbidden.start, currentForbidden.end);
@@ -308,10 +297,10 @@ function startAdvCountdown(timings) {
       // Neutralize Timeline
       document.querySelectorAll(".s-item").forEach(item => item.classList.remove("active"));
     } else {
-      statusLabel.textContent = "Permissible Time";
-      if (statusDot) statusDot.style.display = "none";
+      if (statusDot) {
+        statusDot.className = "h-status-dot permissible";
+      }
       if (fRangeEl) fRangeEl.style.display = "none";
-      if (fCountdownEl) fCountdownEl.parentElement.style.display = "none";
 
       // 2. Identify Current & Next Prayer
       let currentIdx = -1;
@@ -323,10 +312,7 @@ function startAdvCountdown(timings) {
       const currentP = prayerSchedule[currentIdx];
       const nextP = prayerSchedule[(currentIdx + 1) % 5];
 
-      const pNowEl = document.getElementById("adv-p-now");
       if (pNowEl) pNowEl.textContent = currentP.name;
-
-      const pStartEl = document.getElementById("adv-p-start");
       if (pStartEl) pStartEl.textContent = formatTo12h(currentP.time);
 
       document.querySelectorAll(".s-item").forEach(item => {

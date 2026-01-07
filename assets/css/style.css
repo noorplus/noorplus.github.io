@@ -387,53 +387,73 @@ body {
   overflow: hidden;
 }
 
-.status-indicator {
+.h-now-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 2px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
-.status-label {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.status-dot {
+.h-status-dot {
   width: 10px;
   height: 10px;
-  background-color: var(--alert);
   border-radius: 50%;
+  transition: background-color var(--transition-normal);
+}
+
+.h-status-dot.forbidden {
+  background-color: var(--alert);
   box-shadow: 0 0 8px var(--alert);
   animation: pulse-red 2s infinite;
 }
 
-.f-range {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin-bottom: 4px;
+.h-status-dot.permissible {
+  background-color: var(--success);
+  box-shadow: 0 0 8px var(--success);
 }
 
-.f-countdown {
-  display: flex;
-  align-items: center;
-  font-size: 13px;
-  color: var(--primary-soft);
+.h-label-sm {
+  font-size: 14px;
   font-weight: 600;
+  color: var(--text-muted);
+}
+
+.h-val-md {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.f-range {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--alert);
   margin-bottom: 12px;
 }
 
-.fasting-info {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.4;
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.fasting-info p {
-  margin-bottom: 2px;
+.info-item {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.info-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  width: 50px;
+}
+
+.info-val {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .hero-left {
