@@ -289,14 +289,17 @@ function startAdvCountdown(timings) {
       if (fCountdownEl) {
         fCountdownEl.parentElement.style.display = "flex";
 
-        // Countdown for Forbidden End (Exact Format: 0 hour 2.37 min left (Approx))
+        // Format: 0 hour 2.37 min left (where 37 is seconds)
         const target = new Date();
         const [eh, em] = currentForbidden.end.split(":").map(Number);
         target.setHours(eh, em, 0, 0);
-        const totalSeconds = Math.max(0, (target - now) / 1000);
-        const h = Math.floor(totalSeconds / 3600);
-        const m = ((totalSeconds % 3600) / 60).toFixed(2);
-        fCountdownEl.textContent = `${h} hour ${m} min left (Approx)`;
+
+        const diffSecs = Math.max(0, Math.floor((target - now) / 1000));
+        const h = Math.floor(diffSecs / 3600);
+        const m = Math.floor((diffSecs % 3600) / 60);
+        const s = String(diffSecs % 60).padStart(2, "0");
+
+        fCountdownEl.textContent = `${h} hour ${m}.${s} min left (Approx)`;
       }
 
       // Circular Sync
@@ -331,19 +334,16 @@ function startAdvCountdown(timings) {
       });
 
       // Prayer Countdown
-      const target = new Date();
-      const [th, tm] = nextP.time.split(":").map(Number);
-      target.setHours(th, tm, 0, 0);
-      if (target < now) target.setDate(target.getDate() + 1);
-
-      updateCircular(now, currentP.time, nextP.time, true);
+      const isIshaWindow = currentP.name === "Isha";
+      updateCircular(now, currentP.time, nextP.time, isIshaWindow);
     }
 
     updateTrackerStates(timings, nowStr);
   }
 
   function updateCircular(now, startTime, endTime, isNextDay = false) {
-    const target = new Date();
+    const today = new Date(now);
+    const target = new Date(now);
     const [th, tm] = endTime.split(":").map(Number);
     target.setHours(th, tm, 0, 0);
     if (isNextDay && target < now) target.setDate(target.getDate() + 1);
@@ -354,12 +354,16 @@ function startAdvCountdown(timings) {
     const h = Math.floor(diff / 3600);
     const m = Math.floor((diff % 3600) / 60);
     const s = diff % 60;
-    document.getElementById("adv-timer").textContent = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+
+    const timerEl = document.getElementById("adv-timer");
+    if (timerEl) {
+      timerEl.textContent = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
 
     const ring = document.getElementById("adv-ring-fill");
     const dot = document.getElementById("adv-dot");
     if (ring) {
-      const start = new Date();
+      const start = new Date(now);
       const [sh, sm] = startTime.split(":").map(Number);
       start.setHours(sh, sm, 0, 0);
       if (isNextDay && start > now) start.setDate(start.getDate() - 1);
