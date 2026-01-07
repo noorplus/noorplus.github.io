@@ -43,8 +43,8 @@
   /* --- Sizing & Spacing --- */
   --top-bar-height: 56px;
   --bottom-bar-height: 70px;
-  --page-padding: 5px;
-  --section-gap: 10px;
+  --page-padding: 16px;
+  --section-gap: 20px;
   --card-gap: 14px;
 
   /* --- Shapes & Radius --- */
@@ -338,7 +338,7 @@ img {
 .adv-header {
   display: flex;
   justify-content: space-between;
-  padding: 12px 12px;
+  padding: 12px 20px;
   background: var(--bg);
   border-bottom: 1px solid var(--divider);
   position: sticky;
@@ -357,11 +357,11 @@ img {
 .hero-dash {
   background: var(--surface);
   margin: var(--page-padding);
-  border-radius: var(--radius-sm);
-  padding: var(--page-padding);
+  border-radius: 20px;
+  padding: 24px;
   display: grid;
   grid-template-columns: 1fr 120px;
-  gap: var(--page-padding);
+  gap: 16px;
   align-items: center;
   border: 1px solid var(--divider);
   box-shadow: var(--shadow);
@@ -505,10 +505,10 @@ img {
 .adv-schedule {
   display: flex;
   justify-content: space-between;
-  padding: var(--page-padding);
+  padding: 16px 20px;
   background: var(--surface);
-  margin: var(--page-padding);
-  border-radius: var(--radius-md);
+  margin: 0 16px;
+  border-radius: 14px;
   border: 1px solid var(--divider);
 }
 
