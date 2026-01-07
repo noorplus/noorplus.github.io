@@ -102,8 +102,21 @@ function initQuranPage() {
   const ayahViewEl = document.getElementById("ayah-view");
   const ayahListEl = document.getElementById("ayah-list");
   const qBackBtn = document.getElementById("q-back-btn");
+  const qHeaderTitle = document.getElementById("q-header-title");
+  const qHeaderAction = document.getElementById("q-header-action");
+  const qPlayer = document.getElementById("q-player");
 
   if (!surahListEl) return;
+
+  // Cache for Surah Metadata
+  window.quranSurahs = window.quranSurahs || [];
+
+  // Reset Header to default Al-Quran state
+  qHeaderTitle.textContent = "Al-Quran";
+  if (window.lucide) {
+    qHeaderAction.innerHTML = `<i data-lucide="search"></i>`;
+    lucide.createIcons();
+  }
 
   // Handle Unified Header Back Button
   if (qBackBtn) {
@@ -111,6 +124,10 @@ function initQuranPage() {
       if (!ayahViewEl.classList.contains("hidden")) {
         ayahViewEl.classList.add("hidden");
         qMainViewEl.classList.remove("hidden");
+        qPlayer.classList.add("hidden");
+        qHeaderTitle.textContent = "Al-Quran";
+        qHeaderAction.innerHTML = `<i data-lucide="search"></i>`;
+        if (window.lucide) lucide.createIcons();
       } else {
         loadPage("home");
       }
@@ -120,6 +137,7 @@ function initQuranPage() {
   fetch("https://api.alquran.cloud/v1/surah")
     .then(res => res.json())
     .then(data => {
+      window.quranSurahs = data.data;
       surahListEl.innerHTML = "";
       data.data.forEach(surah => {
         const item = document.createElement("div");
@@ -138,49 +156,107 @@ function initQuranPage() {
     });
 
   window.loadSurah = function (number) {
+    const meta = window.quranSurahs.find(s => s.number === number);
+    if (!meta) return;
+
+    qHeaderTitle.textContent = meta.englishName;
+    qHeaderAction.innerHTML = `<i data-lucide="settings-2"></i>`;
+    if (window.lucide) lucide.createIcons();
+
     qMainViewEl.classList.add("hidden");
     ayahViewEl.classList.remove("hidden");
-    ayahListEl.innerHTML = '<p class="q-loading">Loading Ayahs...</p>';
+    ayahListEl.innerHTML = '<p class="q-loading">Loading Surah Details...</p>';
 
-    Promise.all([
-      fetch(`https://api.alquran.cloud/v1/surah/${number}/ar`).then(r => r.json()),
-      fetch(`https://api.alquran.cloud/v1/surah/${number}/bn.bengali`).then(r => r.json()),
-      fetch(`https://api.alquran.cloud/v1/surah/${number}/en.asad`).then(r => r.json())
-    ]).then(([ar, bn, en]) => {
-      ayahListEl.innerHTML = "";
-      ar.data.ayahs.forEach((ayah, i) => {
-        const div = document.createElement("div");
-        div.className = "ayah";
-        div.innerHTML = `
-          <p class="ayah-ar">${ayah.text}</p>
-          <p class="ayah-bn">${bn.data.ayahs[i].text}</p>
-          <p class="ayah-en">${en.data.ayahs[i].text}</p>
-        `;
-        ayahListEl.appendChild(div);
+    // Update Detail Card
+    document.getElementById("det-name").textContent = meta.englishName;
+    document.getElementById("det-meaning").textContent = meta.englishNameTranslation;
+    document.getElementById("det-revelation").textContent = meta.revelationType;
+    document.getElementById("det-ayahs").textContent = meta.numberOfAyahs;
+
+    // Fetch Ayahs: Arabic, Transliteration, English Translation
+    fetch(`https://api.alquran.cloud/v1/surah/${number}/editions/quran-uthmani,en.transliteration,en.asad`)
+      .then(res => res.json())
+      .then(data => {
+        ayahListEl.innerHTML = "";
+        const ar = data.data[0];
+        const tr = data.data[1];
+        const en = data.data[2];
+
+        ar.ayahs.forEach((ayah, i) => {
+          const item = document.createElement("div");
+          item.className = "ayah-item";
+          item.innerHTML = `
+            <div class="ayah-header-bar">
+              <span class="ayah-num">${ayah.numberInSurah}</span>
+              <div class="ayah-actions">
+                <i data-lucide="play" onclick="playSurahAudio(${number}, this)"></i>
+                <i data-lucide="bookmark"></i>
+                <i data-lucide="book-open"></i>
+                <i data-lucide="share-2"></i>
+              </div>
+            </div>
+            <div class="ayah-content">
+              <p class="ayah-ar">${ayah.text}</p>
+              <p class="ayah-trans">${tr.ayahs[i].text}</p>
+              <p class="ayah-en">${en.ayahs[i].text}</p>
+            </div>
+          `;
+          ayahListEl.appendChild(item);
+        });
+        if (window.lucide) lucide.createIcons();
       });
-    });
   };
 }
 
-async function playSurahAudio(number, btn) {
-  const url = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${number}.mp3`;
-  if (currentAudio) {
-    currentAudio.pause();
-    currentPlayBtn.innerHTML = `<i data-lucide="play"></i>`;
-    if (window.lucide) lucide.createIcons();
+let quranAudio = new Audio();
+let isPlaying = false;
+
+window.playSurahAudio = function (number, btn) {
+  const player = document.getElementById("q-player");
+  const playBtn = document.getElementById("p-play");
+  const stopBtn = document.getElementById("p-stop");
+
+  player.classList.remove("hidden");
+
+  if (isPlaying && quranAudio.src.includes(`/${number}.mp3`)) {
+    quranAudio.pause();
+    isPlaying = false;
+    playBtn.innerHTML = `<i data-lucide="play"></i>`;
+  } else {
+    quranAudio.src = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${number}.mp3`;
+    quranAudio.play();
+    isPlaying = true;
+    playBtn.innerHTML = `<i data-lucide="pause"></i>`;
   }
-  if (currentPlayBtn === btn) {
-    currentAudio = null;
-    currentPlayBtn = null;
-    return;
-  }
-  const audio = new Audio(url);
-  audio.play();
-  btn.innerHTML = `<i data-lucide="pause"></i>`;
+
   if (window.lucide) lucide.createIcons();
-  currentAudio = audio;
-  currentPlayBtn = btn;
-}
+
+  stopBtn.onclick = () => {
+    quranAudio.pause();
+    quranAudio.currentTime = 0;
+    isPlaying = false;
+    player.classList.add("hidden");
+  };
+
+  playBtn.onclick = () => {
+    if (isPlaying) {
+      quranAudio.pause();
+      isPlaying = false;
+      playBtn.innerHTML = `<i data-lucide="play"></i>`;
+    } else {
+      quranAudio.play();
+      isPlaying = true;
+      playBtn.innerHTML = `<i data-lucide="pause"></i>`;
+    }
+    if (window.lucide) lucide.createIcons();
+  };
+
+  quranAudio.onended = () => {
+    isPlaying = false;
+    playBtn.innerHTML = `<i data-lucide="play"></i>`;
+    if (window.lucide) lucide.createIcons();
+  };
+};
 
 /* ===============================
    ADVANCED DASHBOARD MODULE
