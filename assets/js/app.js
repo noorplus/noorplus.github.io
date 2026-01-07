@@ -280,6 +280,12 @@ function startAdvCountdown(timings) {
       forbiddenDetails.style.display = "flex";
       document.getElementById("f-range").textContent = `${formatTo12h(currentForbidden.start)} – ${formatTo12h(currentForbidden.end)}`;
 
+      const pNowEl = document.getElementById("adv-p-now");
+      if (pNowEl) pNowEl.textContent = "Forbidden";
+
+      const pStartEl = document.getElementById("adv-p-start");
+      if (pStartEl) pStartEl.textContent = formatTo12h(currentForbidden.start);
+
       // Countdown for Forbidden End (Exact Format: 0 hour 2.37 min left (Approx))
       const target = new Date();
       const [eh, em] = currentForbidden.end.split(":").map(Number);
@@ -308,6 +314,12 @@ function startAdvCountdown(timings) {
 
       const currentP = prayerSchedule[currentIdx];
       const nextP = prayerSchedule[(currentIdx + 1) % 5];
+
+      const pNowEl = document.getElementById("adv-p-now");
+      if (pNowEl) pNowEl.textContent = currentP.name;
+
+      const pStartEl = document.getElementById("adv-p-start");
+      if (pStartEl) pStartEl.textContent = formatTo12h(currentP.time);
 
       document.querySelectorAll(".s-item").forEach(item => {
         item.classList.toggle("active", item.dataset.prayer === currentP.name);

@@ -6,31 +6,21 @@
         <div class="h-loc" id="adv-location">Detecting...</div>
     </header>
 
-    <!-- 2. Status Indicator Section -->
-    <div class="status-indicator">
-        <span class="status-label" id="status-label">Forbidden Time</span>
-        <span class="status-dot"></span>
-    </div>
-
-    <!-- 3. Forbidden Time Details -->
-    <div class="forbidden-details" id="forbidden-details">
-        <div class="f-range" id="f-range">--:-- -- – --:-- --</div>
-        <div class="f-countdown">
-            <span id="f-countdown-text">-- hour -- min left (Approx)</span>
-        </div>
-    </div>
-
-    <!-- 4. Hero Dashboard -->
+    <!-- 2. Hero Dashboard -->
     <div class="hero-dash">
-        <!-- Left: Fasting Info -->
+        <!-- Left: Status & Info -->
         <div class="hero-left">
-            <div class="h-item">
-                <span class="h-label">Suhur</span>
-                <span class="h-val" id="adv-suhur">--:--</span>
+            <div class="status-indicator">
+                <span class="status-label" id="status-label">Forbidden Time</span>
+                <span class="status-dot"></span>
             </div>
-            <div class="h-item">
-                <span class="h-label">Iftar</span>
-                <span class="h-val" id="adv-iftar">--:--</span>
+            <div class="f-range" id="f-range">--:-- -- – --:-- --</div>
+            <div class="f-countdown">
+                <span id="f-countdown-text">-- hour -- min left (Approx)</span>
+            </div>
+            <div class="fasting-info">
+                <p>Suhur: <span id="adv-suhur">--:--</span></p>
+                <p>Iftar: <span id="adv-iftar">--:--</span></p>
             </div>
         </div>
 
