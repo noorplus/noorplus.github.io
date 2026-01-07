@@ -2,10 +2,10 @@
 /*        DESIGN SYSTEM TOKENS           */
 /* ===================================== */
 
-/* -------- LIGHT MODE -------- */
-:root[data-theme="light"] {
-  /* Colors */
+:root {
+  /* --- Colors (Light Mode Default) --- */
   --bg: #FFFFFF;
+  --bg-rgb: 255, 255, 255;
   --surface: #F1F3F5;
   --surface-soft: #F7F8FA;
   --nav-bg: #F6F7F9;
@@ -27,12 +27,44 @@
 
   --progress-track: #D4D9DE;
   --progress-fill: #000000;
+
+  /* --- Layout --- */
+  --top-bar-height: 56px;
+  --bottom-bar-height: 70px;
+  --page-padding: 16px;
+  --section-gap: 20px;
+  --card-gap: 14px;
+
+  /* --- Radius --- */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  /* --- Typography --- */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-xs: 11px;
+  --font-sm: 13px;
+  --font-md: 15px;
+  --font-lg: 18px;
+  --font-xl: 22px;
+
+  /* --- Icons --- */
+  --icon-sm: 18px;
+  --icon-md: 22px;
+  --icon-lg: 26px;
+
+  /* --- Motion --- */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+
+  /* --- Shadow --- */
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* -------- DARK MODE -------- */
 :root[data-theme="dark"] {
-  /* Colors */
   --bg: #0E1623;
+  --bg-rgb: 14, 22, 35;
   --surface: #1A2433;
   --surface-soft: #283244;
   --nav-bg: #141D2B;
@@ -57,69 +89,9 @@
 }
 
 /* ===================================== */
-/*        STRUCTURE & SIZING              */
+/*        CORE BASE STYLES               */
 /* ===================================== */
 
-:root {
-  /* Default to light theme if no attribute is set */
-  --bg: #FFFFFF;
-  --surface: #F1F3F5;
-  --surface-soft: #F7F8FA;
-  --nav-bg: #F6F7F9;
-  --divider: #E3E6EA;
-
-  --primary: #2E7E9D;
-  --primary-soft: #6BB3D1;
-  --success: #48B572;
-  --alert: #E14B4B;
-
-  --text-primary: #1C2730;
-  --text-secondary: #5C6C78;
-  --text-muted: #8C99A5;
-  --text-disabled: #B7C0C8;
-
-  --icon-active: #2E7E9D;
-  --icon-default: #5C6C78;
-  --icon-muted: #9AA6AF;
-
-  --progress-track: #D4D9DE;
-  --progress-fill: #000000;
-
-  /* Layout */
-  --top-bar-height: 56px;
-  --bottom-bar-height: 64px;
-  --page-padding: 16px;
-  --section-gap: 20px;
-  --card-gap: 14px;
-
-  /* Radius */
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 18px;
-  --radius-pill: 999px;
-
-  /* Typography */
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
-
-  --font-xs: 11px;
-  --font-sm: 13px;
-  --font-md: 15px;
-  --font-lg: 18px;
-  --font-xl: 22px;
-
-  /* Icons */
-  --icon-sm: 18px;
-  --icon-md: 22px;
-  --icon-lg: 26px;
-
-  /* Motion */
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-/* Base Styles */
 * {
   margin: 0;
   padding: 0;
@@ -130,7 +102,6 @@
 body {
   font-family: var(--font-family);
   background-color: var(--surface-soft);
-  /* Better contrast for mobile container */
   color: var(--text-primary);
   line-height: 1.5;
   transition: background-color var(--transition-normal), color var(--transition-normal);
@@ -140,11 +111,10 @@ body {
   min-height: 100vh;
 }
 
-/* Fixed Mobile Container Shell */
+/* --- Fixed Mobile Shell --- */
 #app-shell {
   width: 100%;
   max-width: 480px;
-  /* Standard mobile width */
   background-color: var(--bg);
   min-height: 100vh;
   position: relative;
@@ -157,42 +127,15 @@ body {
   flex: 1;
   padding: var(--page-padding);
   padding-top: calc(var(--page-padding) + 10px);
-  padding-bottom: calc(var(--bottom-bar-height) + var(--page-padding));
+  padding-bottom: calc(var(--bottom-bar-height) + 20px);
   overflow-y: auto;
 }
 
-/* Page Transitions */
-.page-fade-in {
-  animation: fadeIn 0.3s ease forwards;
-}
+/* ===================================== */
+/*        LAYOUT COMPONENTS              */
+/* ===================================== */
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Lucide Icon Base Styling */
-.lucide {
-  width: var(--icon-md);
-  height: var(--icon-md);
-  stroke-width: 2px;
-  transition: transform var(--transition-fast);
-}
-
-/* Standardized Header (Used across all pages) */
-.page-header {
-  margin-bottom: var(--section-gap);
-  padding: 8px 16px;
-}
-
-/* Force Bottom Nav Fixed */
+/* --- Bottom Navigation --- */
 .bottom-nav {
   position: fixed !important;
   bottom: 0;
@@ -200,7 +143,7 @@ body {
   transform: translateX(-50%);
   width: 100%;
   max-width: 480px;
-  background: var(--nav-bg);
+  background: rgba(var(--bg-rgb), 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--divider);
@@ -208,43 +151,7 @@ body {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: 70px;
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-/* Fixed Nav Spacing */
-#app-main {
-  padding-bottom: 90px;
-}
-
-.page-title {
-  font-size: var(--font-xl);
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.page-subtitle {
-  font-size: var(--font-sm);
-  color: var(--text-secondary);
-}
-
-/* Bottom Navigation */
-.bottom-nav {
-  position: absolute;
-  /* Relative to app-shell */
-  bottom: 0;
-  left: 0;
-  right: 0;
   height: var(--bottom-bar-height);
-  background-color: var(--nav-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid var(--divider);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 1000;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -265,6 +172,7 @@ body {
 .bottom-nav button .lucide {
   width: var(--icon-md);
   height: var(--icon-md);
+  stroke-width: 2px;
 }
 
 .bottom-nav button.active {
@@ -277,7 +185,28 @@ body {
   stroke-width: 2.5px;
 }
 
-/* UI Components */
+/* --- Headers --- */
+.page-header {
+  margin-bottom: var(--section-gap);
+  padding: 8px 16px;
+}
+
+.page-title {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.page-subtitle {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+/* ===================================== */
+/*        SHARED UI COMPONENTS           */
+/* ===================================== */
+
 .card {
   background-color: var(--surface);
   border-radius: var(--radius-lg);
@@ -316,35 +245,7 @@ body {
   color: var(--text-secondary);
 }
 
-/* Home Actions */
-.home-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: var(--section-gap);
-}
-
-.home-actions .action-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 16px;
-  background-color: var(--surface);
-  color: var(--text-primary);
-  border: 1px solid var(--divider);
-  border-radius: var(--radius-lg);
-  font-weight: 500;
-  text-align: center;
-}
-
-.home-actions .action-btn .lucide {
-  color: var(--primary);
-  width: 24px;
-  height: 24px;
-}
-
-/* Menu List & Toggle */
+/* --- Menu & List Items --- */
 .menu-list {
   background-color: var(--surface);
   border-radius: var(--radius-lg);
@@ -394,6 +295,7 @@ body {
   color: var(--text-muted);
 }
 
+/* --- Toggles & Switches --- */
 .toggle-switch {
   width: 44px;
   height: 24px;
@@ -424,7 +326,7 @@ body {
   transform: translateX(20px);
 }
 
-/* Buttons */
+/* --- Buttons --- */
 .action-btn,
 .back-btn,
 .surah-play {
@@ -440,7 +342,6 @@ body {
   padding: 12px 20px;
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: var(--font-sm);
   margin-right: 8px;
 }
 
@@ -449,7 +350,7 @@ body {
 }
 
 /* ===================================== */
-/*        ADVANCED DASHBOARD STYLES       */
+/*        HOME DASHBOARD STYLES          */
 /* ===================================== */
 
 .adv-header {
@@ -470,7 +371,7 @@ body {
   font-size: 14px;
 }
 
-/* Hero Dashboard */
+/* --- Hero Dashboard --- */
 .hero-dash {
   background: var(--surface);
   margin: 16px;
@@ -486,7 +387,6 @@ body {
   overflow: hidden;
 }
 
-/* Status Indicator */
 .status-indicator {
   display: flex;
   align-items: center;
@@ -510,24 +410,6 @@ body {
   animation: pulse-red 2s infinite;
 }
 
-@keyframes pulse-red {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(225, 75, 75, 0.7);
-  }
-
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 10px rgba(225, 75, 75, 0);
-  }
-
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(225, 75, 75, 0);
-  }
-}
-
-/* Forbidden Details */
 .forbidden-details {
   display: flex;
   flex-direction: column;
@@ -550,11 +432,6 @@ body {
   font-size: 14px;
   color: var(--text-secondary);
   font-weight: 600;
-}
-
-.f-countdown small {
-  font-size: 11px;
-  color: var(--text-muted);
 }
 
 .hero-left {
@@ -582,19 +459,7 @@ body {
   color: var(--text-primary);
 }
 
-.h-meta-row {
-  display: flex;
-  gap: 16px;
-  margin-top: 4px;
-}
-
-.h-val-small {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-/* Circle Countdown */
+/* --- Circle Timer --- */
 .adv-circle-box {
   position: relative;
   width: 120px;
@@ -648,7 +513,7 @@ body {
   transition: all 1s linear;
 }
 
-/* Horizontal Schedule */
+/* --- Prayer Timeline --- */
 .adv-schedule {
   display: flex;
   justify-content: space-between;
@@ -685,6 +550,14 @@ body {
   color: var(--text-secondary);
 }
 
+.s-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--divider);
+  transition: all var(--transition-normal);
+}
+
 .s-item.active .s-indicator {
   background: var(--primary);
   box-shadow: 0 0 8px var(--primary);
@@ -701,7 +574,7 @@ body {
   margin: 24px -16px;
 }
 
-/* Feature Grid */
+/* --- Feature Grid --- */
 .adv-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -747,7 +620,7 @@ body {
   text-align: center;
 }
 
-/* Prayer Tracker (Strict) */
+/* --- Prayer Tracker --- */
 .adv-tracker {
   margin: 16px 20px;
   padding-bottom: 20px;
@@ -793,7 +666,6 @@ body {
   color: var(--alert);
 }
 
-/* Tracker States */
 .t-btn.done i {
   color: var(--success);
 }
@@ -808,25 +680,9 @@ body {
   pointer-events: none;
 }
 
-/* Force Bottom Nav Fixed */
-.bottom-nav {
-  position: fixed !important;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 480px;
-  background: rgba(var(--bg-rgb, 255, 255, 255), 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid var(--divider);
-}
-
-/* Ensure body scroll doesn't hide content behind nav */
-#app-main {
-  padding-bottom: calc(var(--bottom-bar-height) + 20px);
-}
-
+/* ===================================== */
+/*        QURAN & LIBRARY STYLES         */
+/* ===================================== */
 
 .surah-info {
   display: flex;
@@ -854,7 +710,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
 }
 
 .ayah {
@@ -892,7 +747,10 @@ body {
   border: 1px solid var(--divider);
 }
 
-/* Animations */
+/* ===================================== */
+/*        ANIMATIONS                     */
+/* ===================================== */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -902,6 +760,23 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes pulse-red {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(225, 75, 75, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(225, 75, 75, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(225, 75, 75, 0);
   }
 }
 
