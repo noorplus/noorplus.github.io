@@ -43,8 +43,8 @@
   /* --- Sizing & Spacing --- */
   --top-bar-height: 56px;
   --bottom-bar-height: 70px;
-  --page-padding: 16px;
-  --section-gap: 20px;
+  --page-padding: 5px;
+  --section-gap: 10px;
   --card-gap: 14px;
 
   /* --- Shapes & Radius --- */
@@ -338,7 +338,7 @@ img {
 .adv-header {
   display: flex;
   justify-content: space-between;
-  padding: 12px 20px;
+  padding: 12px 12px;
   background: var(--bg);
   border-bottom: 1px solid var(--divider);
   position: sticky;
