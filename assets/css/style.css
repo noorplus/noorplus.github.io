@@ -1,9 +1,21 @@
-/* ===================================== */
-/*        DESIGN SYSTEM TOKENS           */
-/* ===================================== */
+/* 
+================================================================
+    NOORPLUS MOBILE APP - DESIGN SYSTEM & STYLES
+================================================================
+    Structure:
+    1. Design Tokens (Variables)
+    2. Reset & Base Styles
+    3. Layout (App Shell & Navigation)
+    4. Global UI Components (Cards, Buttons, Menus)
+    5. Home Dashboard Page
+    6. Quran & Modules
+    7. Animations
+================================================================
+*/
 
+/* 1. DESIGN TOKENS */
 :root {
-  /* --- Colors (Light Mode Default) --- */
+  /* --- Colors (Light Theme) --- */
   --bg: #FFFFFF;
   --bg-rgb: 255, 255, 255;
   --surface: #F1F3F5;
@@ -28,14 +40,14 @@
   --progress-track: #D4D9DE;
   --progress-fill: #000000;
 
-  /* --- Layout --- */
+  /* --- Sizing & Spacing --- */
   --top-bar-height: 56px;
   --bottom-bar-height: 70px;
   --page-padding: 16px;
   --section-gap: 20px;
   --card-gap: 14px;
 
-  /* --- Radius --- */
+  /* --- Shapes & Radius --- */
   --radius-sm: 10px;
   --radius-md: 14px;
   --radius-lg: 18px;
@@ -49,19 +61,18 @@
   --font-lg: 18px;
   --font-xl: 22px;
 
-  /* --- Icons --- */
+  /* --- Assets --- */
   --icon-sm: 18px;
   --icon-md: 22px;
   --icon-lg: 26px;
 
-  /* --- Motion --- */
+  /* --- Effects --- */
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
-
-  /* --- Shadow --- */
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* --- Dark Theme Overrides --- */
 :root[data-theme="dark"] {
   --bg: #0E1623;
   --bg-rgb: 14, 22, 35;
@@ -88,10 +99,7 @@
   --progress-fill: #FFFFFF;
 }
 
-/* ===================================== */
-/*        CORE BASE STYLES               */
-/* ===================================== */
-
+/* 2. RESET & BASE STYLES */
 * {
   margin: 0;
   padding: 0;
@@ -111,7 +119,22 @@ body {
   min-height: 100vh;
 }
 
-/* --- Fixed Mobile Shell --- */
+h1,
+h2,
+h3 {
+  color: var(--text-primary);
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* 3. LAYOUT (APP SHELL) */
 #app-shell {
   width: 100%;
   max-width: 480px;
@@ -126,16 +149,10 @@ body {
 #app-main {
   flex: 1;
   padding: var(--page-padding);
-  padding-top: calc(var(--page-padding) + 10px);
   padding-bottom: calc(var(--bottom-bar-height) + 20px);
   overflow-y: auto;
 }
 
-/* ===================================== */
-/*        LAYOUT COMPONENTS              */
-/* ===================================== */
-
-/* --- Bottom Navigation --- */
 .bottom-nav {
   position: fixed !important;
   bottom: 0;
@@ -169,14 +186,14 @@ body {
   justify-content: center;
 }
 
+.bottom-nav button.active {
+  color: var(--icon-active);
+}
+
 .bottom-nav button .lucide {
   width: var(--icon-md);
   height: var(--icon-md);
   stroke-width: 2px;
-}
-
-.bottom-nav button.active {
-  color: var(--icon-active);
 }
 
 .bottom-nav button.home .lucide {
@@ -185,28 +202,9 @@ body {
   stroke-width: 2.5px;
 }
 
-/* --- Headers --- */
-.page-header {
-  margin-bottom: var(--section-gap);
-  padding: 8px 16px;
-}
+/* 4. GLOBAL UI COMPONENTS */
 
-.page-title {
-  font-size: var(--font-xl);
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.page-subtitle {
-  font-size: var(--font-sm);
-  color: var(--text-secondary);
-}
-
-/* ===================================== */
-/*        SHARED UI COMPONENTS           */
-/* ===================================== */
-
+/* --- Card Base --- */
 .card {
   background-color: var(--surface);
   border-radius: var(--radius-lg);
@@ -240,12 +238,7 @@ body {
   color: var(--text-primary);
 }
 
-.card-text {
-  font-size: var(--font-md);
-  color: var(--text-secondary);
-}
-
-/* --- Menu & List Items --- */
+/* --- Menu & Lists --- */
 .menu-list {
   background-color: var(--surface);
   border-radius: var(--radius-lg);
@@ -276,15 +269,6 @@ body {
   gap: 14px;
 }
 
-.menu-icon {
-  color: var(--icon-default);
-}
-
-.menu-info {
-  display: flex;
-  flex-direction: column;
-}
-
 .menu-label {
   font-weight: 600;
   font-size: var(--font-md);
@@ -295,7 +279,7 @@ body {
   color: var(--text-muted);
 }
 
-/* --- Toggles & Switches --- */
+/* --- Toggles & Buttons --- */
 .toggle-switch {
   width: 44px;
   height: 24px;
@@ -326,7 +310,6 @@ body {
   transform: translateX(20px);
 }
 
-/* --- Buttons --- */
 .action-btn,
 .back-btn,
 .surah-play {
@@ -349,10 +332,9 @@ body {
   opacity: 0.8;
 }
 
-/* ===================================== */
-/*        HOME DASHBOARD STYLES          */
-/* ===================================== */
+/* 5. HOME DASHBOARD PAGE */
 
+/* --- Home Header --- */
 .adv-header {
   display: flex;
   justify-content: space-between;
@@ -371,10 +353,10 @@ body {
   font-size: 14px;
 }
 
-/* --- Hero Dashboard --- */
+/* --- Hero Section --- */
 .hero-dash {
   background: var(--surface);
-  margin: 16px;
+  margin: var(--page-padding);
   border-radius: 20px;
   padding: 24px;
   display: grid;
@@ -387,6 +369,13 @@ body {
   overflow: hidden;
 }
 
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Now / Status Line */
 .h-now-row {
   display: flex;
   align-items: center;
@@ -398,18 +387,17 @@ body {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  transition: background-color var(--transition-normal);
+}
+
+.h-status-dot.permissible {
+  background-color: var(--success);
+  box-shadow: 0 0 8px var(--success);
 }
 
 .h-status-dot.forbidden {
   background-color: var(--alert);
   box-shadow: 0 0 8px var(--alert);
   animation: pulse-red 2s infinite;
-}
-
-.h-status-dot.permissible {
-  background-color: var(--success);
-  box-shadow: 0 0 8px var(--success);
 }
 
 .h-label-sm {
@@ -424,6 +412,7 @@ body {
   color: var(--text-primary);
 }
 
+/* Range & Info Grid */
 .f-range {
   font-size: 18px;
   font-weight: 800;
@@ -456,32 +445,7 @@ body {
   color: var(--text-primary);
 }
 
-.hero-left {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.h-item {
-  display: flex;
-  flex-direction: column;
-}
-
-.h-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.h-val {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-/* --- Circle Timer --- */
+/* --- Circular Timer --- */
 .adv-circle-box {
   position: relative;
   width: 120px;
@@ -704,10 +668,7 @@ body {
   pointer-events: none;
 }
 
-/* ===================================== */
-/*        QURAN & LIBRARY STYLES         */
-/* ===================================== */
-
+/* 6. QURAN & MODULES */
 .surah-info {
   display: flex;
   flex-direction: column;
@@ -771,10 +732,7 @@ body {
   border: 1px solid var(--divider);
 }
 
-/* ===================================== */
-/*        ANIMATIONS                     */
-/* ===================================== */
-
+/* 7. ANIMATIONS */
 @keyframes fadeIn {
   from {
     opacity: 0;
