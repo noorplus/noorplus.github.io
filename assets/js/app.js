@@ -185,7 +185,10 @@ function initHomePage() {
   if (!dateEl) return;
 
   const now = new Date();
-  dateEl.textContent = now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+  const d = now.getDate().toString().padStart(2, "0");
+  const m = now.toLocaleDateString("en-GB", { month: "short" });
+  const y = now.getFullYear();
+  dateEl.textContent = `${d} ${m}, ${y}`;
   renderTracker();
 
   if (navigator.geolocation) {
@@ -277,17 +280,20 @@ function startAdvCountdown(timings) {
       forbiddenDetails.style.display = "flex";
       document.getElementById("f-range").textContent = `${formatTo12h(currentForbidden.start)} – ${formatTo12h(currentForbidden.end)}`;
 
-      // Countdown for Forbidden End
+      // Countdown for Forbidden End (Exact Format: 0 hour 2.37 min left (Approx))
       const target = new Date();
       const [eh, em] = currentForbidden.end.split(":").map(Number);
       target.setHours(eh, em, 0, 0);
-      const diff = Math.floor((target - now) / 1000);
-      const h = Math.floor(diff / 3600);
-      const m = Math.floor((diff % 3600) / 60);
-      document.getElementById("f-countdown-text").textContent = `${h > 0 ? h + "h " : ""}${m}m left`;
+      const totalSeconds = Math.max(0, (target - now) / 1000);
+      const h = Math.floor(totalSeconds / 3600);
+      const m = ((totalSeconds % 3600) / 60).toFixed(2);
+      document.getElementById("f-countdown-text").textContent = `${h} hour ${m} min left (Approx)`;
 
       // Circular Sync
       updateCircular(now, currentForbidden.start, currentForbidden.end);
+
+      // Neutralize Timeline
+      document.querySelectorAll(".s-item").forEach(item => item.classList.remove("active"));
     } else {
       statusLabel.textContent = "Permissible Time";
       document.querySelector(".status-dot")?.style.setProperty("display", "none");
@@ -391,19 +397,17 @@ function updateTrackerStates(timings, nowStr) {
     const p = btn.dataset.p;
     btn.classList.remove("missed", "upcoming", "done");
 
-    // Reset icon
+    // Reset icon to warning/exclamation for pending state
     const icon = btn.querySelector("i");
-    if (icon) icon.setAttribute("data-lucide", "info");
+    if (icon) icon.setAttribute("data-lucide", "alert-triangle");
 
     if (todayData[p] === "done") {
       btn.classList.add("done");
       if (icon) icon.setAttribute("data-lucide", "check-circle");
     } else if (nowStr < timings[p]) {
       btn.classList.add("upcoming");
-      if (icon) icon.setAttribute("data-lucide", "clock");
     } else {
       btn.classList.add("missed");
-      if (icon) icon.setAttribute("data-lucide", "alert-circle");
     }
   });
   if (window.lucide) lucide.createIcons();
