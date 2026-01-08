@@ -368,7 +368,7 @@ img {
   border-radius: 20px;
   padding: var(--space-md);
   display: grid;
-  grid-template-columns: 1fr 120px;
+  grid-template-columns: 1fr 50%;
   gap: var(--space-md);
   align-items: center;
   border: 1px solid var(--divider);
