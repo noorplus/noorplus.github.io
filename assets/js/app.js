@@ -38,7 +38,7 @@ function loadPage(page) {
       // Re-init modules conditionally
       if (window.lucide) lucide.createIcons();
       initThemeToggle();
-
+      
       if (page === "home") initHomePage();
       else if (page === "quran") initQuranPage();
     })
@@ -111,13 +111,15 @@ function initQuranPage() {
 
   if (!surahListEl) return;
 
-  // Cache for Surah Metadata
+  // Cache/State
   window.quranSurahs = window.quranSurahs || [];
-
-  // Reset Header to default search state
+  
+  // Reset Header state
   if (qSearchContainer) qSearchContainer.style.display = "flex";
+  const qHeaderTitle = document.getElementById("q-header-title");
+  if (qHeaderTitle) qHeaderTitle.classList.add("hidden");
 
-  // Handle Search Input (Debounced)
+  // Search Logic (Debounced)
   let searchTimeout;
   if (qSearchInput) {
     qSearchInput.value = "";
@@ -125,42 +127,46 @@ function initQuranPage() {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(() => {
         const term = e.target.value.toLowerCase();
-        const filtered = window.quranSurahs.filter(s =>
-          s.englishName.toLowerCase().includes(term) ||
-          s.name.includes(term) ||
-          s.number.toString() === term
+        const filtered = window.quranSurahs.filter(s => 
+          s.englishName.toLowerCase().includes(term) || s.name.includes(term) || s.number.toString() === term
         );
         renderSurahList(filtered);
       }, 150);
     };
   }
 
-  // Handle Tab Toggles
+  // Tab Events
   qTabs.forEach(tab => {
     tab.onclick = () => {
       qTabs.forEach(t => t.classList.remove("active"));
       tab.classList.add("active");
-      const category = tab.getAttribute("data-tab");
-      handleCategorySwitch(category);
+      handleCategorySwitch(tab.dataset.tab);
     };
   });
 
-  // Handle Unified Header Back Button
+  // Back Button
   if (qBackBtn) {
     qBackBtn.onclick = () => {
-      const qHeaderTitle = document.getElementById("q-header-title");
       if (!ayahViewEl.classList.contains("hidden")) {
         ayahViewEl.classList.add("hidden");
         qMainViewEl.classList.remove("hidden");
         qPlayer.classList.add("hidden");
         if (qSearchContainer) qSearchContainer.style.display = "flex";
         if (qHeaderTitle) qHeaderTitle.classList.add("hidden");
-        qHeaderAction.innerHTML = `<i data-lucide="more-vertical"></i>`;
-        if (window.lucide) lucide.createIcons();
       } else {
         loadPage("home");
       }
     };
+  }
+
+  function handleCategorySwitch(cat) {
+    surahListEl.innerHTML = `<p class="q-loading">Loading ${cat}...</p>`;
+    if (cat === "surah") renderSurahList(window.quranSurahs);
+    else if (cat === "juz") renderJuzView();
+    else if (cat === "page") renderPageView();
+    else if (cat === "ruku") renderRukuView();
+    else if (cat === "topic") renderTopicView();
+    else if (cat === "ayah") renderAyahSearchView();
   }
 
   function renderSurahList(list) {
@@ -168,98 +174,152 @@ function initQuranPage() {
       surahListEl.innerHTML = '<p class="q-loading">No results found.</p>';
       return;
     }
-    const fragment = document.createDocumentFragment();
-    list.forEach(surah => {
+    const frag = document.createDocumentFragment();
+    list.forEach(s => {
       const item = document.createElement("div");
       item.className = "q-item";
-      item.onclick = () => window.loadSurah(surah.number);
+      item.onclick = () => window.loadAyahView(`surah/${s.number}`, s.englishName);
       item.innerHTML = `
-        <div class="q-star-badge">${surah.number}</div>
+        <div class="q-star-badge">${s.number}</div>
         <div class="q-item-info">
-          <span class="q-item-name">${surah.englishName}</span>
-          <span class="q-item-meta">Verses: ${surah.numberOfAyahs} | ${surah.revelationType}</span>
+          <span class="q-item-name">${s.englishName}</span>
+          <span class="q-item-meta">Verses: ${s.numberOfAyahs} | ${s.revelationType}</span>
         </div>
-        <span class="q-item-ar">${surah.name}</span>
+        <span class="q-item-ar">${s.name}</span>
       `;
-      fragment.appendChild(item);
+      frag.appendChild(item);
     });
     surahListEl.innerHTML = "";
-    surahListEl.appendChild(fragment);
+    surahListEl.appendChild(frag);
   }
 
-  function handleCategorySwitch(cat) {
-    surahListEl.innerHTML = `<p class="q-loading">Loading ${cat} list...</p>`;
-    // For now, only Surah is implemented. Others get a placeholder.
-    if (cat === "surah") {
-      renderSurahList(window.quranSurahs);
-    } else {
-      setTimeout(() => {
-        surahListEl.innerHTML = `
-          <div style="text-align:center; padding: 48px; color: var(--text-muted);">
-            <i data-lucide="layers" style="width: 48px; height: 48px; margin-bottom: 12px; opacity:0.5;"></i>
-            <p style="font-weight:700; font-size: 18px; color: var(--text-primary); margin-bottom: 4px;">${cat.toUpperCase()} View</p>
-            <p style="font-size: 14px;">This section is coming soon in the next update.</p>
-          </div>
-        `;
-        if (window.lucide) lucide.createIcons();
-      }, 300);
+  function renderJuzView() {
+    const grid = document.createElement("div");
+    grid.className = "q-badge-grid";
+    for (let i = 1; i <= 30; i++) {
+      const b = document.createElement("div");
+      b.className = "q-badge";
+      b.onclick = () => window.loadAyahView(`juz/${i}`, `Juz ${i}`);
+      b.innerHTML = `<span class="q-badge-num">${i}</span><span class="q-badge-label">Juz</span>`;
+      grid.appendChild(b);
+    }
+    surahListEl.innerHTML = "";
+    surahListEl.appendChild(grid);
+  }
+
+  function renderPageView() {
+    const grid = document.createElement("div");
+    grid.className = "q-badge-grid";
+    for (let i = 1; i <= 604; i++) {
+      const b = document.createElement("div");
+      b.className = "q-badge";
+      b.onclick = () => window.loadAyahView(`page/${i}`, `Page ${i}`);
+      b.innerHTML = `<span class="q-badge-num">${i}</span><span class="q-badge-label">Page</span>`;
+      grid.appendChild(b);
+    }
+    surahListEl.innerHTML = "";
+    surahListEl.appendChild(grid);
+  }
+
+  function renderRukuView() {
+    surahListEl.innerHTML = '<div class="q-badge-grid"></div>';
+    const grid = surahListEl.querySelector(".q-badge-grid");
+    for (let i = 1; i <= 556; i++) {
+      const b = document.createElement("div");
+      b.className = "q-badge";
+      b.onclick = () => window.loadAyahView(`ruku/${i}`, `Ruku ${i}`);
+      b.innerHTML = `<span class="q-badge-num">${i}</span><span class="q-badge-label">Ruku</span>`;
+      grid.appendChild(b);
     }
   }
 
-  // Initial Fetch (Cached)
-  if (window.quranSurahs && window.quranSurahs.length > 0) {
-    renderSurahList(window.quranSurahs);
-  } else {
+  function renderTopicView() {
+    const topics = [
+      { name: "Belief (Iman)", icon: "shield-check" },
+      { name: "Prayer (Salah)", icon: "hand-metal" },
+      { name: "Charity (Zakat)", icon: "heart-handshake" },
+      { name: "Stories (Qisas)", icon: "book-open" },
+      { name: "Ethics (Akhlaq)", icon: "sparkles" },
+      { name: "Hereafter", icon: "cloud" }
+    ];
+    const grid = document.createElement("div");
+    grid.className = "q-topic-grid";
+    topics.forEach(t => {
+      const card = document.createElement("div");
+      card.className = "q-topic-card";
+      card.innerHTML = `
+        <div class="q-topic-icon"><i data-lucide="${t.icon}"></i></div>
+        <span class="q-topic-name">${t.name}</span>
+      `;
+      card.onclick = () => alert(t.name + " topics coming soon.");
+      grid.appendChild(card);
+    });
+    surahListEl.innerHTML = "";
+    surahListEl.appendChild(grid);
+    if (window.lucide) lucide.createIcons();
+  }
+
+  function renderAyahSearchView() {
+    surahListEl.innerHTML = `
+      <div style="padding: 24px; text-align: center; color: var(--text-muted);">
+        <i data-lucide="search" style="width:48px; height:48px; opacity: 0.3; margin-bottom: 12px;"></i>
+        <p>Search for specific Ayahs using the search bar above.</p>
+        <p style="font-size: 12px; margin-top: 8px;">Try "Baqarah 255" or "1:1"</p>
+      </div>
+    `;
+    if (window.lucide) lucide.createIcons();
+  }
+
+  // Load Data
+  if (window.quranSurahs.length > 0) renderSurahList(window.quranSurahs);
+  else {
     fetch("https://api.alquran.cloud/v1/surah")
       .then(res => res.json())
-      .then(data => {
-        window.quranSurahs = data.data;
-        renderSurahList(window.quranSurahs);
-      });
+      .then(d => { window.quranSurahs = d.data; renderSurahList(d.data); });
   }
 
-  window.loadSurah = function (number) {
-    const meta = window.quranSurahs.find(s => s.number === number);
-    if (!meta) return;
-
-    const qHeaderTitle = document.getElementById("q-header-title");
+  // Load Ayah View (Global Helper)
+  window.loadAyahView = function (endpoint, title) {
     if (qSearchContainer) qSearchContainer.style.display = "none";
-    if (qHeaderTitle) {
-      qHeaderTitle.textContent = meta.englishName;
-      qHeaderTitle.classList.remove("hidden");
-    }
-    qHeaderAction.innerHTML = `<i data-lucide="settings-2"></i>`;
-    if (window.lucide) lucide.createIcons();
-
+    if (qHeaderTitle) { qHeaderTitle.textContent = title; qHeaderTitle.classList.remove("hidden"); }
+    
     qMainViewEl.classList.add("hidden");
     ayahViewEl.classList.remove("hidden");
-    ayahListEl.innerHTML = '<p class="q-loading">Loading Surah Details...</p>';
+    ayahListEl.innerHTML = '<p class="q-loading">Loading Verses...</p>';
 
-    // Update Detail Card
-    document.getElementById("det-name").textContent = meta.englishName;
-    document.getElementById("det-meaning").textContent = meta.englishNameTranslation;
-    document.getElementById("det-revelation").textContent = meta.revelationType;
-    document.getElementById("det-ayahs").textContent = meta.numberOfAyahs;
-
-    fetch(`https://api.alquran.cloud/v1/surah/${number}/editions/quran-uthmani,en.transliteration,en.asad`)
+    fetch(`https://api.alquran.cloud/v1/${endpoint}/editions/quran-uthmani,en.transliteration,en.asad`)
       .then(res => res.json())
       .then(data => {
         ayahListEl.innerHTML = "";
         const ar = data.data[0];
         const tr = data.data[1];
         const en = data.data[2];
+        
+        // Hide detail card for Juz/Page as it's surah-centric
+        const detailCard = document.querySelector(".q-detail-card");
+        if (endpoint.startsWith("surah")) {
+          detailCard.style.display = "flex";
+          const meta = window.quranSurahs.find(s => endpoint.includes(s.number));
+          if (meta) {
+            document.getElementById("det-name").textContent = meta.englishName;
+            document.getElementById("det-meaning").textContent = meta.englishNameTranslation;
+            document.getElementById("det-revelation").textContent = meta.revelationType;
+            document.getElementById("det-ayahs").textContent = meta.numberOfAyahs;
+          }
+        } else {
+          detailCard.style.display = "none";
+        }
 
-        const fragment = document.createDocumentFragment();
+        const frag = document.createDocumentFragment();
         ar.ayahs.forEach((ayah, i) => {
           const item = document.createElement("div");
           item.className = "ayah-item";
           item.innerHTML = `
             <div class="ayah-header-bar">
-              <span class="ayah-num">${ayah.numberInSurah}</span>
+              <span class="ayah-num">${ayah.numberInSurah || ayah.number}</span>
               <div class="ayah-actions">
-                <i data-lucide="play" onclick="playSurahAudio(${number}, this)"></i>
+                <i data-lucide="play" onclick="playSurahAudio(${ayah.surah?.number || ayah.number}, this)"></i>
                 <i data-lucide="bookmark"></i>
-                <i data-lucide="book-open"></i>
                 <i data-lucide="share-2"></i>
               </div>
             </div>
@@ -269,10 +329,9 @@ function initQuranPage() {
               <p class="ayah-en">${en.ayahs[i].text}</p>
             </div>
           `;
-          fragment.appendChild(item);
+          frag.appendChild(item);
         });
-        ayahListEl.innerHTML = "";
-        ayahListEl.appendChild(fragment);
+        ayahListEl.appendChild(frag);
         if (window.lucide) lucide.createIcons();
       });
   };

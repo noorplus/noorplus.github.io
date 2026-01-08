@@ -185,7 +185,7 @@ img {
   border: none;
   color: var(--icon-default);
   cursor: pointer;
-  padding: var(--space-sm);
+  padding: 12px;
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
   display: flex;
@@ -274,7 +274,7 @@ img {
 .menu-item-left {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: 14px;
 }
 
 .menu-label {
@@ -330,10 +330,10 @@ img {
 .action-btn {
   background-color: var(--primary);
   color: #FFFFFF;
-  padding: var(--space-sm) var(--space-lg);
+  padding: 12px 20px;
   border-radius: var(--radius-md);
   font-weight: 600;
-  margin-right: var(--space-xs);
+  margin-right: 8px;
 }
 
 .action-btn:active {
@@ -346,7 +346,7 @@ img {
 .adv-header {
   display: flex;
   justify-content: space-between;
-  padding: var(--space-sm) var(--page-padding);
+  padding: 12px 20px;
   background: var(--bg);
   border-bottom: 1px solid var(--divider);
   position: sticky;
@@ -358,14 +358,14 @@ img {
 .h-loc {
   font-weight: 700;
   color: var(--text-secondary);
-  font-size: var(--font-sm);
+  font-size: 14px;
 }
 
 /* --- Hero Section --- */
 .hero-dash {
   background: var(--surface);
   margin: var(--space-md);
-  border-radius: var(--radius-lg);
+  border-radius: 20px;
   padding: var(--space-lg);
   display: grid;
   grid-template-columns: 1fr 120px;
@@ -394,7 +394,7 @@ img {
 .h-status-dot {
   width: 10px;
   height: 10px;
-  border-radius: var(--radius-pill);
+  border-radius: 50%;
 }
 
 .h-status-dot.permissible {
@@ -409,46 +409,46 @@ img {
 }
 
 .h-label-sm {
-  font-size: var(--font-sm);
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-muted);
 }
 
 .h-val-md {
-  font-size: var(--font-lg);
+  font-size: 18px;
   font-weight: 800;
   color: var(--text-primary);
 }
 
 /* Range & Info Grid */
 .f-range {
-  font-size: var(--font-lg);
+  font-size: 18px;
   font-weight: 800;
   color: var(--alert);
-  margin-bottom: var(--space-sm);
+  margin-bottom: 12px;
 }
 
 .info-grid {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xs);
+  gap: 4px;
 }
 
 .info-item {
   display: flex;
-  gap: var(--space-xs);
+  gap: 6px;
   align-items: baseline;
 }
 
 .info-label {
-  font-size: var(--font-xs);
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-muted);
   width: 50px;
 }
 
 .info-val {
-  font-size: var(--font-sm);
+  font-size: 14px;
   font-weight: 800;
   color: var(--text-primary);
 }
@@ -487,7 +487,7 @@ img {
 }
 
 #adv-timer {
-  font-size: var(--font-lg);
+  font-size: 18px;
   font-weight: 800;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
@@ -495,24 +495,28 @@ img {
 }
 
 .c-text small {
-  font-size: var(--font-xs);
+  font-size: 11px;
   color: var(--text-primary);
   font-weight: 700;
 }
 
 .c-dot {
-  fill: var(--text-primary);
+  fill: #000000;
   transition: all 1s linear;
+}
+
+[data-theme="dark"] .c-dot {
+  fill: #FFFFFF;
 }
 
 /* --- Prayer Timeline --- */
 .adv-schedule {
   display: flex;
   justify-content: space-between;
-  padding: var(--space-md) var(--page-padding);
+  padding: 16px 20px;
   background: var(--surface);
-  margin: 0 var(--space-md);
-  border-radius: var(--radius-md);
+  margin: 0 16px;
+  border-radius: 14px;
   border: 1px solid var(--divider);
 }
 
@@ -520,7 +524,7 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-2xs);
+  gap: 6px;
   transition: all var(--transition-normal);
   filter: grayscale(1) opacity(0.7);
 }
@@ -531,7 +535,7 @@ img {
 }
 
 .s-name {
-  font-size: var(--font-xs);
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -545,7 +549,7 @@ img {
 .s-indicator {
   width: 6px;
   height: 6px;
-  border-radius: var(--radius-pill);
+  border-radius: 50%;
   background: var(--divider);
   transition: all var(--transition-normal);
 }
@@ -563,23 +567,23 @@ img {
 .adv-divider {
   height: 1px;
   background: var(--divider);
-  margin: var(--space-lg) calc(var(--space-md) * -1);
+  margin: 24px -16px;
 }
 
 /* --- Feature Grid --- */
 .adv-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-md);
-  padding: 0 var(--page-padding);
-  margin-bottom: var(--space-lg);
+  gap: 16px;
+  padding: 0 20px;
+  margin-bottom: 24px;
 }
 
 .g-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-xs);
+  gap: 8px;
   cursor: pointer;
 }
 
@@ -587,7 +591,7 @@ img {
   width: 54px;
   height: 54px;
   background: var(--surface);
-  border-radius: var(--radius-md);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -614,17 +618,17 @@ img {
 
 /* --- Prayer Tracker --- */
 .adv-tracker {
-  margin: var(--space-md) var(--page-padding);
-  padding-bottom: var(--space-lg);
+  margin: 16px 20px;
+  padding-bottom: 20px;
 }
 
 .t-header {
-  font-size: var(--font-sm);
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
-  margin: 0 calc(var(--page-padding) * -1) var(--space-md) calc(var(--page-padding) * -1);
+  margin: 0 -16px 16px -16px;
   background: var(--surface-soft);
-  padding: var(--space-xs) var(--page-padding);
+  padding: 10px 16px;
   border-left: 4px solid var(--primary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -633,28 +637,28 @@ img {
 .t-row {
   display: flex;
   justify-content: space-between;
-  gap: var(--space-xs);
+  gap: 8px;
 }
 
 .t-btn {
   flex: 1;
   background: var(--surface);
   border: 1px solid var(--divider);
-  padding: var(--space-xs) var(--space-2xs);
-  border-radius: var(--radius-sm);
+  padding: 10px 4px;
+  border-radius: 12px;
   font-size: 11px;
   font-weight: 700;
   color: var(--text-secondary);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-2xs);
+  gap: 6px;
   transition: all var(--transition-fast);
   cursor: pointer;
 }
 
 .t-btn i {
-  font-size: var(--font-md);
+  font-size: 16px;
   color: var(--alert);
 }
 
@@ -740,6 +744,17 @@ img {
   height: 24px;
 }
 
+.q-title {
+  font-size: var(--font-md);
+  font-weight: 800;
+  color: var(--text-primary);
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .q-section {
   padding: 0;
   margin-top: var(--space-lg);
@@ -815,7 +830,7 @@ img {
 }
 
 .q-tab {
-  padding: var(--space-xs);
+  padding: var(--space-xs) var(--space-lg);
   background: none;
   border: none;
   font-size: var(--font-sm);
@@ -834,12 +849,94 @@ img {
   box-shadow: var(--shadow);
 }
 
-/* --- Surah List --- */
+/* --- Content Views --- */
 .q-list {
   display: flex;
   flex-direction: column;
 }
 
+/* Badge Grid (Juz, Page, Ruku) */
+.q-badge-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+  padding-bottom: var(--space-lg);
+}
+
+.q-badge {
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.q-badge:active {
+  transform: scale(0.92);
+  background: var(--surface-soft);
+}
+
+.q-badge-num {
+  font-size: var(--font-lg);
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.q-badge-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Topic/Keyword List */
+.q-topic-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.q-topic-card {
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.q-topic-card:active {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.q-topic-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+
+.q-topic-name {
+  font-size: var(--font-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Standard Item */
 .q-item {
   display: flex;
   align-items: center;
@@ -914,7 +1011,6 @@ img {
   border: 1px solid var(--divider);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
-  margin-top: var(--space-md);
   margin-bottom: var(--space-xl);
   display: flex;
   justify-content: space-between;
@@ -1024,7 +1120,7 @@ img {
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border-top: 1px solid var(--divider);
-  padding: var(--space-md) var(--page-padding);
+  padding: var(--space-md) var(--space-lg);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1108,6 +1204,4 @@ img {
 
 #app-main>* {
   animation: fadeIn 0.4s ease-out forwards;
-  will-change: opacity, transform;
-
 }
