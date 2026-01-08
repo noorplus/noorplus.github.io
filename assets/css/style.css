@@ -364,7 +364,7 @@ img {
 /* --- Hero Section --- */
 .hero-dash {
   background: var(--surface);
-  margin: var(--space-md);
+  margin: var(--space-xs);
   border-radius: 20px;
   padding: var(--space-md);
   display: grid;
