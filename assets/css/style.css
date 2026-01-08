@@ -422,35 +422,38 @@ img {
 
 /* Range & Info Grid */
 .f-range {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 800;
   color: var(--alert);
-  margin-bottom: 12px;
 }
 
 .info-grid {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  margin-top: var(--space-xs);
 }
 
 .info-item {
   display: flex;
-  gap: 6px;
+  gap: 12px;
   align-items: baseline;
+  justify-content: flex-start;
 }
 
 .info-label {
   font-size: 13px;
   font-weight: 700;
   color: var(--text-muted);
-  width: 50px;
+  width: 100px;
+  flex-shrink: 0;
 }
 
 .info-val {
   font-size: 14px;
   font-weight: 800;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 
 /* --- Circular Timer --- */

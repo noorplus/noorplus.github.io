@@ -7,7 +7,7 @@ const buttons = document.querySelectorAll(".bottom-nav button");
 function formatTo12h(time24) {
   if (!time24) return "--:--";
   let [h, m] = time24.split(":").map(Number);
-  const period = h >= 12 ? "PM" : "AM";
+  const period = h >= 12 ? "pm" : "am";
   h = h % 12 || 12;
   return `${h}:${String(m).padStart(2, "0")} ${period}`;
 }
@@ -38,7 +38,7 @@ function loadPage(page) {
       // Re-init modules conditionally
       if (window.lucide) lucide.createIcons();
       initThemeToggle();
-      
+
       if (page === "home") initHomePage();
       else if (page === "quran") initQuranPage();
     })
@@ -113,7 +113,7 @@ function initQuranPage() {
 
   // Cache/State
   window.quranSurahs = window.quranSurahs || [];
-  
+
   // Reset Header state
   if (qSearchContainer) qSearchContainer.style.display = "flex";
   const qHeaderTitle = document.getElementById("q-header-title");
@@ -127,7 +127,7 @@ function initQuranPage() {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(() => {
         const term = e.target.value.toLowerCase();
-        const filtered = window.quranSurahs.filter(s => 
+        const filtered = window.quranSurahs.filter(s =>
           s.englishName.toLowerCase().includes(term) || s.name.includes(term) || s.number.toString() === term
         );
         renderSurahList(filtered);
@@ -282,7 +282,7 @@ function initQuranPage() {
   window.loadAyahView = function (endpoint, title) {
     if (qSearchContainer) qSearchContainer.style.display = "none";
     if (qHeaderTitle) { qHeaderTitle.textContent = title; qHeaderTitle.classList.remove("hidden"); }
-    
+
     qMainViewEl.classList.add("hidden");
     ayahViewEl.classList.remove("hidden");
     ayahListEl.innerHTML = '<p class="q-loading">Loading Verses...</p>';
@@ -294,7 +294,7 @@ function initQuranPage() {
         const ar = data.data[0];
         const tr = data.data[1];
         const en = data.data[2];
-        
+
         // Hide detail card for Juz/Page as it's surah-centric
         const detailCard = document.querySelector(".q-detail-card");
         if (endpoint.startsWith("surah")) {
@@ -495,9 +495,10 @@ function startAdvCountdown(timings) {
       if (statusDot) {
         statusDot.className = "h-status-dot forbidden";
       }
+      const fRow = document.getElementById("f-row");
+      if (fRow) fRow.style.display = "flex";
       if (fRangeEl) {
-        fRangeEl.style.display = "block";
-        fRangeEl.textContent = `${formatTo12h(currentForbidden.start)} – ${formatTo12h(currentForbidden.end)}`;
+        fRangeEl.textContent = `${formatTo12h(currentForbidden.start)} - ${formatTo12h(currentForbidden.end)}`;
       }
       if (pStartEl) pStartEl.textContent = formatTo12h(currentForbidden.start);
 
@@ -510,7 +511,8 @@ function startAdvCountdown(timings) {
       if (statusDot) {
         statusDot.className = "h-status-dot permissible";
       }
-      if (fRangeEl) fRangeEl.style.display = "none";
+      const fRow = document.getElementById("f-row");
+      if (fRow) fRow.style.display = "none";
 
       // 2. Identify Current & Next Prayer
       let currentIdx = -1;
@@ -524,6 +526,8 @@ function startAdvCountdown(timings) {
 
       if (pNowEl) pNowEl.textContent = currentP.name;
       if (pStartEl) pStartEl.textContent = formatTo12h(currentP.time);
+      const pEndEl = document.getElementById("adv-p-end");
+      if (pEndEl) pEndEl.textContent = formatTo12h(nextP.time);
 
       document.querySelectorAll(".s-item").forEach(item => {
         item.classList.toggle("active", item.dataset.prayer === currentP.name);
