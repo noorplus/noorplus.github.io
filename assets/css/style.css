@@ -513,7 +513,7 @@ img {
 .adv-schedule {
   display: flex;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: var(--space-md);
   background: var(--surface);
   margin: 0 16px;
   border-radius: 14px;
@@ -575,7 +575,7 @@ img {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  padding: 0 20px;
+  padding: 0 16px;
   margin-bottom: 24px;
 }
 
