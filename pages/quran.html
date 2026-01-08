@@ -3,13 +3,16 @@
   <!-- 1. Custom Header -->
   <header class="q-header">
     <button class="icon-btn" id="q-back-btn"><i data-lucide="chevron-left"></i></button>
-    <h1 class="q-title" id="q-header-title">Al-Quran</h1>
-    <button class="icon-btn" id="q-header-action"><i data-lucide="search"></i></button>
+    <h1 class="q-title hidden" id="q-header-title">Al-Quran</h1>
+    <div class="q-search-container">
+      <i data-lucide="search" class="search-icon"></i>
+      <input type="text" id="q-search-input" placeholder="Search Surah, Ayah..." autocomplete="off">
+    </div>
+    <button class="icon-btn" id="q-header-action"><i data-lucide="more-vertical"></i></button>
   </header>
 
   <div id="quran-main-view">
     <!-- 2. Quick Access -->
-    <!-- ... same ... -->
     <div class="q-section">
       <h3 class="q-section-title">Quick Access</h3>
       <div class="q-quick-grid">
@@ -24,13 +27,15 @@
       </div>
     </div>
 
-    <!-- 3. Tabs -->
+    <!-- 3. Tabs (Scrollable) -->
     <div class="q-tabs">
       <div class="q-tabs-track">
         <button class="q-tab active" data-tab="surah">Surah</button>
+        <button class="q-tab" data-tab="ayah">Ayah</button>
         <button class="q-tab" data-tab="juz">Juz</button>
         <button class="q-tab" data-tab="page">Page</button>
-        <button class="q-tab" data-tab="topic">Topic</button>
+        <button class="q-tab" data-tab="ruku">Ruku</button>
+        <button class="q-tab" data-tab="topic">Keywords</button>
       </div>
     </div>
 

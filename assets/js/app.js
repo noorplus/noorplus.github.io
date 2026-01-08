@@ -35,11 +35,12 @@ function loadPage(page) {
       const activeBtn = document.querySelector(`.bottom-nav button[data-page="${page}"]`);
       if (activeBtn) activeBtn.classList.add("active");
 
-      // Re-init modules
+      // Re-init modules conditionally
       if (window.lucide) lucide.createIcons();
       initThemeToggle();
-      initQuranPage();
-      initHomePage();
+
+      if (page === "home") initHomePage();
+      else if (page === "quran") initQuranPage();
     })
     .catch(err => {
       console.error("Navigation Error:", err);
@@ -102,31 +103,59 @@ function initQuranPage() {
   const ayahViewEl = document.getElementById("ayah-view");
   const ayahListEl = document.getElementById("ayah-list");
   const qBackBtn = document.getElementById("q-back-btn");
-  const qHeaderTitle = document.getElementById("q-header-title");
+  const qSearchInput = document.getElementById("q-search-input");
+  const qSearchContainer = document.querySelector(".q-search-container");
   const qHeaderAction = document.getElementById("q-header-action");
   const qPlayer = document.getElementById("q-player");
+  const qTabs = document.querySelectorAll(".q-tab");
 
   if (!surahListEl) return;
 
   // Cache for Surah Metadata
   window.quranSurahs = window.quranSurahs || [];
 
-  // Reset Header to default Al-Quran state
-  qHeaderTitle.textContent = "Al-Quran";
-  if (window.lucide) {
-    qHeaderAction.innerHTML = `<i data-lucide="search"></i>`;
-    lucide.createIcons();
+  // Reset Header to default search state
+  if (qSearchContainer) qSearchContainer.style.display = "flex";
+
+  // Handle Search Input (Debounced)
+  let searchTimeout;
+  if (qSearchInput) {
+    qSearchInput.value = "";
+    qSearchInput.oninput = (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const term = e.target.value.toLowerCase();
+        const filtered = window.quranSurahs.filter(s =>
+          s.englishName.toLowerCase().includes(term) ||
+          s.name.includes(term) ||
+          s.number.toString() === term
+        );
+        renderSurahList(filtered);
+      }, 150);
+    };
   }
+
+  // Handle Tab Toggles
+  qTabs.forEach(tab => {
+    tab.onclick = () => {
+      qTabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      const category = tab.getAttribute("data-tab");
+      handleCategorySwitch(category);
+    };
+  });
 
   // Handle Unified Header Back Button
   if (qBackBtn) {
     qBackBtn.onclick = () => {
+      const qHeaderTitle = document.getElementById("q-header-title");
       if (!ayahViewEl.classList.contains("hidden")) {
         ayahViewEl.classList.add("hidden");
         qMainViewEl.classList.remove("hidden");
         qPlayer.classList.add("hidden");
-        qHeaderTitle.textContent = "Al-Quran";
-        qHeaderAction.innerHTML = `<i data-lucide="search"></i>`;
+        if (qSearchContainer) qSearchContainer.style.display = "flex";
+        if (qHeaderTitle) qHeaderTitle.classList.add("hidden");
+        qHeaderAction.innerHTML = `<i data-lucide="more-vertical"></i>`;
         if (window.lucide) lucide.createIcons();
       } else {
         loadPage("home");
@@ -134,32 +163,71 @@ function initQuranPage() {
     };
   }
 
-  fetch("https://api.alquran.cloud/v1/surah")
-    .then(res => res.json())
-    .then(data => {
-      window.quranSurahs = data.data;
-      surahListEl.innerHTML = "";
-      data.data.forEach(surah => {
-        const item = document.createElement("div");
-        item.className = "q-item";
-        item.onclick = () => window.loadSurah(surah.number);
-        item.innerHTML = `
-          <div class="q-star-badge">${surah.number}</div>
-          <div class="q-item-info">
-            <span class="q-item-name">${surah.englishName}</span>
-            <span class="q-item-meta">Verses: ${surah.numberOfAyahs} | ${surah.revelationType}</span>
-          </div>
-          <span class="q-item-ar">${surah.name}</span>
-        `;
-        surahListEl.appendChild(item);
-      });
+  function renderSurahList(list) {
+    if (list.length === 0) {
+      surahListEl.innerHTML = '<p class="q-loading">No results found.</p>';
+      return;
+    }
+    const fragment = document.createDocumentFragment();
+    list.forEach(surah => {
+      const item = document.createElement("div");
+      item.className = "q-item";
+      item.onclick = () => window.loadSurah(surah.number);
+      item.innerHTML = `
+        <div class="q-star-badge">${surah.number}</div>
+        <div class="q-item-info">
+          <span class="q-item-name">${surah.englishName}</span>
+          <span class="q-item-meta">Verses: ${surah.numberOfAyahs} | ${surah.revelationType}</span>
+        </div>
+        <span class="q-item-ar">${surah.name}</span>
+      `;
+      fragment.appendChild(item);
     });
+    surahListEl.innerHTML = "";
+    surahListEl.appendChild(fragment);
+  }
+
+  function handleCategorySwitch(cat) {
+    surahListEl.innerHTML = `<p class="q-loading">Loading ${cat} list...</p>`;
+    // For now, only Surah is implemented. Others get a placeholder.
+    if (cat === "surah") {
+      renderSurahList(window.quranSurahs);
+    } else {
+      setTimeout(() => {
+        surahListEl.innerHTML = `
+          <div style="text-align:center; padding: 48px; color: var(--text-muted);">
+            <i data-lucide="layers" style="width: 48px; height: 48px; margin-bottom: 12px; opacity:0.5;"></i>
+            <p style="font-weight:700; font-size: 18px; color: var(--text-primary); margin-bottom: 4px;">${cat.toUpperCase()} View</p>
+            <p style="font-size: 14px;">This section is coming soon in the next update.</p>
+          </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+      }, 300);
+    }
+  }
+
+  // Initial Fetch (Cached)
+  if (window.quranSurahs && window.quranSurahs.length > 0) {
+    renderSurahList(window.quranSurahs);
+  } else {
+    fetch("https://api.alquran.cloud/v1/surah")
+      .then(res => res.json())
+      .then(data => {
+        window.quranSurahs = data.data;
+        renderSurahList(window.quranSurahs);
+      });
+  }
 
   window.loadSurah = function (number) {
     const meta = window.quranSurahs.find(s => s.number === number);
     if (!meta) return;
 
-    qHeaderTitle.textContent = meta.englishName;
+    const qHeaderTitle = document.getElementById("q-header-title");
+    if (qSearchContainer) qSearchContainer.style.display = "none";
+    if (qHeaderTitle) {
+      qHeaderTitle.textContent = meta.englishName;
+      qHeaderTitle.classList.remove("hidden");
+    }
     qHeaderAction.innerHTML = `<i data-lucide="settings-2"></i>`;
     if (window.lucide) lucide.createIcons();
 
@@ -173,7 +241,6 @@ function initQuranPage() {
     document.getElementById("det-revelation").textContent = meta.revelationType;
     document.getElementById("det-ayahs").textContent = meta.numberOfAyahs;
 
-    // Fetch Ayahs: Arabic, Transliteration, English Translation
     fetch(`https://api.alquran.cloud/v1/surah/${number}/editions/quran-uthmani,en.transliteration,en.asad`)
       .then(res => res.json())
       .then(data => {
@@ -182,6 +249,7 @@ function initQuranPage() {
         const tr = data.data[1];
         const en = data.data[2];
 
+        const fragment = document.createDocumentFragment();
         ar.ayahs.forEach((ayah, i) => {
           const item = document.createElement("div");
           item.className = "ayah-item";
@@ -201,8 +269,10 @@ function initQuranPage() {
               <p class="ayah-en">${en.ayahs[i].text}</p>
             </div>
           `;
-          ayahListEl.appendChild(item);
+          fragment.appendChild(item);
         });
+        ayahListEl.innerHTML = "";
+        ayahListEl.appendChild(fragment);
         if (window.lucide) lucide.createIcons();
       });
   };
