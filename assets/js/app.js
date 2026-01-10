@@ -41,7 +41,8 @@ function loadPage(page) {
 
       if (page === "home") initHomePage();
       else if (page === "quran") initQuranPage();
-    })
+      else if (page === "prayer-time") initPrayerTimePage();
+    }))
     .catch(err => {
       console.error("Navigation Error:", err);
       main.innerHTML = `<div style="padding:40px; text-align:center; color:var(--alert);">
@@ -632,4 +633,102 @@ function updateTrackerStates(timings, nowStr) {
     }
   });
   if (window.lucide) lucide.createIcons();
+}
+
+/* ===============================
+   PRAYER TIME PAGE
+================================ */
+function initPrayerTimePage() {
+  // Back button
+  const backBtn = document.getElementById('pt-back-btn');
+  if (backBtn) {
+    backBtn.onclick = () => loadPage('home');
+  }
+
+  // Update prayer times
+  updatePrayerTimes();
+
+  // Update current prayer status
+  updateCurrentPrayer();
+
+  // Refresh every minute
+  window.prayerTimeInterval = setInterval(updateCurrentPrayer, 60000);
+}
+
+function updatePrayerTimes() {
+  // Mock prayer times - Replace with actual API call
+  const times = {
+    'Fajr': '05:30 am',
+    'Sunrise': '07:00 am',
+    'Forbidden1': '07:00 am - 09:00 am',
+    'Duha': '09:00 am - 11:30 am',
+    'Forbidden2': '11:30 am - 12:00 pm',
+    'Dhuhr': '12:30 pm',
+    'Asr': '03:45 pm',
+    'Forbidden3': '03:45 pm - 05:15 pm',
+    'Sunset': '05:15 pm',
+    'Maghrib': '05:20 pm',
+    'Isha': '06:50 pm',
+    'Tahajjud': '02:00 am - 04:00 am'
+  };
+
+  Object.keys(times).forEach(key => {
+    const el = document.getElementById(`pt-${key}`);
+    if (el) el.textContent = times[key];
+  });
+
+  // Update date
+  const dateEl = document.getElementById('pt-date');
+  if (dateEl) {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    dateEl.textContent = new Date().toLocaleDateString('en-US', options);
+  }
+}
+
+function updateCurrentPrayer() {
+  // Determine current prayer based on time
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const timeInMinutes = hours * 60 + minutes;
+
+  let currentPrayer = '--';
+  let timeRemaining = '--:--';
+
+  // Prayer time ranges (in 24-hour format, minutes from midnight)
+  const prayerRanges = {
+    'Fajr': { start: 5 * 60 + 30, end: 7 * 60 }, // 05:30 - 07:00
+    'Dhuhr': { start: 12 * 60 + 30, end: 15 * 60 }, // 12:30 - 15:00
+    'Asr': { start: 15 * 60 + 45, end: 17 * 60 + 15 }, // 15:45 - 17:15
+    'Maghrib': { start: 17 * 60 + 20, end: 19 * 60 }, // 17:20 - 19:00
+    'Isha': { start: 18 * 60 + 50, end: 22 * 60 } // 18:50 - 22:00
+  };
+
+  // Find current prayer
+  for (const [prayer, range] of Object.entries(prayerRanges)) {
+    if (timeInMinutes >= range.start && timeInMinutes < range.end) {
+      currentPrayer = prayer;
+      const endTime = range.end;
+      const remaining = endTime - timeInMinutes;
+      const remHours = Math.floor(remaining / 60);
+      const remMins = remaining % 60;
+      timeRemaining = `${remHours}:${String(remMins).padStart(2, '0')}`;
+      break;
+    }
+  }
+
+  // Update current prayer display
+  const prayerEl = document.getElementById('pt-current-prayer');
+  if (prayerEl) prayerEl.textContent = currentPrayer;
+
+  const timeEl = document.getElementById('pt-time-remaining');
+  if (timeEl) timeEl.textContent = timeRemaining;
+
+  // Highlight current prayer row
+  document.querySelectorAll('.pt-time-row').forEach(row => {
+    row.classList.remove('pt-current-prayer');
+    if (row.getAttribute('data-prayer') === currentPrayer) {
+      row.classList.add('pt-current-prayer');
+    }
+  });
 }
