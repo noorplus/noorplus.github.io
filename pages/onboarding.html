@@ -1,41 +1,45 @@
 <div id="onboarding-shell" class="onboarding-container">
 
-  <!-- Step 1: Location & Prayer Settings -->
+  <!-- Step 1: Location & Prayer Calculation -->
   <div class="onboarding-step" id="step-1" data-step="1">
     <div class="onboarding-content">
       <!-- Illustration -->
       <div class="onb-illustration">
-        <i data-lucide="map-pin" class="onb-icon-large"></i>
+        <svg viewBox="0 0 200 200" width="120" height="120" style="margin: 0 auto;">
+          <circle cx="100" cy="100" r="80" fill="#4a9d6f" opacity="0.8"/>
+          <path d="M 100 20 Q 150 60 150 100 Q 150 140 100 160 Q 50 140 50 100 Q 50 60 100 20" fill="#f4d856"/>
+          <circle cx="75" cy="85" r="12" fill="#4a9d6f"/>
+          <g transform="translate(130, 50)">
+            <circle cx="0" cy="0" r="16" fill="#000" opacity="0.8"/>
+            <circle cx="0" cy="0" r="14" fill="#fff"/>
+            <circle cx="0" cy="0" r="6" fill="#000"/>
+          </g>
+        </svg>
       </div>
 
-      <!-- Title & Description -->
-      <h1 class="onb-title">Welcome to Noor Plus</h1>
-      <p class="onb-description">Let's set up your prayer times. First, we need your location.</p>
+      <h1 class="onb-title" style="text-align: center; margin-top: 24px;">Your Location</h1>
 
-      <!-- Controls -->
-      <div class="onb-controls">
-        <!-- Location Input -->
-        <div class="onb-control-group">
-          <label class="onb-label">Your Location</label>
-          <div class="onb-location-input">
-            <input 
-              type="text" 
-              id="location-input" 
-              class="onb-input" 
-              placeholder="Enter city name or ZIP code"
-              autocomplete="off"
-            >
-            <button id="location-detect-btn" class="onb-btn-icon">
-              <i data-lucide="navigation"></i>
-            </button>
-          </div>
-          <small class="onb-helper">We'll use this to calculate accurate prayer times</small>
+      <div class="onb-location-display">
+        <div class="onb-location-header">
+          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">Current Location</h3>
         </div>
+        <p id="location-display-address" style="margin: 0 0 8px 0; font-size: 14px; color: var(--text-primary);">Detecting location...</p>
+        <p id="location-display-timezone" style="margin: 0; font-size: 13px; color: var(--text-secondary);">Time Zone: --</p>
+      </div>
 
-        <!-- Calculation Method -->
-        <div class="onb-control-group">
-          <label class="onb-label">Prayer Calculation Method</label>
-          <select id="calculation-method" class="onb-select">
+      <div style="margin-top: 28px;">
+        <h2 style="font-size: 18px; margin: 0 0 12px 0;">Prayer Time Calculation</h2>
+        <p style="font-size: 14px; color: var(--text-secondary); margin: 0 0 16px 0;">Select your preferred calculation method or let the app find it for accurate prayer times in your area.</p>
+
+        <div class="onb-dropdown-group">
+          <button class="onb-dropdown-btn" id="calc-method-btn">
+            <span>Calculation Method</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span id="calc-method-value" style="font-weight: 600;">Karachi</span>
+              <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
+            </div>
+          </button>
+          <select id="calculation-method" style="display: none;">
             <option value="Karachi">Karachi (Shafi)</option>
             <option value="ISNA">ISNA (North America)</option>
             <option value="MWL">Muslim World League</option>
@@ -43,158 +47,122 @@
             <option value="Egypt">Egyptian General Authority</option>
             <option value="Dubai">Dubai (Gulf)</option>
           </select>
-          <small class="onb-helper">Choose based on your region or preference</small>
         </div>
 
-        <!-- Asr Method -->
-        <div class="onb-control-group">
-          <label class="onb-label">Asr Prayer Method</label>
-          <div class="onb-radio-group">
-            <label class="onb-radio">
-              <input type="radio" name="asr-method" value="Shafi" checked>
-              <span>Shafi (Default)</span>
-            </label>
-            <label class="onb-radio">
-              <input type="radio" name="asr-method" value="Hanafi">
-              <span>Hanafi</span>
-            </label>
-          </div>
-          <small class="onb-helper">This affects Asr prayer time calculation</small>
+        <div class="onb-dropdown-group" style="margin-top: 12px;">
+          <button class="onb-dropdown-btn" id="asr-method-btn">
+            <span>Asr Calculation</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span id="asr-method-value" style="font-weight: 600;">Hanafi</span>
+              <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
+            </div>
+          </button>
+          <select id="asr-method" style="display: none;">
+            <option value="Shafi">Shafi</option>
+            <option value="Hanafi" selected>Hanafi</option>
+          </select>
         </div>
+
+        <p style="margin-top: 12px; font-size: 13px; color: #4caf50; text-align: center;">The calculation method is set automatically; you can change it if needed.</p>
       </div>
 
-      <!-- Next Button -->
-      <button class="onb-btn-next" id="step-1-next">Continue</button>
+      <button style="width: 100%; margin-top: 20px; padding: 12px; background: #f0f0f0; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; color: var(--text-primary);">See Country & Method List</button>
+
+      <button class="onb-btn-next" id="step-1-next" style="margin-top: 32px;">Continue</button>
     </div>
   </div>
 
   <!-- Step 2: Language Selection -->
   <div class="onboarding-step" id="step-2" data-step="2" style="display:none;">
     <div class="onboarding-content">
-      <!-- Illustration -->
+      <!-- Illustration: Bangladesh Flag -->
       <div class="onb-illustration">
-        <i data-lucide="globe" class="onb-icon-large"></i>
+        <svg viewBox="0 0 200 200" width="100" height="100" style="margin: 0 auto;">
+          <!-- Flag pole -->
+          <rect x="70" y="80" width="8" height="80" fill="#333"/>
+          <!-- Flag -->
+          <path d="M 78 90 Q 140 85 140 120 Q 140 155 78 150 Z" fill="#1aa260"/>
+          <!-- Red circle (Bangladesh flag) -->
+          <circle cx="105" cy="120" r="20" fill="#e21e1e"/>
+        </svg>
       </div>
 
       <!-- Title & Description -->
-      <h1 class="onb-title">Choose Your Language</h1>
-      <p class="onb-description">Select your preferred language for the app interface.</p>
+      <h1 class="onb-title" style="color: var(--primary); text-align: center;">Choose preferred language</h1>
+      <p class="onb-description" style="text-align: center; margin-top: 12px; font-size: 14px;">Deen app comes with both English and Bangla language. Choose your preferred language to continue.</p>
 
-      <!-- Controls -->
-      <div class="onb-controls">
-        <div class="onb-language-grid">
-          <!-- English -->
-          <label class="onb-language-card">
-            <input type="radio" name="language" value="en" class="onb-hidden" checked>
-            <div class="onb-language-content">
-              <i data-lucide="check-circle" class="onb-language-icon"></i>
-              <div class="onb-language-text">
-                <div class="onb-language-name">English</div>
-                <div class="onb-language-code">en</div>
-              </div>
-            </div>
+      <!-- Language Toggle -->
+      <div style="display: flex; justify-content: center; margin: 32px 0;">
+        <div class="onb-language-toggle">
+          <label class="onb-toggle-option">
+            <input type="radio" name="language" value="en" class="onb-toggle-radio" checked>
+            <span class="onb-toggle-label">English</span>
           </label>
-
-          <!-- Bangla -->
-          <label class="onb-language-card">
-            <input type="radio" name="language" value="bn" class="onb-hidden">
-            <div class="onb-language-content">
-              <i data-lucide="check-circle" class="onb-language-icon"></i>
-              <div class="onb-language-text">
-                <div class="onb-language-name">বাংলা</div>
-                <div class="onb-language-code">Bangla</div>
-              </div>
-            </div>
-          </label>
-
-          <!-- Arabic -->
-          <label class="onb-language-card">
-            <input type="radio" name="language" value="ar" class="onb-hidden">
-            <div class="onb-language-content">
-              <i data-lucide="check-circle" class="onb-language-icon"></i>
-              <div class="onb-language-text">
-                <div class="onb-language-name">العربية</div>
-                <div class="onb-language-code">Arabic</div>
-              </div>
-            </div>
-          </label>
-
-          <!-- Urdu -->
-          <label class="onb-language-card">
-            <input type="radio" name="language" value="ur" class="onb-hidden">
-            <div class="onb-language-content">
-              <i data-lucide="check-circle" class="onb-language-icon"></i>
-              <div class="onb-language-text">
-                <div class="onb-language-name">اردو</div>
-                <div class="onb-language-code">Urdu</div>
-              </div>
-            </div>
+          <label class="onb-toggle-option">
+            <input type="radio" name="language" value="bn" class="onb-toggle-radio">
+            <span class="onb-toggle-label">Bangla</span>
           </label>
         </div>
       </div>
 
-      <!-- Navigation Buttons -->
-      <div class="onb-btn-group">
-        <button class="onb-btn-back" id="step-2-back">Back</button>
-        <button class="onb-btn-next" id="step-2-next">Continue</button>
-      </div>
+      <!-- Next Button -->
+      <button class="onb-btn-next" id="step-2-next" style="margin-top: 40px;">Continue</button>
     </div>
   </div>
 
   <!-- Step 3: Hijri Date Adjustment -->
   <div class="onboarding-step" id="step-3" data-step="3" style="display:none;">
     <div class="onboarding-content">
-      <!-- Illustration -->
+      <!-- Illustration: Space/Planets -->
       <div class="onb-illustration">
-        <i data-lucide="calendar" class="onb-icon-large"></i>
+        <svg viewBox="0 0 200 200" width="120" height="120" style="margin: 0 auto;">
+          <!-- Dark blue circle background -->
+          <circle cx="100" cy="100" r="90" fill="#3d5a80" opacity="0.7"/>
+          <!-- Stars -->
+          <circle cx="60" cy="40" r="2" fill="#fff" opacity="0.6"/>
+          <circle cx="140" cy="50" r="1.5" fill="#fff" opacity="0.5"/>
+          <circle cx="160" cy="140" r="1" fill="#fff" opacity="0.4"/>
+          <!-- Sun (yellow) -->
+          <circle cx="100" cy="100" r="32" fill="#ffc107"/>
+          <!-- Earth -->
+          <circle cx="50" cy="60" r="16" fill="#4caf50"/>
+          <circle cx="55" cy="55" r="4" fill="#ffeb3b"/>
+          <!-- Saturn with rings -->
+          <circle cx="140" cy="120" r="18" fill="#cd853f"/>
+          <ellipse cx="140" cy="120" rx="28" ry="8" fill="none" stroke="#a67035" stroke-width="2"/>
+          <!-- Rocket -->
+          <g transform="translate(75, 45)">
+            <polygon points="0,-15 -8,5 -3,5 3,5 8,5" fill="#ff5722"/>
+            <rect x="-5" y="5" width="10" height="12" fill="#e0e0e0"/>
+          </g>
+        </svg>
       </div>
 
       <!-- Title & Description -->
-      <h1 class="onb-title">Hijri Date Adjustment</h1>
-      <p class="onb-description">Adjust the Islamic (Hijri) calendar based on your local moon sighting.</p>
+      <h1 class="onb-title" style="text-align: center;">Adjust Hijri Date</h1>
+      <p class="onb-description" style="text-align: center; margin-top: 16px; font-size: 14px;">Some countries (Bangladesh, India, Pakistan and other South Asian countries) are 1 day behind from Saudi Arabia in terms of moon sighting. You may adjust Hijri date by your location or keep it as same as Saudi Arabia.</p>
 
-      <!-- Controls -->
-      <div class="onb-controls">
-        <div class="onb-control-group">
-          <label class="onb-label">Date Offset</label>
-          <div class="onb-slider-container">
-            <div class="onb-slider-labels">
-              <span class="onb-slider-min">-2</span>
-              <span class="onb-slider-max">+2</span>
-            </div>
-            <input 
-              type="range" 
-              id="hijri-offset-slider" 
-              class="onb-slider" 
-              min="-2" 
-              max="2" 
-              value="0"
-              step="1"
-            >
-            <div class="onb-slider-value">
-              <span id="hijri-offset-value">0</span>
-              <span class="onb-slider-unit">days</span>
-            </div>
+      <!-- Slider Container -->
+      <div style="margin: 32px 0;">
+        <div class="onb-slider-fancy">
+          <div class="onb-slider-track">
+            <input type="range" id="hijri-offset-slider" min="-2" max="2" value="0" step="1" class="onb-slider-input">
           </div>
-          <small class="onb-helper">This adjusts the Hijri date display (+1 means one day ahead)</small>
-        </div>
-
-        <!-- Info Box -->
-        <div class="onb-info-box">
-          <div class="onb-info-icon">
-            <i data-lucide="info"></i>
-          </div>
-          <div class="onb-info-text">
-            <strong>Example:</strong> If your local Islamic calendar shows +1 day, adjust the slider to +1.
+          <div class="onb-slider-labels-row">
+            <span>-2</span>
+            <span>-1</span>
+            <span style="font-weight: 600; color: var(--primary);">0</span>
+            <span>+1</span>
+            <span>+2</span>
           </div>
         </div>
       </div>
 
-      <!-- Navigation Buttons -->
-      <div class="onb-btn-group">
-        <button class="onb-btn-back" id="step-3-back">Back</button>
-        <button class="onb-btn-next onb-btn-finish" id="step-3-next">Finish Setup</button>
-      </div>
+      <!-- Label -->
+      <p style="text-align: center; font-size: 14px; color: var(--text-secondary); margin-top: 24px;">Same day as Saudi Arabia</p>
+
+      <!-- Next Button -->
+      <button class="onb-btn-next" id="step-3-next" style="margin-top: 48px;">Continue</button>
     </div>
   </div>
 
@@ -659,6 +627,178 @@
 :root[data-theme="dark"] .onb-language-card input:checked ~ .onb-language-content {
   background: rgba(78, 182, 204, 0.1);
 }
+
+/* NEW DESIGN ELEMENTS */
+
+/* Location Display */
+.onb-location-display {
+  padding: var(--space-lg);
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-lg);
+  margin: var(--space-lg) 0;
+}
+
+.onb-location-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+/* Dropdown Groups */
+.onb-dropdown-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.onb-dropdown-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-md) var(--space-lg);
+  border: 2px solid var(--divider);
+  background: white;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-md);
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.onb-dropdown-btn:active {
+  border-color: var(--primary);
+  background: var(--bg);
+}
+
+.onb-dropdown-btn span:first-child {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* Language Toggle */
+.onb-language-toggle {
+  display: flex;
+  background: #000;
+  border-radius: 50px;
+  padding: 4px;
+  width: fit-content;
+  gap: 0;
+}
+
+.onb-toggle-option {
+  flex: 1;
+  padding: 12px 32px;
+  background: #000;
+  border: none;
+  cursor: pointer;
+  border-radius: 50px;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.onb-toggle-radio {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.onb-toggle-label {
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: #fff;
+  transition: color var(--transition-normal);
+}
+
+.onb-toggle-radio:checked + .onb-toggle-label {
+  color: #000;
+}
+
+.onb-toggle-option:has(.onb-toggle-radio:checked) {
+  background: #fff;
+}
+
+.onb-toggle-option:not(:has(.onb-toggle-radio:checked)) {
+  background: #000;
+}
+
+/* Fancy Slider */
+.onb-slider-fancy {
+  padding: var(--space-lg) var(--space-md);
+}
+
+.onb-slider-track {
+  position: relative;
+  padding: var(--space-lg) 0;
+}
+
+.onb-slider-input {
+  width: 100%;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(to right, #000 0%, #000 50%, #fff 50%, #fff 100%);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.onb-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  border: 4px solid #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.onb-slider-input::-moz-range-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  border: 4px solid #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.onb-slider-labels-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-lg);
+  padding: 0 var(--space-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: var(--font-md);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .onb-language-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .onb-btn-group {
+    flex-direction: column;
+  }
+  
+  .onb-btn-group .onb-btn-back {
+    flex: none;
+  }
+  
+  .onb-toggle-option {
+    padding: 12px 24px;
+  }
+}
 </style>
 
 <script>
@@ -694,15 +834,6 @@ class OnboardingSystem {
       // Auto-detect location on init
       this.autoDetectLocation();
       
-      // Focus on location input
-      setTimeout(() => {
-        const input = document.getElementById('location-input');
-        if (input && !input.value) {
-          input.focus();
-          input.placeholder = "Enter city name (e.g., Dhaka)";
-        }
-      }, 100);
-      
       // Recreate lucide icons
       if (window.lucide) lucide.createIcons();
     } catch (e) {
@@ -731,19 +862,40 @@ class OnboardingSystem {
             
             // Try to get city name via reverse geocoding
             this.reverseGeocode(latitude, longitude).then(cityName => {
-              const input = document.getElementById('location-input');
-              if (input) {
-                input.value = cityName || `Lat: ${latitude.toFixed(2)}, Lng: ${longitude.toFixed(2)}`;
+              this.data.location = cityName || `Lat: ${latitude.toFixed(2)}, Lng: ${longitude.toFixed(2)}`;
+              
+              // Update location display
+              const addressEl = document.getElementById('location-display-address');
+              if (addressEl) {
+                addressEl.textContent = this.data.location;
+              }
+              
+              // Update timezone display
+              const timezoneEl = document.getElementById('location-display-timezone');
+              if (timezoneEl) {
+                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                timezoneEl.textContent = `Time Zone: ${timezone}`;
               }
               
               // Auto-fetch prayer times for this location
               this.fetchPrayerTimesForLocation(latitude, longitude);
             }).catch(err => {
               console.error('Reverse geocoding error:', err);
-              const input = document.getElementById('location-input');
-              if (input) {
-                input.value = `Lat: ${latitude.toFixed(2)}, Lng: ${longitude.toFixed(2)}`;
+              this.data.location = `Lat: ${latitude.toFixed(2)}, Lng: ${longitude.toFixed(2)}`;
+              
+              // Update location display with coordinates
+              const addressEl = document.getElementById('location-display-address');
+              if (addressEl) {
+                addressEl.textContent = this.data.location;
               }
+              
+              // Update timezone display
+              const timezoneEl = document.getElementById('location-display-timezone');
+              if (timezoneEl) {
+                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                timezoneEl.textContent = `Time Zone: ${timezone}`;
+              }
+              
               this.fetchPrayerTimesForLocation(latitude, longitude);
             });
           } catch (e) {
@@ -752,6 +904,11 @@ class OnboardingSystem {
         },
         (error) => {
           console.warn('Auto-detection failed, user must enter manually:', error.message);
+          // Show a message to user
+          const addressEl = document.getElementById('location-display-address');
+          if (addressEl) {
+            addressEl.textContent = 'Enable location access to auto-detect, or manually enter your city';
+          }
         },
         { timeout: 8000, enableHighAccuracy: false }
       );
@@ -765,7 +922,6 @@ class OnboardingSystem {
       // Step 1 - Next (Continue Button)
       const step1Next = document.getElementById('step-1-next');
       if (step1Next) {
-        // Remove old listener if exists
         step1Next._clickHandler = () => {
           console.log('Continue button clicked');
           this.validateStep1();
@@ -776,22 +932,51 @@ class OnboardingSystem {
         console.warn('Step 1 next button not found');
       }
 
-      // Location input - allow Enter key to continue
-      const locationInput = document.getElementById('location-input');
-      if (locationInput) {
-        locationInput.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') {
-            this.validateStep1();
+      // Dropdown buttons for calculation method
+      const calcMethodBtn = document.getElementById('calc-method-btn');
+      if (calcMethodBtn) {
+        calcMethodBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.toggleDropdown('calc-method');
+        });
+      }
+
+      // Dropdown buttons for Asr method
+      const asrMethodBtn = document.getElementById('asr-method-btn');
+      if (asrMethodBtn) {
+        asrMethodBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.toggleDropdown('asr-method');
+        });
+      }
+
+      // Select element change handlers
+      const calcSelect = document.getElementById('calculation-method');
+      if (calcSelect) {
+        calcSelect.addEventListener('change', (e) => {
+          this.data.calculationMethod = e.target.value;
+          const valueDisplay = document.getElementById('calc-method-value');
+          if (valueDisplay) {
+            valueDisplay.textContent = this.getCalculationMethodLabel(e.target.value);
           }
+          this.closeAllDropdowns();
+        });
+      }
+
+      const asrSelect = document.getElementById('asr-method');
+      if (asrSelect) {
+        asrSelect.addEventListener('change', (e) => {
+          this.data.asrMethod = e.target.value;
+          const valueDisplay = document.getElementById('asr-method-value');
+          if (valueDisplay) {
+            valueDisplay.textContent = this.getAsrMethodLabel(e.target.value);
+          }
+          this.closeAllDropdowns();
         });
       }
 
       // Step 2 - Navigation
-      const step2Back = document.getElementById('step-2-back');
       const step2Next = document.getElementById('step-2-next');
-      if (step2Back) {
-        step2Back.addEventListener('click', () => this.previousStep());
-      }
       if (step2Next) {
         step2Next.addEventListener('click', () => {
           const langRadio = document.querySelector('input[name="language"]:checked');
@@ -801,27 +986,16 @@ class OnboardingSystem {
       }
 
       // Step 3 - Navigation
-      const step3Back = document.getElementById('step-3-back');
       const step3Next = document.getElementById('step-3-next');
-      if (step3Back) {
-        step3Back.addEventListener('click', () => this.previousStep());
-      }
       if (step3Next) {
         step3Next.addEventListener('click', () => this.completeOnboarding());
-      }
-
-      // Location detection
-      const detectBtn = document.getElementById('location-detect-btn');
-      if (detectBtn) {
-        detectBtn.addEventListener('click', () => this.detectLocation());
       }
 
       // Hijri offset slider
       const slider = document.getElementById('hijri-offset-slider');
       if (slider) {
         slider.addEventListener('input', (e) => {
-          const valueEl = document.getElementById('hijri-offset-value');
-          if (valueEl) valueEl.textContent = e.target.value;
+          this.data.hijriOffset = parseInt(e.target.value);
         });
       }
 
@@ -838,6 +1012,11 @@ class OnboardingSystem {
           }
         });
       });
+
+      // Close dropdowns when clicking outside
+      document.addEventListener('click', () => {
+        this.closeAllDropdowns();
+      });
       
       console.log('All event listeners attached successfully');
     } catch (e) {
@@ -845,24 +1024,64 @@ class OnboardingSystem {
     }
   }
 
+  toggleDropdown(type) {
+    try {
+      const select = document.getElementById(type === 'calc-method' ? 'calculation-method' : 'asr-method');
+      if (select) {
+        select.click();
+      }
+    } catch (e) {
+      console.error('toggleDropdown error:', e);
+    }
+  }
+
+  closeAllDropdowns() {
+    try {
+      const selects = document.querySelectorAll('select[id*="method"]');
+      selects.forEach(select => select.style.display = 'none');
+    } catch (e) {
+      console.error('closeAllDropdowns error:', e);
+    }
+  }
+
+  getCalculationMethodLabel(value) {
+    const labels = {
+      'Karachi': 'Karachi',
+      'ISNA': 'ISNA',
+      'MWL': 'Muslim World League',
+      'Dubai': 'Dubai',
+      'Egypt': 'Egypt',
+      'Jafari': 'Jafari'
+    };
+    return labels[value] || value;
+  }
+
+  getAsrMethodLabel(value) {
+    const labels = {
+      'Shafi': 'Shafi',
+      'Hanafi': 'Hanafi'
+    };
+    return labels[value] || value;
+  }
+
   validateStep1() {
     try {
-      const locationInput = document.getElementById('location-input');
-      const location = locationInput?.value.trim();
-      if (!location) {
-        alert('Please enter a location');
+      // Check if location was detected/set
+      if (!this.data.location && (!this.data.latitude || !this.data.longitude)) {
+        alert('Please allow location access or the location was not detected. Please try again.');
         return;
       }
 
-      this.data.location = location;
+      // Get calculation method from select element
       const calcMethodEl = document.getElementById('calculation-method');
       if (calcMethodEl) {
         this.data.calculationMethod = calcMethodEl.value;
       }
 
-      const asrMethodRadio = document.querySelector('input[name="asr-method"]:checked');
-      if (asrMethodRadio) {
-        this.data.asrMethod = asrMethodRadio.value;
+      // Get Asr method from select element
+      const asrMethodEl = document.getElementById('asr-method');
+      if (asrMethodEl) {
+        this.data.asrMethod = asrMethodEl.value;
       }
 
       this.nextStep();
