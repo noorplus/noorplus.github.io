@@ -19,7 +19,12 @@ jobs:
         echo "Checking HTML files..."
         find . -name "*.html" -type f | while read file; do
           echo "Validating $file"
-          # Check for unclosed tags (basic check)
+          # Skip validation for fragment files (pages/*.html)
+          if [[ "$file" == "./pages/"* ]]; then
+            echo "✓ $file (fragment, skipped)"
+            continue
+          fi
+          # Check for unclosed tags in full HTML files
           if grep -q "</body>" "$file"; then
             echo "✓ $file is valid"
           else
