@@ -1,0 +1,986 @@
+<div id="onboarding-shell" class="onboarding-container">
+
+  <!-- Step 1: Location & Prayer Settings -->
+  <div class="onboarding-step" id="step-1" data-step="1">
+    <div class="onboarding-content">
+      <!-- Illustration -->
+      <div class="onb-illustration">
+        <i data-lucide="map-pin" class="onb-icon-large"></i>
+      </div>
+
+      <!-- Title & Description -->
+      <h1 class="onb-title">Welcome to Noor Plus</h1>
+      <p class="onb-description">Let's set up your prayer times. First, we need your location.</p>
+
+      <!-- Controls -->
+      <div class="onb-controls">
+        <!-- Location Input -->
+        <div class="onb-control-group">
+          <label class="onb-label">Your Location</label>
+          <div class="onb-location-input">
+            <input 
+              type="text" 
+              id="location-input" 
+              class="onb-input" 
+              placeholder="Enter city name or ZIP code"
+              autocomplete="off"
+            >
+            <button id="location-detect-btn" class="onb-btn-icon">
+              <i data-lucide="navigation"></i>
+            </button>
+          </div>
+          <small class="onb-helper">We'll use this to calculate accurate prayer times</small>
+        </div>
+
+        <!-- Calculation Method -->
+        <div class="onb-control-group">
+          <label class="onb-label">Prayer Calculation Method</label>
+          <select id="calculation-method" class="onb-select">
+            <option value="Karachi">Karachi (Shafi)</option>
+            <option value="ISNA">ISNA (North America)</option>
+            <option value="MWL">Muslim World League</option>
+            <option value="Makkah">Umm Al-Qura (Makkah)</option>
+            <option value="Egypt">Egyptian General Authority</option>
+            <option value="Dubai">Dubai (Gulf)</option>
+          </select>
+          <small class="onb-helper">Choose based on your region or preference</small>
+        </div>
+
+        <!-- Asr Method -->
+        <div class="onb-control-group">
+          <label class="onb-label">Asr Prayer Method</label>
+          <div class="onb-radio-group">
+            <label class="onb-radio">
+              <input type="radio" name="asr-method" value="Shafi" checked>
+              <span>Shafi (Default)</span>
+            </label>
+            <label class="onb-radio">
+              <input type="radio" name="asr-method" value="Hanafi">
+              <span>Hanafi</span>
+            </label>
+          </div>
+          <small class="onb-helper">This affects Asr prayer time calculation</small>
+        </div>
+      </div>
+
+      <!-- Next Button -->
+      <button class="onb-btn-next" id="step-1-next">Continue</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Language Selection -->
+  <div class="onboarding-step" id="step-2" data-step="2" style="display:none;">
+    <div class="onboarding-content">
+      <!-- Illustration -->
+      <div class="onb-illustration">
+        <i data-lucide="globe" class="onb-icon-large"></i>
+      </div>
+
+      <!-- Title & Description -->
+      <h1 class="onb-title">Choose Your Language</h1>
+      <p class="onb-description">Select your preferred language for the app interface.</p>
+
+      <!-- Controls -->
+      <div class="onb-controls">
+        <div class="onb-language-grid">
+          <!-- English -->
+          <label class="onb-language-card">
+            <input type="radio" name="language" value="en" class="onb-hidden" checked>
+            <div class="onb-language-content">
+              <i data-lucide="check-circle" class="onb-language-icon"></i>
+              <div class="onb-language-text">
+                <div class="onb-language-name">English</div>
+                <div class="onb-language-code">en</div>
+              </div>
+            </div>
+          </label>
+
+          <!-- Bangla -->
+          <label class="onb-language-card">
+            <input type="radio" name="language" value="bn" class="onb-hidden">
+            <div class="onb-language-content">
+              <i data-lucide="check-circle" class="onb-language-icon"></i>
+              <div class="onb-language-text">
+                <div class="onb-language-name">বাংলা</div>
+                <div class="onb-language-code">Bangla</div>
+              </div>
+            </div>
+          </label>
+
+          <!-- Arabic -->
+          <label class="onb-language-card">
+            <input type="radio" name="language" value="ar" class="onb-hidden">
+            <div class="onb-language-content">
+              <i data-lucide="check-circle" class="onb-language-icon"></i>
+              <div class="onb-language-text">
+                <div class="onb-language-name">العربية</div>
+                <div class="onb-language-code">Arabic</div>
+              </div>
+            </div>
+          </label>
+
+          <!-- Urdu -->
+          <label class="onb-language-card">
+            <input type="radio" name="language" value="ur" class="onb-hidden">
+            <div class="onb-language-content">
+              <i data-lucide="check-circle" class="onb-language-icon"></i>
+              <div class="onb-language-text">
+                <div class="onb-language-name">اردو</div>
+                <div class="onb-language-code">Urdu</div>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="onb-btn-group">
+        <button class="onb-btn-back" id="step-2-back">Back</button>
+        <button class="onb-btn-next" id="step-2-next">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Hijri Date Adjustment -->
+  <div class="onboarding-step" id="step-3" data-step="3" style="display:none;">
+    <div class="onboarding-content">
+      <!-- Illustration -->
+      <div class="onb-illustration">
+        <i data-lucide="calendar" class="onb-icon-large"></i>
+      </div>
+
+      <!-- Title & Description -->
+      <h1 class="onb-title">Hijri Date Adjustment</h1>
+      <p class="onb-description">Adjust the Islamic (Hijri) calendar based on your local moon sighting.</p>
+
+      <!-- Controls -->
+      <div class="onb-controls">
+        <div class="onb-control-group">
+          <label class="onb-label">Date Offset</label>
+          <div class="onb-slider-container">
+            <div class="onb-slider-labels">
+              <span class="onb-slider-min">-2</span>
+              <span class="onb-slider-max">+2</span>
+            </div>
+            <input 
+              type="range" 
+              id="hijri-offset-slider" 
+              class="onb-slider" 
+              min="-2" 
+              max="2" 
+              value="0"
+              step="1"
+            >
+            <div class="onb-slider-value">
+              <span id="hijri-offset-value">0</span>
+              <span class="onb-slider-unit">days</span>
+            </div>
+          </div>
+          <small class="onb-helper">This adjusts the Hijri date display (+1 means one day ahead)</small>
+        </div>
+
+        <!-- Info Box -->
+        <div class="onb-info-box">
+          <div class="onb-info-icon">
+            <i data-lucide="info"></i>
+          </div>
+          <div class="onb-info-text">
+            <strong>Example:</strong> If your local Islamic calendar shows +1 day, adjust the slider to +1.
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="onb-btn-group">
+        <button class="onb-btn-back" id="step-3-back">Back</button>
+        <button class="onb-btn-next onb-btn-finish" id="step-3-next">Finish Setup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Indicator -->
+  <div class="onb-progress">
+    <div class="onb-progress-dots">
+      <div class="onb-dot active" data-step="1"></div>
+      <div class="onb-dot" data-step="2"></div>
+      <div class="onb-dot" data-step="3"></div>
+    </div>
+    <span class="onb-progress-text">Step <span id="current-step">1</span> of 3</span>
+  </div>
+
+</div>
+
+<style>
+/* ================================================================
+   ONBOARDING STYLES
+================================================================ */
+
+.onboarding-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* Step Container */
+.onboarding-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-lg);
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.onboarding-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* Illustration */
+.onb-illustration {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-2xl) 0;
+}
+
+.onb-icon-large {
+  font-size: 80px;
+  color: var(--primary);
+  opacity: 0.3;
+}
+
+/* Typography */
+.onb-title {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0;
+}
+
+.onb-description {
+  font-size: var(--font-md);
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Controls */
+.onb-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.onb-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.onb-label {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.onb-helper {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  display: block;
+}
+
+/* Input Fields */
+.onb-input,
+.onb-select {
+  width: 100%;
+  padding: var(--space-md);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  font-size: var(--font-md);
+  color: var(--text-primary);
+  background: var(--bg);
+  font-family: inherit;
+  transition: all var(--transition-normal);
+}
+
+.onb-input:focus,
+.onb-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(46, 126, 157, 0.1);
+}
+
+.onb-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Location Input with Button */
+.onb-location-input {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.onb-location-input .onb-input {
+  flex: 1;
+}
+
+.onb-btn-icon {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid var(--divider);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  color: var(--primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all var(--transition-normal);
+}
+
+.onb-btn-icon:active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Radio Group */
+.onb-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.onb-radio {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.onb-radio:hover {
+  background: var(--surface-soft);
+}
+
+.onb-radio input[type="radio"] {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+
+.onb-radio span {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.onb-radio input[type="radio"]:checked ~ span {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Language Grid */
+.onb-language-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.onb-language-card {
+  position: relative;
+  cursor: pointer;
+}
+
+.onb-language-card input {
+  display: none;
+}
+
+.onb-language-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  border: 2px solid var(--divider);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  transition: all var(--transition-normal);
+  text-align: center;
+}
+
+.onb-language-card input:checked ~ .onb-language-content {
+  border-color: var(--primary);
+  background: rgba(46, 126, 157, 0.05);
+}
+
+.onb-language-icon {
+  font-size: 24px;
+  color: var(--primary);
+  opacity: 0;
+  transition: all var(--transition-normal);
+}
+
+.onb-language-card input:checked ~ .onb-language-content .onb-language-icon {
+  opacity: 1;
+}
+
+.onb-language-name {
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.onb-language-code {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+}
+
+/* Slider */
+.onb-slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.onb-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 var(--space-sm);
+}
+
+.onb-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--progress-track);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.onb-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(46, 126, 157, 0.3);
+  transition: all var(--transition-normal);
+}
+
+.onb-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.onb-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(46, 126, 157, 0.3);
+  transition: all var(--transition-normal);
+}
+
+.onb-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+.onb-slider-value {
+  text-align: center;
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.onb-slider-unit {
+  margin-left: var(--space-xs);
+  font-size: var(--font-sm);
+  color: var(--text-muted);
+}
+
+/* Info Box */
+.onb-info-box {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: rgba(46, 126, 157, 0.05);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-sm);
+}
+
+.onb-info-icon {
+  color: var(--primary);
+  font-size: 20px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.onb-info-text {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Buttons */
+.onb-btn-next,
+.onb-btn-back {
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  font-size: var(--font-md);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.onb-btn-next {
+  background: var(--primary);
+  color: white;
+  width: 100%;
+}
+
+.onb-btn-next:active {
+  background: #2169a6;
+  transform: scale(0.98);
+}
+
+.onb-btn-next:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.onb-btn-finish {
+  background: var(--success);
+}
+
+.onb-btn-finish:active {
+  background: #3a9c5d;
+}
+
+.onb-btn-back {
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--divider);
+  flex: 1;
+}
+
+.onb-btn-back:active {
+  background: var(--surface-soft);
+}
+
+.onb-btn-group {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.onb-btn-group .onb-btn-next {
+  flex: 1;
+}
+
+/* Progress Indicator */
+.onb-progress {
+  padding: var(--space-lg) var(--space-md);
+  background: var(--surface);
+  border-top: 1px solid var(--divider);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+}
+
+.onb-progress-dots {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.onb-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--divider);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+}
+
+.onb-dot.active {
+  background: var(--primary);
+  width: 28px;
+  border-radius: 5px;
+}
+
+.onb-progress-text {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Hidden Input */
+.onb-hidden {
+  display: none;
+}
+
+/* Dark Mode */
+:root[data-theme="dark"] .onb-language-card input:checked ~ .onb-language-content {
+  background: rgba(78, 182, 204, 0.1);
+}
+</style>
+
+<script>
+/* Onboarding System */
+
+class OnboardingSystem {
+  constructor() {
+    this.currentStep = 1;
+    this.totalSteps = 3;
+    this.data = {
+      location: '',
+      timezone: '',
+      calculationMethod: 'Karachi',
+      asrMethod: 'Shafi',
+      language: 'en',
+      hijriOffset: 0
+    };
+    try {
+      this.init();
+    } catch (e) {
+      console.error('OnboardingSystem init error:', e);
+    }
+  }
+
+  init() {
+    try {
+      this.attachEventListeners();
+      this.updateProgressIndicator();
+      
+      // Recreate lucide icons
+      if (window.lucide) lucide.createIcons();
+    } catch (e) {
+      console.error('init error:', e);
+    }
+  }
+
+  attachEventListeners() {
+    try {
+      // Step 1 - Next
+      const step1Next = document.getElementById('step-1-next');
+      if (step1Next) {
+        step1Next.addEventListener('click', () => this.validateStep1());
+      }
+
+      // Step 2 - Navigation
+      const step2Back = document.getElementById('step-2-back');
+      const step2Next = document.getElementById('step-2-next');
+      if (step2Back) {
+        step2Back.addEventListener('click', () => this.previousStep());
+      }
+      if (step2Next) {
+        step2Next.addEventListener('click', () => {
+          const langRadio = document.querySelector('input[name="language"]:checked');
+          if (langRadio) this.data.language = langRadio.value;
+          this.nextStep();
+        });
+      }
+
+      // Step 3 - Navigation
+      const step3Back = document.getElementById('step-3-back');
+      const step3Next = document.getElementById('step-3-next');
+      if (step3Back) {
+        step3Back.addEventListener('click', () => this.previousStep());
+      }
+      if (step3Next) {
+        step3Next.addEventListener('click', () => this.completeOnboarding());
+      }
+
+      // Location detection
+      const detectBtn = document.getElementById('location-detect-btn');
+      if (detectBtn) {
+        detectBtn.addEventListener('click', () => this.detectLocation());
+      }
+
+      // Hijri offset slider
+      const slider = document.getElementById('hijri-offset-slider');
+      if (slider) {
+        slider.addEventListener('input', (e) => {
+          const valueEl = document.getElementById('hijri-offset-value');
+          if (valueEl) valueEl.textContent = e.target.value;
+        });
+      }
+
+      // Progress dots
+      document.querySelectorAll('.onb-dot').forEach(dot => {
+        dot.addEventListener('click', (e) => {
+          try {
+            const step = parseInt(e.target.getAttribute('data-step'));
+            if (step < this.currentStep) {
+              this.goToStep(step);
+            }
+          } catch (e) {
+            console.error('Dot click error:', e);
+          }
+        });
+      });
+    } catch (e) {
+      console.error('attachEventListeners error:', e);
+    }
+  }
+
+  validateStep1() {
+    try {
+      const locationInput = document.getElementById('location-input');
+      const location = locationInput?.value.trim();
+      if (!location) {
+        alert('Please enter a location');
+        return;
+      }
+
+      this.data.location = location;
+      const calcMethodEl = document.getElementById('calculation-method');
+      if (calcMethodEl) {
+        this.data.calculationMethod = calcMethodEl.value;
+      }
+
+      const asrMethodRadio = document.querySelector('input[name="asr-method"]:checked');
+      if (asrMethodRadio) {
+        this.data.asrMethod = asrMethodRadio.value;
+      }
+
+      this.nextStep();
+    } catch (e) {
+      console.error('validateStep1 error:', e);
+      alert('Error validating step 1. Please try again.');
+    }
+  }
+
+  nextStep() {
+    try {
+      if (this.currentStep < this.totalSteps) {
+        this.goToStep(this.currentStep + 1);
+      }
+    } catch (e) {
+      console.error('nextStep error:', e);
+    }
+  }
+
+  previousStep() {
+    try {
+      if (this.currentStep > 1) {
+        this.goToStep(this.currentStep - 1);
+      }
+    } catch (e) {
+      console.error('previousStep error:', e);
+    }
+  }
+
+  goToStep(step) {
+    try {
+      // Hide current step
+      const currentStepEl = document.getElementById(`step-${this.currentStep}`);
+      if (currentStepEl) {
+        currentStepEl.style.display = 'none';
+      }
+
+      // Show new step
+      const newStepEl = document.getElementById(`step-${step}`);
+      if (newStepEl) {
+        newStepEl.style.display = 'flex';
+      }
+
+      this.currentStep = step;
+      this.updateProgressIndicator();
+      
+      // Collect data from current step if navigating forward
+      if (step === 2) {
+        const langRadio = document.querySelector('input[name="language"]:checked');
+        if (langRadio) this.data.language = langRadio.value;
+      } else if (step === 3) {
+        const slider = document.getElementById('hijri-offset-slider');
+        if (slider) this.data.hijriOffset = parseInt(slider.value);
+      }
+    } catch (e) {
+      console.error('goToStep error:', e);
+    }
+  }
+
+  updateProgressIndicator() {
+    try {
+      const currentStepEl = document.getElementById('current-step');
+      if (currentStepEl) {
+        currentStepEl.textContent = this.currentStep;
+      }
+      
+      document.querySelectorAll('.onb-dot').forEach((dot, index) => {
+        const step = index + 1;
+        if (step <= this.currentStep) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    } catch (e) {
+      console.error('updateProgressIndicator error:', e);
+    }
+  }
+
+  detectLocation() {
+    try {
+      const btn = document.getElementById('location-detect-btn');
+      if (!btn) return;
+      
+      btn.disabled = true;
+      btn.textContent = 'Detecting...';
+
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported on your device');
+        btn.disabled = false;
+        btn.textContent = 'Detect Location';
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          try {
+            const { latitude, longitude } = position.coords;
+            const input = document.getElementById('location-input');
+            if (input) {
+              input.value = `Lat: ${latitude.toFixed(2)}, Lng: ${longitude.toFixed(2)}`;
+            }
+            btn.disabled = false;
+            btn.textContent = 'Detect Location';
+          } catch (e) {
+            console.error('Position handler error:', e);
+            btn.disabled = false;
+            btn.textContent = 'Detect Location';
+          }
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+          alert('Unable to detect location. Please enter manually.');
+          btn.disabled = false;
+          btn.textContent = 'Detect Location';
+        },
+        { timeout: 10000, enableHighAccuracy: false }
+      );
+    } catch (e) {
+      console.error('detectLocation error:', e);
+    }
+  }
+
+  completeOnboarding() {
+    try {
+      // Collect final data
+      const slider = document.getElementById('hijri-offset-slider');
+      if (slider) {
+        this.data.hijriOffset = parseInt(slider.value);
+      }
+
+      const langRadio = document.querySelector('input[name="language"]:checked');
+      if (langRadio) {
+        this.data.language = langRadio.value;
+      }
+
+      // Save to localStorage
+      localStorage.setItem('onboardingCompleted', 'true');
+      localStorage.setItem('userPreferences', JSON.stringify(this.data));
+
+      // Apply settings
+      this.applySettings();
+
+      // Redirect to home
+      this.redirectToHome();
+    } catch (e) {
+      console.error('completeOnboarding error:', e);
+      alert('Error completing onboarding. Please try again.');
+    }
+  }
+
+  applySettings() {
+    try {
+      // Apply language
+      localStorage.setItem('language', this.data.language);
+      
+      // Apply hijri offset
+      localStorage.setItem('hijriOffset', this.data.hijriOffset.toString());
+      
+      // Apply calculation method
+      localStorage.setItem('calculationMethod', this.data.calculationMethod);
+      
+      // Apply location if provided
+      if (this.data.location) {
+        localStorage.setItem('userLocation', this.data.location);
+      }
+    } catch (e) {
+      console.error('applySettings error:', e);
+    }
+  }
+
+  redirectToHome() {
+    try {
+      // Hide onboarding
+      const container = document.getElementById('onboarding-shell');
+      if (container) {
+        container.style.display = 'none';
+      }
+
+      // Show main app
+      const appShell = document.getElementById('app-shell');
+      if (appShell) {
+        appShell.style.display = 'flex';
+      }
+
+      // Load home page
+      if (window.loadPage) {
+        window.loadPage('home');
+      }
+    } catch (e) {
+      console.error('redirectToHome error:', e);
+      // Fallback to hard reload
+      setTimeout(() => location.reload(), 500);
+    }
+  }
+}
+
+// Initialize onboarding when page loads
+let onboardingInstance = null;
+function initOnboarding() {
+  onboardingInstance = new OnboardingSystem();
+}
+
+// Export for use in app.js
+window.initOnboarding = initOnboarding;
+</script>
