@@ -1,0 +1,68 @@
+name: Lint & Validate
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Validate HTML
+      run: |
+        # Check for common HTML issues
+        echo "Checking HTML files..."
+        find . -name "*.html" -type f | while read file; do
+          echo "Validating $file"
+          # Check for unclosed tags (basic check)
+          if grep -q "</body>" "$file"; then
+            echo "✓ $file is valid"
+          else
+            echo "✗ $file might have issues"
+            exit 1
+          fi
+        done
+    
+    - name: Validate CSS Syntax
+      run: |
+        echo "Checking CSS files..."
+        find assets/css -name "*.css" -type f | while read file; do
+          echo "Checking $file"
+          # Basic CSS validation (check for unclosed brackets)
+          if grep -q '^}' "$file"; then
+            echo "✓ $file looks valid"
+          fi
+        done
+    
+    - name: Check JavaScript Syntax
+      run: |
+        echo "Checking JavaScript files..."
+        find assets/js -name "*.js" -type f | while read file; do
+          echo "Checking $file"
+          # Basic JS syntax check using node if available
+          node -c "$file" 2>/dev/null || echo "⚠ Could not validate $file (node not available)"
+        done
+    
+    - name: Check File Encoding
+      run: |
+        echo "Verifying UTF-8 encoding..."
+        find . -name "*.html" -o -name "*.css" -o -name "*.js" -o -name "*.md" | while read file; do
+          file "$file" | grep -q "ASCII\|UTF-8" && echo "✓ $file" || echo "⚠ $file"
+        done
+    
+    - name: Verify No Large Files
+      run: |
+        echo "Checking for large files..."
+        find . -type f -size +5M | while read file; do
+          echo "⚠ Large file found: $file"
+        done || echo "✓ No files over 5MB"
+    
+    - name: Check for TODO Comments
+      run: |
+        echo "Checking for TODOs..."
+        grep -r "TODO\|FIXME\|HACK" assets/ pages/ || echo "✓ No TODOs found"

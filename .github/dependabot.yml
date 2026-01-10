@@ -1,0 +1,25 @@
+version: 2
+updates:
+  # Auto-update dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "noorplus/maintainers"
+    labels:
+      - "dependencies"
+      - "automation"
+    
+  # Monitor for vulnerability alerts on dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "noorplus/maintainers"
+    labels:
+      - "dependencies"
+      - "security"
