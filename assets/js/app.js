@@ -131,6 +131,7 @@ function loadPage(page) {
         if (page === "home") initHomePage();
         else if (page === "quran") initQuranPage();
         else if (page === "prayer-time") initPrayerTimePage();
+        else if (page === "menu") initMenuPage();
       })
       .catch(err => {
         console.error("Navigation Error:", err);
@@ -173,6 +174,204 @@ function initThemeToggle() {
     console.error('initThemeToggle error:', e);
   }
 }
+
+function initMenuPage() {
+  try {
+    // Prayer Settings button
+    const prayerSettingsBtn = document.getElementById('prayer-settings-btn');
+    if (prayerSettingsBtn) {
+      prayerSettingsBtn.addEventListener('click', () => {
+        openPrayerSettingsModal();
+      });
+    }
+
+    // Clear Cache button
+    const clearCacheBtn = document.getElementById('clear-cache-btn');
+    if (clearCacheBtn) {
+      clearCacheBtn.addEventListener('click', () => {
+        if (confirm('Clear all cached data?')) {
+          clearAppCache();
+          localStorage.setItem('noorplus_cache_timestamp', Date.now());
+          alert('Cache cleared successfully');
+        }
+      });
+    }
+
+    // Close Modal button
+    const closeBtn = document.getElementById('close-settings-modal');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closePrayerSettingsModal);
+    }
+
+    // Modal background click
+    const modal = document.getElementById('prayer-settings-modal');
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closePrayerSettingsModal();
+        }
+      });
+    }
+
+    // Location detect button in settings
+    const detectBtn = document.getElementById('settings-location-detect-btn');
+    if (detectBtn) {
+      detectBtn.addEventListener('click', detectPrayerSettingsLocation);
+    }
+
+    // Save button
+    const saveBtn = document.getElementById('save-prayer-settings');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', savePrayerSettings);
+    }
+
+    // Load current settings into modal
+    loadPrayerSettingsModal();
+  } catch (e) {
+    console.error('initMenuPage error:', e);
+  }
+}
+
+function openPrayerSettingsModal() {
+  try {
+    const modal = document.getElementById('prayer-settings-modal');
+    if (modal) {
+      modal.style.display = 'flex';
+      loadPrayerSettingsModal();
+    }
+  } catch (e) {
+    console.error('openPrayerSettingsModal error:', e);
+  }
+}
+
+function closePrayerSettingsModal() {
+  try {
+    const modal = document.getElementById('prayer-settings-modal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  } catch (e) {
+    console.error('closePrayerSettingsModal error:', e);
+  }
+}
+
+function loadPrayerSettingsModal() {
+  try {
+    const location = localStorage.getItem('userLocation') || 'Not set';
+    const calcMethod = localStorage.getItem('calculationMethod') || 'Karachi';
+    const asrMethod = localStorage.getItem('asrMethod') || 'Shafi';
+
+    const locationInput = document.getElementById('settings-location-input');
+    const currentLocationSpan = document.getElementById('current-location');
+    const calcSelect = document.getElementById('settings-calculation-method');
+    const asrRadios = document.querySelectorAll('input[name="settings-asr-method"]');
+
+    if (locationInput) locationInput.value = location === 'Not set' ? '' : location;
+    if (currentLocationSpan) currentLocationSpan.textContent = location;
+    if (calcSelect) calcSelect.value = calcMethod;
+    
+    asrRadios.forEach(radio => {
+      radio.checked = radio.value === asrMethod;
+    });
+  } catch (e) {
+    console.error('loadPrayerSettingsModal error:', e);
+  }
+}
+
+function detectPrayerSettingsLocation() {
+  try {
+    const btn = document.getElementById('settings-location-detect-btn');
+    if (!btn || !navigator.geolocation) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="loader" style="animation: spin 1s linear infinite;"></i>';
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          
+          // Reverse geocode
+          fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+            { headers: { 'Accept': 'application/json' } }
+          )
+          .then(res => res.json())
+          .then(data => {
+            const city = data.address?.city || data.address?.town || data.address?.village || `Lat: ${latitude.toFixed(2)}, Lng: ${longitude.toFixed(2)}`;
+            const input = document.getElementById('settings-location-input');
+            if (input) input.value = city;
+            
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="navigation" style="width: 20px; height: 20px;"></i>';
+            if (window.lucide) lucide.createIcons();
+          })
+          .catch(() => {
+            const input = document.getElementById('settings-location-input');
+            if (input) input.value = `Lat: ${latitude.toFixed(2)}, Lng: ${longitude.toFixed(2)}`;
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="navigation" style="width: 20px; height: 20px;"></i>';
+            if (window.lucide) lucide.createIcons();
+          });
+        } catch (e) {
+          console.error('Position handler error:', e);
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="navigation" style="width: 20px; height: 20px;"></i>';
+        }
+      },
+      (error) => {
+        alert('Could not detect location. Please enter manually.');
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="navigation" style="width: 20px; height: 20px;"></i>';
+      },
+      { timeout: 8000, enableHighAccuracy: false }
+    );
+  } catch (e) {
+    console.error('detectPrayerSettingsLocation error:', e);
+  }
+}
+
+function savePrayerSettings() {
+  try {
+    const locationInput = document.getElementById('settings-location-input');
+    const calcSelect = document.getElementById('settings-calculation-method');
+    const asrRadio = document.querySelector('input[name="settings-asr-method"]:checked');
+
+    const location = locationInput?.value.trim();
+    if (!location) {
+      alert('Please enter a location');
+      return;
+    }
+
+    const calcMethod = calcSelect?.value || 'Karachi';
+    const asrMethod = asrRadio?.value || 'Shafi';
+
+    // Save to localStorage
+    localStorage.setItem('userLocation', location);
+    localStorage.setItem('calculationMethod', calcMethod);
+    localStorage.setItem('asrMethod', asrMethod);
+
+    // Update preferences
+    const prefs = JSON.parse(localStorage.getItem('userPreferences') || '{}');
+    prefs.location = location;
+    prefs.calculationMethod = calcMethod;
+    prefs.asrMethod = asrMethod;
+    localStorage.setItem('userPreferences', JSON.stringify(prefs));
+
+    alert('Prayer settings saved successfully!');
+    closePrayerSettingsModal();
+
+    // Reload prayer times if on home or prayer-time page
+    const currentPage = document.querySelector('.page:not([style*="display: none"])');
+    if (currentPage?.classList.contains('home') || currentPage?.classList.contains('prayer-time')) {
+      window.location.reload();
+    }
+  } catch (e) {
+    console.error('savePrayerSettings error:', e);
+    alert('Error saving settings');
+  }
+}
+
 
 /* ===============================
    INITIAL LOAD & PREFERENCES
