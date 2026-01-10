@@ -27,6 +27,8 @@
         <p id="location-display-timezone" style="margin: 0; font-size: 13px; color: var(--text-secondary);">Time Zone: --</p>
       </div>
 
+      <button id="skip-location-btn" style="width: 100%; margin-top: 12px; padding: 10px; background: transparent; border: 1px solid var(--divider); border-radius: 8px; font-size: 13px; cursor: pointer; color: var(--text-secondary); display: none;">Skip Location (Use Manual Calculation)</button>
+
       <div style="margin-top: 28px;">
         <h2 style="font-size: 18px; margin: 0 0 12px 0;">Prayer Time Calculation</h2>
         <p style="font-size: 14px; color: var(--text-secondary); margin: 0 0 16px 0;">Select your preferred calculation method or let the app find it for accurate prayer times in your area.</p>
@@ -845,12 +847,19 @@ class OnboardingSystem {
     try {
       if (!navigator.geolocation) {
         console.warn('Geolocation not supported');
+        this.showSkipLocationOption();
         return;
       }
+
+      // Set a timeout to show skip option after 3 seconds if no response
+      const timeoutId = setTimeout(() => {
+        this.showSkipLocationOption();
+      }, 3000);
 
       // Auto-trigger location detection without button
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          clearTimeout(timeoutId);
           try {
             const { latitude, longitude } = position.coords;
             
@@ -859,6 +868,10 @@ class OnboardingSystem {
             this.data.longitude = longitude;
             
             console.log('Auto-detected location:', latitude, longitude);
+            
+            // Hide skip button since location was detected
+            const skipBtn = document.getElementById('skip-location-btn');
+            if (skipBtn) skipBtn.style.display = 'none';
             
             // Try to get city name via reverse geocoding
             this.reverseGeocode(latitude, longitude).then(cityName => {
@@ -900,20 +913,37 @@ class OnboardingSystem {
             });
           } catch (e) {
             console.error('Position handler error:', e);
+            this.showSkipLocationOption();
           }
         },
         (error) => {
-          console.warn('Auto-detection failed, user must enter manually:', error.message);
-          // Show a message to user
-          const addressEl = document.getElementById('location-display-address');
-          if (addressEl) {
-            addressEl.textContent = 'Enable location access to auto-detect, or manually enter your city';
-          }
+          clearTimeout(timeoutId);
+          console.warn('Auto-detection failed:', error.message);
+          // Show skip option when location is denied or fails
+          this.showSkipLocationOption();
         },
-        { timeout: 8000, enableHighAccuracy: false }
+        { timeout: 3000, enableHighAccuracy: false }
       );
     } catch (e) {
       console.error('autoDetectLocation error:', e);
+      this.showSkipLocationOption();
+    }
+  }
+
+  showSkipLocationOption() {
+    try {
+      const skipBtn = document.getElementById('skip-location-btn');
+      const addressEl = document.getElementById('location-display-address');
+      if (skipBtn) {
+        skipBtn.style.display = 'block';
+        skipBtn.addEventListener('click', () => {
+          // User skipped location, proceed with default
+          this.data.location = 'Not detected';
+          addressEl.textContent = 'Using default settings';
+        });
+      }
+    } catch (e) {
+      console.error('showSkipLocationOption error:', e);
     }
   }
 
@@ -1066,12 +1096,9 @@ class OnboardingSystem {
 
   validateStep1() {
     try {
-      // Check if location was detected/set
-      if (!this.data.location && (!this.data.latitude || !this.data.longitude)) {
-        alert('Please allow location access or the location was not detected. Please try again.');
-        return;
-      }
-
+      // Location is now optional - user can skip it
+      // But we still need to get calculation method
+      
       // Get calculation method from select element
       const calcMethodEl = document.getElementById('calculation-method');
       if (calcMethodEl) {
@@ -1082,6 +1109,11 @@ class OnboardingSystem {
       const asrMethodEl = document.getElementById('asr-method');
       if (asrMethodEl) {
         this.data.asrMethod = asrMethodEl.value;
+      }
+
+      // If no location was detected, it's okay - use default
+      if (!this.data.location) {
+        this.data.location = 'Not specified';
       }
 
       this.nextStep();
