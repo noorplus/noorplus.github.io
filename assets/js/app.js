@@ -426,11 +426,22 @@ function showOnboarding() {
         }
         container.innerHTML = html;
         
-        // Initialize lucide icons
-        if (window.lucide) lucide.createIcons();
-        
-        // Initialize onboarding
-        if (window.initOnboarding) initOnboarding();
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+          try {
+            // Initialize lucide icons
+            if (window.lucide) {
+              lucide.createIcons();
+            }
+            
+            // Initialize onboarding
+            if (window.initOnboarding) {
+              window.initOnboarding();
+            }
+          } catch (e) {
+            console.error('Onboarding init error:', e);
+          }
+        }, 50);
       })
       .catch(err => {
         console.error("Failed to load onboarding:", err);

@@ -694,6 +694,15 @@ class OnboardingSystem {
       // Auto-detect location on init
       this.autoDetectLocation();
       
+      // Focus on location input
+      setTimeout(() => {
+        const input = document.getElementById('location-input');
+        if (input && !input.value) {
+          input.focus();
+          input.placeholder = "Enter city name (e.g., Dhaka)";
+        }
+      }, 100);
+      
       // Recreate lucide icons
       if (window.lucide) lucide.createIcons();
     } catch (e) {
@@ -753,10 +762,28 @@ class OnboardingSystem {
 
   attachEventListeners() {
     try {
-      // Step 1 - Next
+      // Step 1 - Next (Continue Button)
       const step1Next = document.getElementById('step-1-next');
       if (step1Next) {
-        step1Next.addEventListener('click', () => this.validateStep1());
+        // Remove old listener if exists
+        step1Next._clickHandler = () => {
+          console.log('Continue button clicked');
+          this.validateStep1();
+        };
+        step1Next.addEventListener('click', step1Next._clickHandler);
+        console.log('Step 1 next button listener attached');
+      } else {
+        console.warn('Step 1 next button not found');
+      }
+
+      // Location input - allow Enter key to continue
+      const locationInput = document.getElementById('location-input');
+      if (locationInput) {
+        locationInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            this.validateStep1();
+          }
+        });
       }
 
       // Step 2 - Navigation
@@ -811,6 +838,8 @@ class OnboardingSystem {
           }
         });
       });
+      
+      console.log('All event listeners attached successfully');
     } catch (e) {
       console.error('attachEventListeners error:', e);
     }
