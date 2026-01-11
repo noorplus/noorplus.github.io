@@ -34,4 +34,24 @@
   color: #444;
 }
 
+label {
+  display: block;
+  text-align: left;
+  margin-top: 12px;
+}
+
+select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+}
+
+.hidden {
+  display: none;
+}
+
+hr {
+  margin: 16px 0;
+}
+
 
