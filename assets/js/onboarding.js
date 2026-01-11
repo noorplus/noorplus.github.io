@@ -1,44 +1,25 @@
-let step = 1;
+/* =================================================
+   STEP 0: FORCE BROWSER LOCATION POPUP (MINIMAL)
+   This is the ONLY reliable trigger
+================================================== */
 
-/* ===============================
-   AUTO LOCATION REQUEST (CRITICAL)
-   This MUST run immediately
-================================ */
 document.addEventListener("DOMContentLoaded", () => {
-  requestLocationPermission();
+  navigator.geolocation.getCurrentPosition(
+    onPermissionGranted,
+    onPermissionDenied
+  );
 });
 
-/* ===============================
-   REQUEST LOCATION PERMISSION
-   (This triggers browser popup)
-================================ */
-function requestLocationPermission() {
-  if (!("geolocation" in navigator)) {
-    console.error("Geolocation not supported");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    handleLocationSuccess,
-    handleLocationError,
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
-    }
-  );
-}
-
-/* ===============================
-   SUCCESS: PERMISSION GRANTED
-================================ */
-function handleLocationSuccess(position) {
+/* =================================================
+   PERMISSION GRANTED
+================================================== */
+function onPermissionGranted(position) {
   const lat = position.coords.latitude;
   const lon = position.coords.longitude;
 
-  console.log("Location granted:", lat, lon);
+  console.log("Permission granted:", lat, lon);
 
-  // Update UI immediately (prevents 'stuck' feeling)
+  // Update UI immediately
   const locationEl = document.getElementById("location-text");
   const timezoneEl = document.getElementById("timezone-text");
 
@@ -46,18 +27,17 @@ function handleLocationSuccess(position) {
     locationEl.innerText = "Location detected. Loading details…";
   }
 
-  // Continue with Layer 2 + Prayer API
+  // NOW it is safe to do async work
   enrichLocation(lat, lon);
 }
 
-/* ===============================
-   ERROR: PERMISSION DENIED / BLOCKED
-================================ */
-function handleLocationError(error) {
-  console.error("Geolocation error:", error);
+/* =================================================
+   PERMISSION DENIED
+================================================== */
+function onPermissionDenied(error) {
+  console.error("Permission denied:", error);
 
   const locationEl = document.getElementById("location-text");
-
   if (locationEl) {
     locationEl.innerText =
       "Location access denied. Please allow location to continue.";
@@ -65,13 +45,13 @@ function handleLocationError(error) {
 
   alert(
     "Location permission is required.\n\n" +
-    "Please enable location access in your browser settings and reload the page."
+    "Please enable it in browser settings and reload."
   );
 }
 
-/* ===============================
-   LAYER 2: HUMAN-READABLE LOCATION
-================================ */
+/* =================================================
+   LAYER 2: REVERSE GEOCODING (SAFE, AFTER PERMISSION)
+================================================== */
 async function enrichLocation(lat, lon) {
   let city = "Unknown";
   let country = "";
@@ -87,7 +67,7 @@ async function enrichLocation(lat, lon) {
     country = geo.countryName || country;
     timezone = geo.timezone || timezone;
   } catch (e) {
-    console.warn("Reverse geocoding failed, using fallback");
+    console.warn("Reverse geocoding failed");
   }
 
   // Update UI
@@ -102,13 +82,13 @@ async function enrichLocation(lat, lon) {
   prefs.location = { lat, lon, city, country, timezone };
   localStorage.setItem("noorPreferences", JSON.stringify(prefs));
 
-  // Continue to prayer defaults
+  // Continue to prayer API
   loadPrayerDefaults(lat, lon);
 }
 
-/* ===============================
-   PRAYER API DEFAULTS
-================================ */
+/* =================================================
+   PRAYER API DEFAULTS (AFTER LOCATION)
+================================================== */
 async function loadPrayerDefaults(lat, lon) {
   const res = await fetch(
     `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}`
@@ -119,22 +99,11 @@ async function loadPrayerDefaults(lat, lon) {
   const prefs = JSON.parse(localStorage.getItem("noorPreferences")) || {};
   prefs.prayerMethod = meta.method.id;
   prefs.asrMethod = meta.school;
-
   localStorage.setItem("noorPreferences", JSON.stringify(prefs));
 
-  // Update UI
   document.getElementById("method-label").innerText = meta.method.name;
   document.getElementById("asr-label").innerText =
     meta.school === 1 ? "Hanafi" : "Shafi";
 
   document.getElementById("next-btn").classList.remove("hidden");
-}
-
-/* ===============================
-   STEP NAVIGATION
-================================ */
-function nextStep() {
-  document.querySelector(`[data-step="${step}"]`).classList.remove("active");
-  step++;
-  document.querySelector(`[data-step="${step}"]`)?.classList.add("active");
 }
