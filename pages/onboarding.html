@@ -1,14 +1,42 @@
 <link rel="stylesheet" href="assets/css/onboarding.css" />
+
 <section class="onboarding">
 
+  <!-- STEP 1 -->
   <div class="step active" data-step="1">
     <h2>Your Location</h2>
-    <p class="muted">Used to calculate accurate prayer times.</p>
-    <button onclick="detectLocation()">Detect Location</button>
-    <div id="location-status"></div>
-    <button class="primary" onclick="nextStep()">→</button>
+    <p class="muted">
+      We use your location to calculate accurate prayer times.
+    </p>
+
+    <button onclick="detectLocation()">Allow Location</button>
+
+    <div id="location-box" class="hidden">
+      <p><strong>Your current location:</strong></p>
+      <p id="location-text">Detecting…</p>
+
+      <hr />
+
+      <p><strong>Prayer Time Calculation</strong></p>
+
+      <label>
+        Calculation Method
+        <select id="method-select"></select>
+      </label>
+
+      <label>
+        Asr Calculation
+        <select id="asr-select">
+          <option value="0">Shafi</option>
+          <option value="1">Hanafi</option>
+        </select>
+      </label>
+    </div>
+
+    <button id="next-btn" class="primary hidden" onclick="nextStep()">→</button>
   </div>
 
+  <!-- STEP 2 -->
   <div class="step" data-step="2">
     <h2>Choose Language</h2>
     <button onclick="setLanguage('en')">English</button>
@@ -16,6 +44,7 @@
     <button class="primary" onclick="nextStep()">→</button>
   </div>
 
+  <!-- STEP 3 -->
   <div class="step" data-step="3">
     <h2>Adjust Hijri Date</h2>
     <button onclick="setHijri(-1)">-1</button>
