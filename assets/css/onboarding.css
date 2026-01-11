@@ -78,3 +78,18 @@
 .step.active {
   display: block;
 }
+
+.update-location-btn {
+  margin: 12px auto 8px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  border: 1px solid var(--text-secondary);
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.update-location-btn:active {
+  opacity: 0.7;
+}
