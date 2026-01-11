@@ -1,58 +1,71 @@
-/* =================================================
-   STEP 0: FORCE BROWSER LOCATION POPUP (MINIMAL)
-   This is the ONLY reliable trigger
-================================================== */
+let step = 1;
+const prefs = JSON.parse(localStorage.getItem("noorPreferences")) || {};
 
+/* =====================================
+   AUTO REQUEST ON FIRST VISIT
+===================================== */
 document.addEventListener("DOMContentLoaded", () => {
-  navigator.geolocation.getCurrentPosition(
-    onPermissionGranted,
-    onPermissionDenied
-  );
+  requestLocationPermission();
 });
 
-/* =================================================
-   PERMISSION GRANTED
-================================================== */
-function onPermissionGranted(position) {
-  const lat = position.coords.latitude;
-  const lon = position.coords.longitude;
-
-  console.log("Permission granted:", lat, lon);
-
-  // Update UI immediately
+/* =====================================
+   MANUAL + AUTO LOCATION REQUEST
+===================================== */
+function requestLocationPermission() {
   const locationEl = document.getElementById("location-text");
   const timezoneEl = document.getElementById("timezone-text");
 
   if (locationEl) {
-    locationEl.innerText = "Location detected. Loading details…";
+    locationEl.innerText = "Requesting location permission…";
   }
 
-  // NOW it is safe to do async work
-  enrichLocation(lat, lon);
-}
-
-/* =================================================
-   PERMISSION DENIED
-================================================== */
-function onPermissionDenied(error) {
-  console.error("Permission denied:", error);
-
-  const locationEl = document.getElementById("location-text");
-  if (locationEl) {
-    locationEl.innerText =
-      "Location access denied. Please allow location to continue.";
+  if (!("geolocation" in navigator)) {
+    locationEl.innerText = "Geolocation not supported on this device.";
+    return;
   }
 
-  alert(
-    "Location permission is required.\n\n" +
-    "Please enable it in browser settings and reload."
+  navigator.geolocation.getCurrentPosition(
+    handleLocationSuccess,
+    handleLocationError,
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
   );
 }
 
-/* =================================================
-   LAYER 2: REVERSE GEOCODING (SAFE, AFTER PERMISSION)
-================================================== */
+/* =====================================
+   SUCCESS
+===================================== */
+function handleLocationSuccess(position) {
+  const lat = position.coords.latitude;
+  const lon = position.coords.longitude;
+
+  enrichLocation(lat, lon);
+}
+
+/* =====================================
+   ERROR
+===================================== */
+function handleLocationError(error) {
+  console.warn("Geolocation error:", error);
+
+  const locationEl = document.getElementById("location-text");
+
+  if (locationEl) {
+    locationEl.innerText =
+      "Location access not granted. Please tap “Update Location”.";
+  }
+}
+
+/* =====================================
+   LAYER 2: HUMAN READABLE LOCATION
+===================================== */
 async function enrichLocation(lat, lon) {
+  const locationEl = document.getElementById("location-text");
+  const timezoneEl = document.getElementById("timezone-text");
+
   let city = "Unknown";
   let country = "";
   let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -70,25 +83,18 @@ async function enrichLocation(lat, lon) {
     console.warn("Reverse geocoding failed");
   }
 
-  // Update UI
-  document.getElementById("location-text").innerText =
-    `${city}${country ? ", " + country : ""}`;
+  locationEl.innerText = `${city}${country ? ", " + country : ""}`;
+  timezoneEl.innerText = `Time Zone: ${timezone}`;
 
-  document.getElementById("timezone-text").innerText =
-    `Time Zone: ${timezone}`;
-
-  // Save location
-  const prefs = JSON.parse(localStorage.getItem("noorPreferences")) || {};
   prefs.location = { lat, lon, city, country, timezone };
   localStorage.setItem("noorPreferences", JSON.stringify(prefs));
 
-  // Continue to prayer API
   loadPrayerDefaults(lat, lon);
 }
 
-/* =================================================
-   PRAYER API DEFAULTS (AFTER LOCATION)
-================================================== */
+/* =====================================
+   PRAYER API DEFAULTS
+===================================== */
 async function loadPrayerDefaults(lat, lon) {
   const res = await fetch(
     `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}`
@@ -96,9 +102,9 @@ async function loadPrayerDefaults(lat, lon) {
   const data = await res.json();
   const meta = data.data.meta;
 
-  const prefs = JSON.parse(localStorage.getItem("noorPreferences")) || {};
   prefs.prayerMethod = meta.method.id;
   prefs.asrMethod = meta.school;
+
   localStorage.setItem("noorPreferences", JSON.stringify(prefs));
 
   document.getElementById("method-label").innerText = meta.method.name;
@@ -106,4 +112,13 @@ async function loadPrayerDefaults(lat, lon) {
     meta.school === 1 ? "Hanafi" : "Shafi";
 
   document.getElementById("next-btn").classList.remove("hidden");
+}
+
+/* =====================================
+   STEP NAVIGATION
+===================================== */
+function nextStep() {
+  document.querySelector(`[data-step="${step}"]`).classList.remove("active");
+  step++;
+  document.querySelector(`[data-step="${step}"]`)?.classList.add("active");
 }
