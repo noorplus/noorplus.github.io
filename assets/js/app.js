@@ -1,49 +1,31 @@
-/* ===============================
-   THEME MANAGEMENT
-================================ */
+const root = document.getElementById("app-root");
 
-/*
-  Read saved theme from localStorage.
-  Possible values:
-  - "light"
-  - "dark"
-*/
-const savedTheme = localStorage.getItem("theme");
+const completed = localStorage.getItem("onboardingCompleted") === "true";
 
-/*
-  If a theme was saved earlier,
-  apply it to the document root (<html>).
-*/
-if (savedTheme) {
-  document.documentElement.setAttribute("data-theme", savedTheme);
+if (!completed) {
+  loadOnboarding();
+} else {
+  loadHome();
 }
 
-/*
-  Toggle between light and dark theme.
-  This function can be called from:
-  - a button click
-  - a menu option
-*/
-function toggleTheme() {
-  /*
-    Get current theme from <html>.
-    If not set, assume light theme.
-  */
-  const currentTheme =
-    document.documentElement.getAttribute("data-theme") || "light";
+function loadOnboarding() {
+  fetch("pages/onboarding.html")
+    .then(r => r.text())
+    .then(html => {
+      root.innerHTML = html;
+      const s = document.createElement("script");
+      s.src = "assets/js/onboarding.js";
+      document.body.appendChild(s);
+    });
+}
 
-  /*
-    Decide the next theme.
-  */
-  const nextTheme = currentTheme === "dark" ? "light" : "dark";
-
-  /*
-    Apply the new theme.
-  */
-  document.documentElement.setAttribute("data-theme", nextTheme);
-
-  /*
-    Persist theme choice so it survives reloads.
-  */
-  localStorage.setItem("theme", nextTheme);
+function loadHome() {
+  fetch("pages/home.html")
+    .then(r => r.text())
+    .then(html => {
+      root.innerHTML = html;
+      const s = document.createElement("script");
+      s.src = "assets/js/home.js";
+      document.body.appendChild(s);
+    });
 }
