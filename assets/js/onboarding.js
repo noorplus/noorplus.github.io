@@ -324,9 +324,9 @@ document.addEventListener("click", (e) => {
 elements.seeMethodList.addEventListener("click", () => {
   alert(
     "Full prayer calculation method list:\n\n" +
-      onboardingState.calculationMethods
-        .map((m) => `${m.id}: ${m.name}`)
-        .join("\n")
+    onboardingState.calculationMethods
+      .map((m) => `${m.id}: ${m.name}`)
+      .join("\n")
   );
 });
 
@@ -355,8 +355,9 @@ elements.step3Next.addEventListener("click", async () => {
   try {
     await saveOnboardingData();
     hideLoading();
-    // Redirect to home
-    window.location.href = "../pages/home.html";
+    // Finish onboarding - app.js will handle the reload/state check
+    console.log("Onboarding complete. Reloading...");
+    window.location.reload();
   } catch (error) {
     hideLoading();
     showError("Failed to save configuration. Please try again.", () => {
@@ -415,17 +416,25 @@ function checkOnboardingCompletion() {
   }
 }
 
-function init() {
-  checkOnboardingCompletion();
+// function init() {
+//   checkOnboardingCompletion();
+//   updateProgress();
+//   setupLanguageToggle();
+//   setupHijriSlider();
+//   initStep1();
+// }
+
+// // Start onboarding when page loads
+// if (document.readyState === "loading") {
+//   document.addEventListener("DOMContentLoaded", init);
+// } else {
+//   init();
+// }
+
+window.startOnboarding = function () {
+  console.log("Starting onboarding...");
   updateProgress();
   setupLanguageToggle();
   setupHijriSlider();
   initStep1();
-}
-
-// Start onboarding when page loads
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", init);
-} else {
-  init();
-}
+};

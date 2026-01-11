@@ -47,3 +47,49 @@ function toggleTheme() {
   */
   localStorage.setItem("theme", nextTheme);
 }
+
+
+/* ===============================
+   ROUTER & APP INIT
+================================ */
+
+const APP = {
+  container: document.querySelector(".app .page"),
+
+  init: async () => {
+    const isOnboarded = localStorage.getItem("onboardingCompleted");
+
+    if (!isOnboarded) {
+      await APP.loadPage("pages/onboarding.html");
+      // Initialize onboarding logic
+      if (window.startOnboarding) {
+        window.startOnboarding();
+      }
+    } else {
+      await APP.loadPage("pages/home.html");
+      // Add home initialization here if needed
+    }
+  },
+
+  loadPage: async (url) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const html = await response.text();
+
+      // Inject content
+      APP.container.innerHTML = html;
+
+    } catch (error) {
+      console.error("Failed to load page:", error);
+      APP.container.innerHTML = "<p>Error loading content.</p>";
+    }
+  }
+};
+
+// Start App when DOM is ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", APP.init);
+} else {
+  APP.init();
+}

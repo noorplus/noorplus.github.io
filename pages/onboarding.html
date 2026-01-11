@@ -1,208 +1,197 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Noor Plus - Onboarding</title>
-  <link rel="stylesheet" href="../assets/css/style.css" />
-  <link rel="stylesheet" href="../assets/css/onboarding.css" />
-</head>
-<body>
-  <main class="onboarding">
-    <!-- Progress Indicator -->
-    <div class="progress-bar">
-      <div class="progress-fill"></div>
+<!-- Progress Indicator -->
+<div class="progress-bar">
+  <div class="progress-fill"></div>
+</div>
+
+<!-- Step 1: Context (Location & Prayer Calculation) -->
+<section class="step step-1 active">
+  <div class="step-content">
+    <!-- Icon -->
+    <div class="step-icon">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- Globe -->
+        <circle cx="50" cy="50" r="35" fill="#4a9d6f" opacity="0.3" />
+        <circle cx="50" cy="50" r="30" fill="none" stroke="#4a9d6f" stroke-width="2" />
+        <path d="M 35 50 Q 50 40 65 50" fill="none" stroke="#4a9d6f" stroke-width="1.5" />
+        <path d="M 35 50 Q 50 60 65 50" fill="none" stroke="#4a9d6f" stroke-width="1.5" />
+        <!-- Pin -->
+        <circle cx="50" cy="35" r="6" fill="#000" />
+        <path d="M 50 35 L 48 45 L 50 50 L 52 45 Z" fill="#000" />
+      </svg>
     </div>
 
-    <!-- Step 1: Context (Location & Prayer Calculation) -->
-    <section class="step step-1 active">
-      <div class="step-content">
-        <!-- Icon -->
-        <div class="step-icon">
-          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <!-- Globe -->
-            <circle cx="50" cy="50" r="35" fill="#4a9d6f" opacity="0.3"/>
-            <circle cx="50" cy="50" r="30" fill="none" stroke="#4a9d6f" stroke-width="2"/>
-            <path d="M 35 50 Q 50 40 65 50" fill="none" stroke="#4a9d6f" stroke-width="1.5"/>
-            <path d="M 35 50 Q 50 60 65 50" fill="none" stroke="#4a9d6f" stroke-width="1.5"/>
-            <!-- Pin -->
-            <circle cx="50" cy="35" r="6" fill="#000"/>
-            <path d="M 50 35 L 48 45 L 50 50 L 52 45 Z" fill="#000"/>
-          </svg>
-        </div>
+    <h2 class="step-title">Your Location</h2>
 
-        <h2 class="step-title">Your Location</h2>
-
-        <!-- Location Display -->
-        <div class="location-card">
-          <div class="location-info">
-            <p class="location-address" id="locationAddress">Detecting location...</p>
-            <p class="location-timezone" id="locationTimezone">—</p>
-          </div>
-          <button class="location-button" id="retryLocation" style="display: none;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
-            </svg>
-          </button>
-        </div>
-
-        <h3 class="sub-title">Prayer Time Calculation</h3>
-        <p class="sub-description">Select your preferred calculation method or let the app find it for accurate prayer times in your area.</p>
-
-        <!-- Calculation Method Dropdown -->
-        <div class="dropdown-group">
-          <label>Calculation Method</label>
-          <button class="dropdown-button" id="methodDropdown">
-            <span id="methodValue">Auto-detecting...</span>
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M7 10l5 5 5-5z"/>
-            </svg>
-          </button>
-          <div class="dropdown-menu" id="methodMenu" style="display: none;">
-            <!-- Populated by API -->
-          </div>
-        </div>
-
-        <!-- Asr Calculation Dropdown -->
-        <div class="dropdown-group">
-          <label>Asr Calculation</label>
-          <button class="dropdown-button" id="asrDropdown">
-            <span id="asrValue">Hanafi</span>
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M7 10l5 5 5-5z"/>
-            </svg>
-          </button>
-          <div class="dropdown-menu" id="asrMenu" style="display: none;">
-            <div class="dropdown-item" data-value="Hanafi">Hanafi</div>
-            <div class="dropdown-item" data-value="Shafii">Shafii</div>
-          </div>
-        </div>
-
-        <p class="help-text">The calculation method is set automatically; you can change it if needed.</p>
-
-        <button class="secondary-button" id="seeMethodList">See Country & Method List</button>
+    <!-- Location Display -->
+    <div class="location-card">
+      <div class="location-info">
+        <p class="location-address" id="locationAddress">Detecting location...</p>
+        <p class="location-timezone" id="locationTimezone">—</p>
       </div>
-
-      <button class="next-button" id="step1Next" disabled>
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M8 4l8 8-8 8"/>
+      <button class="location-button" id="retryLocation" style="display: none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
         </svg>
       </button>
-    </section>
-
-    <!-- Step 2: Expression (Language Selection) -->
-    <section class="step step-2">
-      <div class="step-content">
-        <!-- Icon -->
-        <div class="step-icon">
-          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <!-- Bangladesh Flag -->
-            <rect x="25" y="35" width="50" height="30" fill="#006747" rx="3"/>
-            <circle cx="50" cy="50" r="12" fill="#ce1126"/>
-          </svg>
-        </div>
-
-        <h2 class="step-title">Choose preferred language</h2>
-        <p class="step-description">Noor Plus comes with both English and Bangla language. Choose your preferred language to continue.</p>
-
-        <!-- Language Toggle -->
-        <div class="language-toggle">
-          <button class="language-option active" data-lang="en">
-            <span>English</span>
-          </button>
-          <button class="language-option" data-lang="bn">
-            <span>Bangla</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="button-group">
-        <button class="back-button" id="step2Back">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M16 20l-8-8 8-8"/>
-          </svg>
-        </button>
-        <button class="next-button" id="step2Next">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M8 4l8 8-8 8"/>
-          </svg>
-        </button>
-      </div>
-    </section>
-
-    <!-- Step 3: Alignment (Hijri Date Adjustment) -->
-    <section class="step step-3">
-      <div class="step-content">
-        <!-- Icon -->
-        <div class="step-icon">
-          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <!-- Space scene -->
-            <rect width="100" height="100" fill="#4a5f8f" rx="50"/>
-            <circle cx="50" cy="50" r="25" fill="#ffc107" opacity="0.9"/>
-            <circle cx="30" cy="30" r="3" fill="#88ccee"/>
-            <circle cx="70" cy="25" r="2" fill="#e8e8e8"/>
-            <circle cx="75" cy="55" r="4" fill="#c9a961"/>
-            <circle cx="25" cy="70" r="3" fill="#4da96e"/>
-            <!-- Star -->
-            <path d="M 50 20 L 53 30 L 63 30 L 55 37 L 58 47 L 50 41 L 42 47 L 45 37 L 37 30 L 47 30 Z" fill="#e8e8e8" opacity="0.6"/>
-          </svg>
-        </div>
-
-        <h2 class="step-title">Adjust Hijri Date</h2>
-        <p class="step-description">Some countries (Bangladesh, India, Pakistan and other South Asian countries) are 1 day behind from Saudi Arabia in terms of moon sighting. You may adjust Hijri date by your location or keep it as same as Saudi Arabia.</p>
-
-        <!-- Hijri Offset Slider -->
-        <div class="hijri-slider-container">
-          <div class="hijri-slider">
-            <input type="range" id="hijriOffset" min="-2" max="2" value="0" class="hijri-input" />
-            <div class="hijri-labels">
-              <span>- 2</span>
-              <span>- 1</span>
-              <span>0</span>
-              <span>+ 1</span>
-              <span>+ 2</span>
-            </div>
-          </div>
-          <p class="hijri-label">Same day as Saudi Arabia</p>
-        </div>
-      </div>
-
-      <div class="button-group">
-        <button class="back-button" id="step3Back">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M16 20l-8-8 8-8"/>
-          </svg>
-        </button>
-        <button class="next-button" id="step3Next">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M8 4l8 8-8 8"/>
-          </svg>
-        </button>
-      </div>
-    </section>
-
-    <!-- Loading Modal -->
-    <div class="modal-overlay" id="loadingModal" style="display: none;">
-      <div class="modal-content">
-        <div class="spinner"></div>
-        <p id="loadingText">Loading...</p>
-      </div>
     </div>
 
-    <!-- Error Modal -->
-    <div class="modal-overlay" id="errorModal" style="display: none;">
-      <div class="modal-content error">
-        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
+    <h3 class="sub-title">Prayer Time Calculation</h3>
+    <p class="sub-description">Select your preferred calculation method or let the app find it for accurate prayer times
+      in your area.</p>
+
+    <!-- Calculation Method Dropdown -->
+    <div class="dropdown-group">
+      <label>Calculation Method</label>
+      <button class="dropdown-button" id="methodDropdown">
+        <span id="methodValue">Auto-detecting...</span>
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M7 10l5 5 5-5z" />
         </svg>
-        <p id="errorText">An error occurred</p>
-        <button class="primary-button" id="errorRetry">Retry</button>
+      </button>
+      <div class="dropdown-menu" id="methodMenu" style="display: none;">
+        <!-- Populated by API -->
       </div>
     </div>
-  </main>
 
-  <script src="../assets/js/onboarding.js"></script>
-</body>
-</html>
+    <!-- Asr Calculation Dropdown -->
+    <div class="dropdown-group">
+      <label>Asr Calculation</label>
+      <button class="dropdown-button" id="asrDropdown">
+        <span id="asrValue">Hanafi</span>
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M7 10l5 5 5-5z" />
+        </svg>
+      </button>
+      <div class="dropdown-menu" id="asrMenu" style="display: none;">
+        <div class="dropdown-item" data-value="Hanafi">Hanafi</div>
+        <div class="dropdown-item" data-value="Shafii">Shafii</div>
+      </div>
+    </div>
+
+    <p class="help-text">The calculation method is set automatically; you can change it if needed.</p>
+
+    <button class="secondary-button" id="seeMethodList">See Country & Method List</button>
+  </div>
+
+  <button class="next-button" id="step1Next" disabled>
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M8 4l8 8-8 8" />
+    </svg>
+  </button>
+</section>
+
+<!-- Step 2: Expression (Language Selection) -->
+<section class="step step-2">
+  <div class="step-content">
+    <!-- Icon -->
+    <div class="step-icon">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- Bangladesh Flag -->
+        <rect x="25" y="35" width="50" height="30" fill="#006747" rx="3" />
+        <circle cx="50" cy="50" r="12" fill="#ce1126" />
+      </svg>
+    </div>
+
+    <h2 class="step-title">Choose preferred language</h2>
+    <p class="step-description">Noor Plus comes with both English and Bangla language. Choose your preferred language to
+      continue.</p>
+
+    <!-- Language Toggle -->
+    <div class="language-toggle">
+      <button class="language-option active" data-lang="en">
+        <span>English</span>
+      </button>
+      <button class="language-option" data-lang="bn">
+        <span>Bangla</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="button-group">
+    <button class="back-button" id="step2Back">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M16 20l-8-8 8-8" />
+      </svg>
+    </button>
+    <button class="next-button" id="step2Next">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 4l8 8-8 8" />
+      </svg>
+    </button>
+  </div>
+</section>
+
+<!-- Step 3: Alignment (Hijri Date Adjustment) -->
+<section class="step step-3">
+  <div class="step-content">
+    <!-- Icon -->
+    <div class="step-icon">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- Space scene -->
+        <rect width="100" height="100" fill="#4a5f8f" rx="50" />
+        <circle cx="50" cy="50" r="25" fill="#ffc107" opacity="0.9" />
+        <circle cx="30" cy="30" r="3" fill="#88ccee" />
+        <circle cx="70" cy="25" r="2" fill="#e8e8e8" />
+        <circle cx="75" cy="55" r="4" fill="#c9a961" />
+        <circle cx="25" cy="70" r="3" fill="#4da96e" />
+        <!-- Star -->
+        <path d="M 50 20 L 53 30 L 63 30 L 55 37 L 58 47 L 50 41 L 42 47 L 45 37 L 37 30 L 47 30 Z" fill="#e8e8e8"
+          opacity="0.6" />
+      </svg>
+    </div>
+
+    <h2 class="step-title">Adjust Hijri Date</h2>
+    <p class="step-description">Some countries (Bangladesh, India, Pakistan and other South Asian countries) are 1 day
+      behind from Saudi Arabia in terms of moon sighting. You may adjust Hijri date by your location or keep it as same
+      as Saudi Arabia.</p>
+
+    <!-- Hijri Offset Slider -->
+    <div class="hijri-slider-container">
+      <div class="hijri-slider">
+        <input type="range" id="hijriOffset" min="-2" max="2" value="0" class="hijri-input" />
+        <div class="hijri-labels">
+          <span>- 2</span>
+          <span>- 1</span>
+          <span>0</span>
+          <span>+ 1</span>
+          <span>+ 2</span>
+        </div>
+      </div>
+      <p class="hijri-label">Same day as Saudi Arabia</p>
+    </div>
+  </div>
+
+  <div class="button-group">
+    <button class="back-button" id="step3Back">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M16 20l-8-8 8-8" />
+      </svg>
+    </button>
+    <button class="next-button" id="step3Next">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 4l8 8-8 8" />
+      </svg>
+    </button>
+  </div>
+</section>
+
+<!-- Loading Modal -->
+<div class="modal-overlay" id="loadingModal" style="display: none;">
+  <div class="modal-content">
+    <div class="spinner"></div>
+    <p id="loadingText">Loading...</p>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal-overlay" id="errorModal" style="display: none;">
+  <div class="modal-content error">
+    <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+    <p id="errorText">An error occurred</p>
+    <button class="primary-button" id="errorRetry">Retry</button>
+  </div>
+</div>
