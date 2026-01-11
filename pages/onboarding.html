@@ -3,37 +3,40 @@
 <section class="onboarding">
 
   <!-- STEP 1 -->
+  <!-- STEP 1 -->
   <div class="step active" data-step="1">
-    <h2>Your Location</h2>
-    <p class="muted">
-      We use your location to calculate accurate prayer times.
+
+    <img src="assets/img/location-globe.svg" class="hero-icon" alt="" />
+
+    <h2 class="title">Your Location</h2>
+
+    <p class="location-text" id="location-text">
+      Detecting your location…
     </p>
 
-    <button onclick="detectLocation()">Allow Location</button>
+    <p class="timezone" id="timezone-text"></p>
 
-    <div id="location-box" class="hidden">
-      <p><strong>Your current location:</strong></p>
-      <p id="location-text">Detecting…</p>
+    <h3 class="section-title">Prayer Time Calculation</h3>
 
-      <hr />
+    <p class="section-desc">
+      Select your preferred calculation method or let the app find it for accurate prayer times in your area.
+    </p>
 
-      <p><strong>Prayer Time Calculation</strong></p>
-
-      <label>
-        Calculation Method
-        <select id="method-select"></select>
-      </label>
-
-      <label>
-        Asr Calculation
-        <select id="asr-select">
-          <option value="0">Shafi</option>
-          <option value="1">Hanafi</option>
-        </select>
-      </label>
+    <div class="select-card" id="method-card">
+      <span>Calculation Method</span>
+      <strong id="method-label">—</strong>
     </div>
 
-    <button id="next-btn" class="primary hidden" onclick="nextStep()">→</button>
+    <div class="select-card" id="asr-card">
+      <span>Asr Calculation</span>
+      <strong id="asr-label">—</strong>
+    </div>
+
+    <p class="hint">
+      The calculation method is set automatically; you can change it if needed.
+    </p>
+
+    <button class="next-btn hidden" id="next-btn" onclick="nextStep()">→</button>
   </div>
 
   <!-- STEP 2 -->
