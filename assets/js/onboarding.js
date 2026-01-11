@@ -120,7 +120,6 @@ function setHijri(val) {
   prefs.hijriOffset = val;
   savePrefs();
 }
-
 function finish() {
   savePrefs();
   localStorage.setItem("onboardingCompleted", "true");
