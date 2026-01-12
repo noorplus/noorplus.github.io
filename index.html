@@ -14,16 +14,30 @@
     location.replace("pages/onboarding.html");
   }
 </script>
+  
+  <div id="app-shell">
+    <main id="app-main">
+      <!-- Content loads here -->
+    </main>
 
-<main id="app-main"></main>
-
-<nav class="bottom-nav">
-  <button data-page="community">👥</button>
-  <button data-page="quran">📖</button>
-  <button data-page="home" class="home">🏠</button>
-  <button data-page="library">📚</button>
-  <button data-page="menu">☰</button>
-</nav>
+    <nav class="bottom-nav">
+      <button data-page="community" aria-label="Community">
+        <i data-lucide="users"></i>
+      </button>
+      <button data-page="quran" aria-label="Quran">
+        <i data-lucide="book-open"></i>
+      </button>
+      <button data-page="home" class="home" aria-label="Home">
+        <i data-lucide="layout-grid"></i>
+      </button>
+      <button data-page="library" aria-label="Library">
+        <i data-lucide="library"></i>
+      </button>
+      <button data-page="menu" aria-label="Menu">
+        <i data-lucide="menu"></i>
+      </button>
+    </nav>
+  </div>
 
 <script src="assets/js/app.js"></script>
 </body>
