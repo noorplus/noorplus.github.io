@@ -43,3 +43,53 @@ body {
 #app-main {
   padding: 70px 16px 80px;
 }
+
+/* ===============================
+   HOME – PRAYER TIMES
+================================ */
+.home {
+  padding: var(--space-5);
+}
+
+.home-header h2 {
+  font-size: 1.4rem;
+  margin-bottom: .25rem;
+}
+
+.prayer-list {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin-top: var(--space-5);
+}
+
+.prayer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .9rem 1rem;
+  background: var(--surface);
+  border-radius: 14px;
+}
+
+.prayer-row span {
+  font-size: .95rem;
+  color: var(--text-secondary);
+}
+
+.prayer-row strong {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.prayer-row.active {
+  border: 2px solid var(--accent);
+  background: color-mix(in srgb, var(--surface) 85%, var(--accent) 15%);
+}
+
+.next-prayer {
+  margin-top: var(--space-5);
+  font-size: .9rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
