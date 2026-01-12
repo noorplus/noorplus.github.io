@@ -1,13 +1,34 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Noor Plus</title>
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-  <main id="app-root"></main>
-  <script src="assets/js/app.js"></script>
+
+<script>
+  if (!localStorage.getItem("onboardingCompleted")) {
+    location.replace("pages/onboarding.html");
+  }
+</script>
+
+<header class="top-nav">
+  <span class="app-title">Noor Plus</span>
+</header>
+
+<main id="app-main"></main>
+
+<nav class="bottom-nav">
+  <button data-page="community">👥</button>
+  <button data-page="quran">📖</button>
+  <button data-page="home" class="home">🏠</button>
+  <button data-page="library">📚</button>
+  <button data-page="menu">☰</button>
+</nav>
+
+<script src="assets/js/app.js"></script>
 </body>
 </html>

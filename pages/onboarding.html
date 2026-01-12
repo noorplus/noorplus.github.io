@@ -1,65 +1,56 @@
-<link rel="stylesheet" href="assets/css/onboarding.css" />
 
-<section class="onboarding">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Onboarding</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+<link rel="stylesheet" href="../assets/css/onboarding.css" />
+</head>
+<body>
 
-  <!-- STEP 1 -->
-  <div class="step active" data-step="1">
+<main class="onboarding">
 
-    <img src="assets/img/location-globe.svg" class="hero-icon" alt="" />
-
-    <h2 class="title">Your Location</h2>
-
-    <p class="location-text" id="location-text">
-      Detecting your location…
-    </p>
-
-    <p class="timezone" id="timezone-text"></p>
-    <button
-  type="button"
-  class="update-location-btn"
-  onclick="requestLocationPermission()"
->
-  Update Location
-</button>
-
-    <h3 class="section-title">Prayer Time Calculation</h3>
-
-    <p class="section-desc">
-      Select your preferred calculation method or let the app find it for accurate prayer times in your area.
-    </p>
-
-    <div class="select-card" id="method-card">
-      <span>Calculation Method</span>
-      <strong id="method-label">—</strong>
+<section class="step active" id="step-1">
+  <h2>Your Location</h2>
+  <div class="location-row">
+    <div>
+      <p id="locationText">Detecting location…</p>
+      <p id="timezoneText"></p>
     </div>
-
-    <div class="select-card" id="asr-card">
-      <span>Asr Calculation</span>
-      <strong id="asr-label">—</strong>
-    </div>
-
-    <p class="hint">
-      The calculation method is set automatically; you can change it if needed.
-    </p>
-
-    <button class="next-btn hidden" id="next-btn" onclick="nextStep()">→</button>
+    <button id="refreshLocation">📍</button>
   </div>
 
-  <!-- STEP 2 -->
-  <div class="step" data-step="2">
-    <h2>Choose Language</h2>
-    <button onclick="setLanguage('en')">English</button>
-    <button onclick="setLanguage('bn')">Bangla</button>
-    <button class="primary" onclick="nextStep()">→</button>
+  <div class="select-card">
+    <span>Calculation</span>
+    <strong id="calcMethod">—</strong>
+  </div>
+  <div class="select-card">
+    <span>Asr</span>
+    <strong id="asrMethod">—</strong>
   </div>
 
-  <!-- STEP 3 -->
-  <div class="step" data-step="3">
-    <h2>Adjust Hijri Date</h2>
-    <button onclick="setHijri(-1)">-1</button>
-    <button onclick="setHijri(0)">0</button>
-    <button onclick="setHijri(1)">+1</button>
-    <button class="primary" onclick="finish()">→</button>
-  </div>
-
+  <button class="next-btn" onclick="goToStep(2)">→</button>
 </section>
+
+<section class="step" id="step-2">
+  <h2>Language</h2>
+  <button onclick="setLanguage('en')">English</button>
+  <button onclick="setLanguage('bn')">Bangla</button>
+  <button class="next-btn" onclick="goToStep(3)">→</button>
+</section>
+
+<section class="step" id="step-3">
+  <h2>Hijri Offset</h2>
+  <button onclick="setHijri(-1)">-1</button>
+  <button onclick="setHijri(0)">0</button>
+  <button onclick="setHijri(1)">+1</button>
+  <button class="next-btn" onclick="finish()">✓</button>
+</section>
+
+</main>
+
+<script src="../assets/js/onboarding.js"></script>
+</body>
+</html>

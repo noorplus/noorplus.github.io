@@ -1,12 +1,45 @@
+
+:root {
+  --bg: #fafafa;
+  --surface: #f1f1f1;
+  --text-primary: #111;
+  --text-secondary: #666;
+}
+
+[data-theme="dark"] {
+  --bg: #121212;
+  --surface: #1e1e1e;
+  --text-primary: #eee;
+  --text-secondary: #aaa;
+}
+
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
-  background: #fafafa;
-  color: #111;
+  background: var(--bg);
+  color: var(--text-primary);
 }
 
-.page {
-  max-width: 420px;
-  margin: auto;
-  padding: 16px;
+.top-nav {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  background: var(--surface);
+}
+
+#app-main {
+  padding: 70px 16px 80px;
 }

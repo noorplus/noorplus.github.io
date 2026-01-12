@@ -1,124 +1,55 @@
-let step = 1;
-const prefs = JSON.parse(localStorage.getItem("noorPreferences")) || {};
 
-/* =====================================
-   AUTO REQUEST ON FIRST VISIT
-===================================== */
-document.addEventListener("DOMContentLoaded", () => {
-  requestLocationPermission();
-});
+let prefs = JSON.parse(localStorage.getItem("noorPreferences")) || {};
 
-/* =====================================
-   MANUAL + AUTO LOCATION REQUEST
-===================================== */
-function requestLocationPermission() {
-  const locationEl = document.getElementById("location-text");
-  const timezoneEl = document.getElementById("timezone-text");
-
-  if (locationEl) {
-    locationEl.innerText = "Requesting location permission…";
-  }
-
-  if (!("geolocation" in navigator)) {
-    locationEl.innerText = "Geolocation not supported on this device.";
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    handleLocationSuccess,
-    handleLocationError,
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
-    }
-  );
+function goToStep(n) {
+  document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+  document.getElementById("step-" + n).classList.add("active");
 }
 
-/* =====================================
-   SUCCESS
-===================================== */
-function handleLocationSuccess(position) {
-  const lat = position.coords.latitude;
-  const lon = position.coords.longitude;
+document.getElementById("refreshLocation").onclick = requestLocation;
+requestLocation();
 
-  enrichLocation(lat, lon);
+function requestLocation() {
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const { latitude, longitude } = pos.coords;
+
+    const geo = await fetch(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+    ).then(r => r.json());
+
+    document.getElementById("locationText").textContent =
+      `${geo.city || geo.locality}, ${geo.countryName}`;
+
+    document.getElementById("timezoneText").textContent =
+      `Time Zone: ${geo.timezone}`;
+
+    const prayer = await fetch(
+      `https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}`
+    ).then(r => r.json());
+
+    let method = prayer.data.meta.method;
+    let asr = method.id === 1 ? 1 : prayer.data.meta.school;
+
+    document.getElementById("calcMethod").textContent = method.name;
+    document.getElementById("asrMethod").textContent = asr === 1 ? "Hanafi" : "Shafi";
+
+    prefs.location = { latitude, longitude, city: geo.city, country: geo.countryName };
+    prefs.prayer = { method: method.id, asr };
+    localStorage.setItem("noorPreferences", JSON.stringify(prefs));
+  });
 }
 
-/* =====================================
-   ERROR
-===================================== */
-function handleLocationError(error) {
-  console.warn("Geolocation error:", error);
-
-  const locationEl = document.getElementById("location-text");
-
-  if (locationEl) {
-    locationEl.innerText =
-      "Location access not granted. Please tap “Update Location”.";
-  }
-}
-
-/* =====================================
-   LAYER 2: HUMAN READABLE LOCATION
-===================================== */
-async function enrichLocation(lat, lon) {
-  const locationEl = document.getElementById("location-text");
-  const timezoneEl = document.getElementById("timezone-text");
-
-  let city = "Unknown";
-  let country = "";
-  let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-  try {
-    const res = await fetch(
-      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
-    );
-    const geo = await res.json();
-
-    city = geo.city || geo.locality || city;
-    country = geo.countryName || country;
-    timezone = geo.timezone || timezone;
-  } catch (e) {
-    console.warn("Reverse geocoding failed");
-  }
-
-  locationEl.innerText = `${city}${country ? ", " + country : ""}`;
-  timezoneEl.innerText = `Time Zone: ${timezone}`;
-
-  prefs.location = { lat, lon, city, country, timezone };
+function setLanguage(l) {
+  prefs.language = l;
   localStorage.setItem("noorPreferences", JSON.stringify(prefs));
-
-  loadPrayerDefaults(lat, lon);
 }
 
-/* =====================================
-   PRAYER API DEFAULTS
-===================================== */
-async function loadPrayerDefaults(lat, lon) {
-  const res = await fetch(
-    `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}`
-  );
-  const data = await res.json();
-  const meta = data.data.meta;
-
-  prefs.prayerMethod = meta.method.id;
-  prefs.asrMethod = meta.school;
-
+function setHijri(h) {
+  prefs.hijriOffset = h;
   localStorage.setItem("noorPreferences", JSON.stringify(prefs));
-
-  document.getElementById("method-label").innerText = meta.method.name;
-  document.getElementById("asr-label").innerText =
-    meta.school === 1 ? "Hanafi" : "Shafi";
-
-  document.getElementById("next-btn").classList.remove("hidden");
 }
 
-/* =====================================
-   STEP NAVIGATION
-===================================== */
-function nextStep() {
-  document.querySelector(`[data-step="${step}"]`).classList.remove("active");
-  step++;
-  document.querySelector(`[data-step="${step}"]`)?.classList.add("active");
+function finish() {
+  localStorage.setItem("onboardingCompleted", "true");
+  location.replace("../index.html");
 }

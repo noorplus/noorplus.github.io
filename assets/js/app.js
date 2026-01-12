@@ -1,31 +1,23 @@
-const root = document.getElementById("app-root");
 
-const completed = localStorage.getItem("onboardingCompleted") === "true";
+const appMain = document.getElementById("app-main");
+const buttons = document.querySelectorAll(".bottom-nav button");
 
-if (!completed) {
-  loadOnboarding();
-} else {
-  loadHome();
-}
-
-function loadOnboarding() {
-  fetch("pages/onboarding.html")
+function loadPage(page) {
+  fetch(`pages/${page}.html`)
     .then(r => r.text())
     .then(html => {
-      root.innerHTML = html;
-      const s = document.createElement("script");
-      s.src = "assets/js/onboarding.js";
-      document.body.appendChild(s);
+      appMain.innerHTML = html;
+      if (page === "home") initHome();
     });
 }
 
-function loadHome() {
-  fetch("pages/home.html")
-    .then(r => r.text())
-    .then(html => {
-      root.innerHTML = html;
-      const s = document.createElement("script");
-      s.src = "assets/js/home.js";
-      document.body.appendChild(s);
-    });
+buttons.forEach(btn =>
+  btn.addEventListener("click", () => loadPage(btn.dataset.page))
+);
+
+loadPage("home");
+
+function initHome() {
+  const prefs = JSON.parse(localStorage.getItem("noorPreferences"));
+  if (!prefs) return;
 }
