@@ -50,7 +50,7 @@
   --space-2xl: 48px;
 
   --top-bar-height: 56px;
-  --bottom-bar-height: 72px;
+  --bottom-bar-height: 64px;
   --page-padding: var(--space-md);
   --section-gap: var(--space-lg);
   --card-gap: var(--space-sm);
@@ -1549,4 +1549,5 @@ img {
 
 :root[data-theme="dark"] .pt-time-row.pt-current-prayer {
   border-left-color: #64b5f6;
+
 }
