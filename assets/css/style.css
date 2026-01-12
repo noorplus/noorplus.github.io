@@ -36,6 +36,8 @@ body {
 
 #app-main {
   padding: 70px 16px 80px;
+  width: 100%;
+  max-width: 480px;
 }
 
 /* ===============================
