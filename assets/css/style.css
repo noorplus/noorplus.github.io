@@ -1,56 +1,135 @@
-
+/* =========================================================
+   1. DESIGN TOKENS
+========================================================= */
 :root {
-  --bg: #fafafa;
-  --surface: #f1f1f1;
-  --text-primary: #111;
-  --text-secondary: #666;
-}
+  /* --- Colors (Light Theme) --- */
+  --bg: #FFFFFF;
+  --bg-rgb: 255, 255, 255;
+  --surface: #F1F3F5;
+  --surface-soft: #F7F8FA;
+  --nav-bg: #F6F7F9;
+  --divider: #E3E6EA;
 
-[data-theme="dark"] {
-  --bg: #121212;
-  --surface: #1e1e1e;
-  --text-primary: #eee;
-  --text-secondary: #aaa;
-}
+  --primary: #2E7E9D;
+  --primary-soft: #6BB3D1;
+  --success: #48B572;
+  --alert: #E14B4B;
 
-:root {
+  --text-primary: #1C2730;
+  --text-secondary: #5C6C78;
+  --text-muted: #8C99A5;
+  --text-disabled: #B7C0C8;
+
+  --icon-active: #2E7E9D;
+  --icon-default: #5C6C78;
+  --icon-muted: #9AA6AF;
+
+  --progress-track: #D4D9DE;
+  --progress-fill: #000000;
+
+  /* --- Spacing --- */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
   --top-bar-height: 56px;
-  --bottom-bar-height: 64px;
-  --page-padding: 16px;
-  --space-lg: 16px;
+  --bottom-bar-height: 72px;
+  --page-padding: var(--space-md);
+
+  /* --- Radius --- */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  /* --- Typography --- */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* --- Effects --- */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* =========================================================
+   DARK THEME
+========================================================= */
+:root[data-theme="dark"] {
+  --bg: #0E1623;
+  --bg-rgb: 14, 22, 35;
+  --surface: #1A2433;
+  --surface-soft: #283244;
+  --nav-bg: #141D2B;
+  --divider: #2E3A4D;
+
+  --primary: #4C8DB6;
+  --primary-soft: #6EAED0;
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #C4CEDA;
+  --text-muted: #9AA6B2;
+  --text-disabled: #6C7886;
+
+  --icon-active: #6EAED0;
+  --icon-default: #C4CEDA;
+  --icon-muted: #7B8795;
+
+  --progress-track: #3A4558;
+  --progress-fill: #FFFFFF;
+}
+
+/* =========================================================
+   2. RESET & BASE
+========================================================= */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-  background: var(--bg);
+  font-family: var(--font-family);
+  background-color: var(--surface-soft);
   color: var(--text-primary);
-  overflow-x: hidden;
+  line-height: 1.5;
+
   display: flex;
   justify-content: center;
   min-height: 100vh;
+
+  overflow: hidden; /* IMPORTANT: only app-main scrolls */
 }
 
+/* =========================================================
+   3. APP SHELL
+========================================================= */
 #app-shell {
   width: 100%;
   max-width: 480px;
   min-height: 100vh;
 
-  margin: 0 auto;
   background-color: var(--bg);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.05);
 
-  position: relative;
   display: flex;
   flex-direction: column;
-
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.05);
+  position: relative;
 }
 
-/* MAIN SCROLL AREA */
+/* =========================================================
+   4. MAIN CONTENT (SCROLL AREA)
+========================================================= */
 #app-main {
   flex: 1;
 
-  /* Reserve space for fixed bars */
+  padding-top: var(--top-bar-height);
   padding-left: var(--page-padding);
   padding-right: var(--page-padding);
   padding-bottom: calc(var(--bottom-bar-height) + var(--space-lg));
@@ -58,22 +137,59 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
 
-  /* Smooth mobile scrolling */
   -webkit-overflow-scrolling: touch;
 }
 
+/* =========================================================
+   5. BOTTOM NAVIGATION
+========================================================= */
 .bottom-nav {
-  position: fixed !important;
+  position: fixed;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
+
   width: 100%;
   max-width: 480px;
-  height: 64px;
-  display: flex;
+  height: var(--bottom-bar-height);
+
+  background: rgba(var(--bg-rgb), 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  border-top: 1px solid var(--divider);
   z-index: 1000;
+
+  display: flex;
   justify-content: space-around;
-  background: var(--surface);
+  align-items: center;
+
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav button {
+  background: none;
+  border: none;
+
+  min-width: 64px;
+  min-height: 48px;
+
+  padding: 12px;
+  border-radius: var(--radius-md);
+
+  color: var(--icon-default);
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  transition: color var(--transition-fast);
+}
+
+.bottom-nav button.active {
+  color: var(--icon-active);
 }
 
 /* ===============================
