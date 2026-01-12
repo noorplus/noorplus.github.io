@@ -1,0 +1,110 @@
+<section class="page menu">
+
+  <header class="page-header">
+    <h1 class="page-title">Menu</h1>
+    <p class="page-subtitle">Personalize your experience</p>
+  </header>
+
+  <!-- Menu List -->
+  <div class="menu-list">
+    <!-- Theme Toggle -->
+    <div class="menu-item" id="theme-toggle">
+      <div class="menu-item-left">
+        <i data-lucide="moon" class="menu-icon"></i>
+        <div class="menu-info">
+          <span class="menu-label">Dark Mode</span>
+          <p class="menu-description">Adjust for better night viewing</p>
+        </div>
+      </div>
+      <div class="toggle-switch"></div>
+    </div>
+
+    <!-- Prayer Settings -->
+    <button class="menu-item" id="prayer-settings-btn" style="background: none; border: none; cursor: pointer; width: 100%;">
+      <div class="menu-item-left">
+        <i data-lucide="settings" class="menu-icon"></i>
+        <div class="menu-info">
+          <span class="menu-label">Prayer Settings</span>
+          <p class="menu-description">Configure location & prayer times</p>
+        </div>
+      </div>
+      <i data-lucide="chevron-right" class="menu-icon"></i>
+    </button>
+
+    <!-- Clear Cache -->
+    <button class="menu-item" id="clear-cache-btn" style="background: none; border: none; cursor: pointer; width: 100%;">
+      <div class="menu-item-left">
+        <i data-lucide="trash-2" class="menu-icon"></i>
+        <div class="menu-info">
+          <span class="menu-label">Clear Cache</span>
+          <p class="menu-description">Remove stored data</p>
+        </div>
+      </div>
+      <i data-lucide="chevron-right" class="menu-icon"></i>
+    </button>
+  </div>
+
+  <!-- Prayer Settings Modal -->
+  <div id="prayer-settings-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; padding: 20px;">
+    <div style="background: var(--bg-primary); border-radius: 12px; max-width: 500px; margin: auto; margin-top: 60px; padding: 24px; max-height: 80vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin: 0; font-size: 20px;">Prayer Settings</h2>
+        <button id="close-settings-modal" style="background: none; border: none; cursor: pointer; font-size: 24px;">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <!-- Location Input -->
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 8px; font-weight: 500;">Your Location</label>
+        <div style="display: flex; gap: 8px;">
+          <input 
+            type="text" 
+            id="settings-location-input" 
+            class="onb-input"
+            placeholder="Enter city or use auto-detect"
+            style="flex: 1;"
+          >
+          <button id="settings-location-detect-btn" class="onb-btn-icon" style="padding: 10px;">
+            <i data-lucide="navigation" style="width: 20px; height: 20px;"></i>
+          </button>
+        </div>
+        <small style="display: block; margin-top: 4px; color: var(--text-secondary);">Current: <span id="current-location">Not set</span></small>
+      </div>
+
+      <!-- Calculation Method -->
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 8px; font-weight: 500;">Calculation Method</label>
+        <select id="settings-calculation-method" class="onb-select">
+          <option value="Karachi">Karachi (Shafi)</option>
+          <option value="ISNA">ISNA (North America)</option>
+          <option value="MWL">Muslim World League</option>
+          <option value="Makkah">Umm Al-Qura (Makkah)</option>
+          <option value="Egypt">Egyptian General Authority</option>
+          <option value="Dubai">Dubai (Gulf)</option>
+        </select>
+      </div>
+
+      <!-- Asr Method -->
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 8px; font-weight: 500;">Asr Prayer Method</label>
+        <div style="display: flex; gap: 16px;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="radio" name="settings-asr-method" value="Shafi" checked>
+            <span>Shafi (Default)</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="radio" name="settings-asr-method" value="Hanafi">
+            <span>Hanafi</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Save Button -->
+      <button id="save-prayer-settings" style="width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px;">
+        Save Settings
+      </button>
+    </div>
+  </div>
+
+</section>
