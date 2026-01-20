@@ -228,7 +228,11 @@ function loadPage(page) {
 
     fetch(`pages/${page}.html`)
       .then(res => {
-        if (!res.ok) throw new Error("Page not found: " + page);
+        if (!res.ok) {
+          // Fallback to construction page if not found
+          console.warn(`Page ${page} not found, loading construction.`);
+          return fetch("pages/construction.html").then(r => r.text());
+        }
         return res.text();
       })
       .then(html => {
@@ -257,16 +261,18 @@ function loadPage(page) {
       })
       .catch(err => {
         console.error("Navigation Error:", err);
+        // Last resort error UI
         main.innerHTML = `<div style="padding:40px; text-align:center; color:var(--alert);">
-          <h3>Load Failed</h3>
-          <p>${err.message}</p>
-          <button onclick="location.reload()" style="margin-top:10px; padding:10px 20px; border-radius:10px; background:var(--primary); color:white; border:none;">Retry</button>
+          <h3>Something went wrong</h3>
+          <p>Could not load content.</p>
+          <button onclick="location.reload()" class="action-btn" style="margin-top:16px;">Reload App</button>
         </div>`;
       });
   } catch (err) {
     console.error("Page load error:", err);
   }
 }
+
 
 
 function initThemeToggle() {
