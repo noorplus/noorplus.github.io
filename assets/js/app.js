@@ -95,7 +95,7 @@ function formatTo12h(time24) {
 function loadPage(page) {
   try {
     console.log("Loading Page:", page);
-    
+
     // Cleanup previous page
     cleanupPage();
 
@@ -269,7 +269,7 @@ function loadPrayerSettingsModal() {
     if (locationInput) locationInput.value = location === 'Not set' ? '' : location;
     if (currentLocationSpan) currentLocationSpan.textContent = location;
     if (calcSelect) calcSelect.value = calcMethod;
-    
+
     asrRadios.forEach(radio => {
       radio.checked = radio.value === asrMethod;
     });
@@ -290,29 +290,51 @@ function detectPrayerSettingsLocation() {
       (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          
+
           // Reverse geocode
           fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
             { headers: { 'Accept': 'application/json' } }
           )
-          .then(res => res.json())
-          .then(data => {
-            const city = data.address?.city || data.address?.town || data.address?.village || `Lat: ${latitude.toFixed(2)}, Lng: ${longitude.toFixed(2)}`;
-            const input = document.getElementById('settings-location-input');
-            if (input) input.value = city;
-            
-            btn.disabled = false;
-            btn.innerHTML = '<i data-lucide="navigation" style="width: 20px; height: 20px;"></i>';
-            if (window.lucide) lucide.createIcons();
-          })
-          .catch(() => {
-            const input = document.getElementById('settings-location-input');
-            if (input) input.value = `Lat: ${latitude.toFixed(2)}, Lng: ${longitude.toFixed(2)}`;
-            btn.disabled = false;
-            btn.innerHTML = '<i data-lucide="navigation" style="width: 20px; height: 20px;"></i>';
-            if (window.lucide) lucide.createIcons();
-          });
+            .then(res => res.json())
+            .then(data => {
+              const city = data.address?.city || data.address?.town || data.address?.village || `Lat: ${latitude.toFixed(2)}, Lng: ${longitude.toFixed(2)}`;
+              const input = document.getElementById('settings-location-input');
+              if (input) input.value = city;
+
+              // Save coordinates
+              localStorage.setItem('userCoordinates', JSON.stringify({ lat: latitude, lon: longitude }));
+
+              // SMART DEFAULT UPDATE FOR UI
+              if (data.address?.country_code) {
+                const defaults = getDefaultsForCountry(data.address.country_code);
+
+                // Update Calculation Dropdown
+                const calcSelect = document.getElementById('settings-calculation-method');
+                if (calcSelect) {
+                  calcSelect.value = defaults.method;
+                  calcSelect.style.borderColor = 'var(--success)';
+                  setTimeout(() => calcSelect.style.borderColor = '', 1000);
+                }
+
+                // Update Asr Radio
+                const asrRadios = document.querySelectorAll('input[name="settings-asr-method"]');
+                asrRadios.forEach(r => {
+                  if (r.value === defaults.asr) r.checked = true;
+                });
+              }
+
+              btn.disabled = false;
+              btn.innerHTML = '<i data-lucide="navigation" style="width: 20px; height: 20px;"></i>';
+              if (window.lucide) lucide.createIcons();
+            })
+            .catch(() => {
+              const input = document.getElementById('settings-location-input');
+              if (input) input.value = `Lat: ${latitude.toFixed(2)}, Lng: ${longitude.toFixed(2)}`;
+              btn.disabled = false;
+              btn.innerHTML = '<i data-lucide="navigation" style="width: 20px; height: 20px;"></i>';
+              if (window.lucide) lucide.createIcons();
+            });
         } catch (e) {
           console.error('Position handler error:', e);
           btn.disabled = false;
@@ -410,10 +432,10 @@ function showOnboarding() {
 
     // Hide main app
     appShell.style.display = "none";
-    
+
     // Show onboarding container
     container.style.display = "flex";
-    
+
     // Load onboarding HTML
     fetch("pages/onboarding.html")
       .then(res => {
@@ -425,7 +447,7 @@ function showOnboarding() {
           throw new Error('Onboarding HTML is empty');
         }
         container.innerHTML = html;
-        
+
         // Small delay to ensure DOM is ready
         setTimeout(() => {
           try {
@@ -433,7 +455,7 @@ function showOnboarding() {
             if (window.lucide) {
               lucide.createIcons();
             }
-            
+
             // Initialize onboarding
             if (window.initOnboarding) {
               window.initOnboarding();
@@ -468,10 +490,10 @@ function startMainApp() {
   try {
     const appShell = document.getElementById("app-shell");
     const onboardingContainer = document.getElementById("onboarding-container");
-    
+
     if (appShell) appShell.style.display = "flex";
     if (onboardingContainer) onboardingContainer.style.display = "none";
-    
+
     // Load home page
     loadPage("home");
   } catch (e) {
@@ -481,15 +503,92 @@ function startMainApp() {
   }
 }
 
+/* ===============================
+   SMART DEFAULTS UTILS
+================================ */
+function getDefaultsForCountry(countryCode) {
+  if (!countryCode) return { method: 'MWL', asr: 'Shafi' };
+
+  const code = countryCode.toUpperCase();
+
+  // South Asia -> Karachi & Hanafi
+  if (['PK', 'BD', 'IN', 'AF'].includes(code)) {
+    return { method: 'Karachi', asr: 'Hanafi' };
+  }
+
+  // North America -> ISNA
+  if (['US', 'CA'].includes(code)) {
+    return { method: 'ISNA', asr: 'Shafi' };
+  }
+
+  // UK/Europe -> MWL or London (using MWL as safe default)
+  if (['GB', 'FR', 'DE', 'ES', 'IT', 'NL'].includes(code)) {
+    return { method: 'MWL', asr: 'Shafi' };
+  }
+
+  // Gulf -> Makkah/Dubai
+  if (['SA'].includes(code)) return { method: 'Makkah', asr: 'Shafi' };
+  if (['AE', 'KW', 'QA', 'BH', 'OM'].includes(code)) return { method: 'Dubai', asr: 'Shafi' };
+
+  // Egypt
+  if (code === 'EG') return { method: 'Egypt', asr: 'Shafi' };
+
+  // Turkey
+  if (code === 'TR') return { method: 'Turkey', asr: 'Hanafi' };
+
+  // Iran
+  if (code === 'IR') return { method: 'Tehran', asr: 'Shafi' };
+
+  // Indonesia, Malaysia, Singapore -> Singapore/Makkah
+  if (['ID', 'MY', 'SG'].includes(code)) return { method: 'Singapore', asr: 'Shafi' };
+
+  return { method: 'MWL', asr: 'Shafi' };
+}
+
+async function autoConfigureSettings(lat, lon) {
+  try {
+    // Only configure if NOT fully set yet
+    if (localStorage.getItem('calculationMethod') && localStorage.getItem('asrMethod')) {
+      return;
+    }
+
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+    const data = await res.json();
+    const countryCode = data.address?.country_code;
+
+    if (countryCode) {
+      const defaults = getDefaultsForCountry(countryCode);
+
+      if (!localStorage.getItem('calculationMethod')) {
+        localStorage.setItem('calculationMethod', defaults.method);
+        console.log(`Auto-set Method to ${defaults.method} for ${countryCode}`);
+      }
+
+      if (!localStorage.getItem('asrMethod')) {
+        localStorage.setItem('asrMethod', defaults.asr);
+        console.log(`Auto-set Asr to ${defaults.asr} for ${countryCode}`);
+      }
+
+      // Update userPreferences object too
+      const prefs = JSON.parse(localStorage.getItem('userPreferences') || '{}');
+      prefs.calculationMethod = localStorage.getItem('calculationMethod');
+      prefs.asrMethod = localStorage.getItem('asrMethod');
+      localStorage.setItem('userPreferences', JSON.stringify(prefs));
+    }
+  } catch (e) {
+    console.error('Auto-config error:', e);
+  }
+}
+
 // Global initialization
 (function startup() {
   try {
     // Initialize cache management
     initCacheManagement();
-    
+
     // Restore theme preferences
     restorePreferences();
-    
+
     // Check if onboarding is needed
     if (!checkOnboardingStatus()) {
       // Show onboarding
@@ -891,8 +990,15 @@ function initHomePage() {
     // Get location with fallback
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
+        async (pos) => {
           try {
+            // Save detected location coordinates for reuse
+            const coords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+            localStorage.setItem('userCoordinates', JSON.stringify(coords));
+
+            // Auto-configure based on location
+            await autoConfigureSettings(pos.coords.latitude, pos.coords.longitude);
+
             fetchAdvPrayerTimes(pos.coords.latitude, pos.coords.longitude);
           } catch (e) {
             console.error('Location fetch error:', e);
@@ -900,8 +1006,13 @@ function initHomePage() {
           }
         },
         () => {
-          console.warn('Geolocation denied, using default');
-          fetchAdvPrayerTimes(23.8103, 90.4125);
+          console.warn('Geolocation denied, trying saved or default');
+          const saved = JSON.parse(localStorage.getItem('userCoordinates') || 'null');
+          if (saved) {
+            fetchAdvPrayerTimes(saved.lat, saved.lon);
+          } else {
+            fetchAdvPrayerTimes(23.8103, 90.4125);
+          }
         }
       );
     } else {
@@ -925,21 +1036,57 @@ function initHomePage() {
   }
 }
 
+
+const CALCULATION_METHODS = {
+  'Karachi': 1,
+  'ISNA': 2,
+  'MWL': 3,
+  'Makkah': 4,
+  'Egypt': 5,
+  'Tehran': 7,
+  'Dubai': 8,
+  'Kuwait': 9,
+  'Qatar': 10,
+  'Singapore': 11,
+  'France': 12,
+  'Turkey': 13,
+  'Russia': 14,
+  'Moonsighting': 15
+};
+
+const ASR_METHODS = {
+  'Shafi': 0, // Standard
+  'Hanafi': 1
+};
+
 async function fetchAdvPrayerTimes(lat, lon) {
   try {
-    // Method 1: University of Islamic Sciences, Karachi (Standard for South Asia)
-    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=1`);
-    
+    // get user preferences
+    const savedCalc = localStorage.getItem('calculationMethod') || 'Karachi';
+    const savedAsr = localStorage.getItem('asrMethod') || 'Shafi';
+
+    // Map to API values
+    const methodId = CALCULATION_METHODS[savedCalc] || 1;
+    const schoolId = ASR_METHODS[savedAsr] || 0;
+
+    console.log(`Fetching prayer times for Lat: ${lat}, Lon: ${lon}, Method: ${methodId} (${savedCalc}), School: ${schoolId} (${savedAsr})`);
+
+    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=${methodId}&school=${schoolId}`);
+
     if (!res.ok) throw new Error('Prayer times API error');
-    
+
     const json = await res.json();
     if (!json.data) throw new Error('Invalid API response');
 
     const timings = json.data.timings;
     const meta = json.data.meta;
 
+    // Cache the latest timings for other pages to use
+    window.latestPrayerData = { timings, meta, date: new Date() };
+
+    // Update Home Page Elements if they exist
     const locEl = document.getElementById("adv-location");
-    if (locEl) locEl.textContent = meta.timezone.split("/")[1]?.replace(/_/g, " ") || "Dhaka";
+    if (locEl) locEl.textContent = meta.timezone.split("/")[1]?.replace(/_/g, " ") || "Location Detected";
 
     const suhurEl = document.getElementById("adv-suhur");
     const iftarEl = document.getElementById("adv-iftar");
@@ -1216,20 +1363,34 @@ function initPrayerTimePage() {
 
 function updatePrayerTimes() {
   try {
-    // Mock prayer times - Replace with actual API call
+    // Use cached data if available, otherwise we wait for the fetch in background
+    // If you came from Home page, latestPrayerData should be set.
+    const timings = window.latestPrayerData ? window.latestPrayerData.timings : null;
+
+    if (!timings) {
+      // Fallback or trigger fetch if coords exist
+      const saved = JSON.parse(localStorage.getItem('userCoordinates') || 'null');
+      if (saved) {
+        fetchAdvPrayerTimes(saved.lat, saved.lon).then(() => {
+          if (window.latestPrayerData) updatePrayerTimes();
+        });
+      }
+      return;
+    }
+
     const times = {
-      'Fajr': '05:30 am',
-      'Sunrise': '07:00 am',
-      'Forbidden1': '07:00 am - 09:00 am',
-      'Duha': '09:00 am - 11:30 am',
-      'Forbidden2': '11:30 am - 12:00 pm',
-      'Dhuhr': '12:30 pm',
-      'Asr': '03:45 pm',
-      'Forbidden3': '03:45 pm - 05:15 pm',
-      'Sunset': '05:15 pm',
-      'Maghrib': '05:20 pm',
-      'Isha': '06:50 pm',
-      'Tahajjud': '02:00 am - 04:00 am'
+      'Fajr': formatTo12h(timings.Fajr),
+      'Sunrise': formatTo12h(timings.Sunrise),
+      'Forbidden1': `${formatTo12h(timings.Sunrise)} - ${addMinutes(timings.Sunrise, 15)}`,
+      'Duha': `${addMinutes(timings.Sunrise, 20)} - ${addMinutes(timings.Dhuhr, -45)}`,
+      'Forbidden2': `${addMinutes(timings.Dhuhr, -10)} - ${formatTo12h(timings.Dhuhr)}`,
+      'Dhuhr': formatTo12h(timings.Dhuhr),
+      'Asr': formatTo12h(timings.Asr),
+      'Forbidden3': `${addMinutes(timings.Maghrib, -15)} - ${formatTo12h(timings.Maghrib)}`,
+      'Sunset': formatTo12h(timings.Maghrib), // Maghrib starts at Sunset
+      'Maghrib': formatTo12h(timings.Maghrib),
+      'Isha': formatTo12h(timings.Isha),
+      'Tahajjud': `${addMinutes(timings.Isha, 60)} - ${addMinutes(timings.Fajr, -45)}`
     };
 
     Object.keys(times).forEach(key => {
@@ -1248,9 +1409,26 @@ function updatePrayerTimes() {
   }
 }
 
+// Helper to add minutes to HH:MM time
+function addMinutes(timeStr, minsToAdd) {
+  if (!timeStr) return "--:--";
+  try {
+    const [h, m] = timeStr.split(':').map(Number);
+    const date = new Date();
+    date.setHours(h, m + minsToAdd, 0);
+    const newH = date.getHours();
+    const newM = date.getMinutes();
+    const period = newH >= 12 ? "pm" : "am";
+    const showH = newH % 12 || 12;
+    return `${showH}:${String(newM).padStart(2, '0')} ${period}`;
+  } catch (e) { return "--:--"; }
+}
+
 function updateCurrentPrayer() {
   try {
     // Determine current prayer based on time
+
+    // START DYNAMIC CALCULATION
     const now = new Date();
     const hours = now.getHours();
     const minutes = now.getMinutes();
@@ -1259,26 +1437,68 @@ function updateCurrentPrayer() {
     let currentPrayer = '--';
     let timeRemaining = '--:--';
 
-    // Prayer time ranges (in 24-hour format, minutes from midnight)
-    const prayerRanges = {
-      'Fajr': { start: 5 * 60 + 30, end: 7 * 60 }, // 05:30 - 07:00
-      'Dhuhr': { start: 12 * 60 + 30, end: 15 * 60 }, // 12:30 - 15:00
-      'Asr': { start: 15 * 60 + 45, end: 17 * 60 + 15 }, // 15:45 - 17:15
-      'Maghrib': { start: 17 * 60 + 20, end: 19 * 60 }, // 17:20 - 19:00
-      'Isha': { start: 18 * 60 + 50, end: 22 * 60 } // 18:50 - 22:00
-    };
+    if (window.latestPrayerData && window.latestPrayerData.timings) {
+      const t = window.latestPrayerData.timings;
 
-    // Find current prayer
-    for (const [prayer, range] of Object.entries(prayerRanges)) {
-      if (timeInMinutes >= range.start && timeInMinutes < range.end) {
-        currentPrayer = prayer;
-        const endTime = range.end;
-        const remaining = endTime - timeInMinutes;
-        const remHours = Math.floor(remaining / 60);
-        const remMins = remaining % 60;
-        timeRemaining = `${remHours}:${String(remMins).padStart(2, '0')}`;
-        break;
+      const getMins = (timeStr) => {
+        const [h, m] = timeStr.split(':').map(Number);
+        return h * 60 + m;
+      };
+
+      // Define ranges dynamically
+      // Note: This logic can be made more sophisticated to handle next day Fajr, etc.
+      // For simplicity, we use gaps between prayers.
+
+      const f = getMins(t.Fajr);
+      const s = getMins(t.Sunrise);
+      const d = getMins(t.Dhuhr);
+      const a = getMins(t.Asr);
+      const m = getMins(t.Maghrib);
+      const i = getMins(t.Isha);
+
+      const prayerRanges = [
+        { name: 'Fajr', start: f, end: s, next: d }, // Fajr ends at Sunrise visually for this app context? Or until Dhuhr? Usually Fajr time is short. Let's use start times.
+        { name: 'Dhuhr', start: d, end: a, next: a },
+        { name: 'Asr', start: a, end: m, next: m },
+        { name: 'Maghrib', start: m, end: i, next: i },
+        { name: 'Isha', start: i, end: 24 * 60, next: f } // Isha until midnight/fajr
+      ];
+
+      // Special check for after midnight before Fajr (part of Isha usually)
+      if (timeInMinutes < f) {
+        currentPrayer = 'Isha';
+        const remaining = f - timeInMinutes;
+        const remH = Math.floor(remaining / 60);
+        const remM = remaining % 60;
+        timeRemaining = `${remH}:${String(remM).padStart(2, '0')}`;
+      } else {
+        for (const p of prayerRanges) {
+          if (timeInMinutes >= p.start && timeInMinutes < p.end) {
+            currentPrayer = p.name;
+            // Time remaining to NEXT prayer start? or end of this one? 
+            // "Prayer Progress Circle - Animated ring showing remaining time for active prayer" 
+            // typically means time left until the NEXT prayer comes in.
+
+            let endTime = p.next;
+            // If next is Fajr (tomorrow), we need to handle wrapping
+            if (p.name === 'Isha' && endTime < timeInMinutes) {
+              // This is complex for simplified logic, let's treat end of day
+              endTime = 24 * 60 + getMins(t.Fajr);
+            }
+
+            let remaining = endTime - timeInMinutes;
+            if (remaining < 0) remaining += 24 * 60;
+
+            const remH = Math.floor(remaining / 60);
+            const remM = remaining % 60;
+            timeRemaining = `${remH}:${String(remM).padStart(2, '0')}`;
+            break;
+          }
+        }
       }
+    } else {
+      // Fallback or loading state
+      timeRemaining = 'Loading...';
     }
 
     // Update current prayer display

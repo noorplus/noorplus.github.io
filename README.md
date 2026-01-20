@@ -65,7 +65,7 @@
 ### Deploy to GitHub Pages
 1. Push changes to your GitHub repository
 2. GitHub automatically deploys from the `main` branch
-3. Access your live app at `https://yourusername.github.io/noorplus.github.io/`
+3. Access your live app at `https://noorplus.github.io/noorplus.github.io/`
 
 ## 📁 Project Structure
 
