@@ -1,0 +1,57 @@
+<section class="page tasbih">
+    <!-- Header -->
+    <header class="q-header sticky-header">
+        <div class="q-header-top">
+            <button class="icon-btn" onclick="loadPage('home')"><i data-lucide="chevron-left"></i></button>
+            <div class="q-header-info">
+                <h1 class="q-title">Digital Tasbih</h1>
+                <small class="q-subtitle">Dhikr Counter</small>
+            </div>
+            <button class="icon-btn" id="t-reset-btn"><i data-lucide="rotate-ccw"></i></button>
+        </div>
+    </header>
+
+    <!-- Main Counter Content -->
+    <div class="tasbih-container">
+
+        <!-- Target Selection -->
+        <div class="t-target-selector">
+            <button class="t-chip active" data-target="33">33</button>
+            <button class="t-chip" data-target="99">99</button>
+            <button class="t-chip" data-target="infinity">∞</button>
+        </div>
+
+        <!-- Counter Circle (Main Tap Area) -->
+        <div class="t-counter-area" id="t-tap-area">
+            <div class="t-ring-bg"></div>
+            <svg class="t-progress-ring" width="280" height="280">
+                <circle class="t-ring-circle" stroke="var(--primary)" stroke-width="8" fill="transparent" r="130"
+                    cx="140" cy="140" />
+            </svg>
+            <div class="t-counter-content">
+                <span class="t-count" id="t-current-count">0</span>
+                <span class="t-label">SubhanAllah</span>
+            </div>
+            <div class="t-ripple"></div>
+        </div>
+
+        <!-- Feedback Info -->
+        <div class="t-stats">
+            <div class="t-stat-item">
+                <span class="t-stat-label">Total</span>
+                <span class="t-stat-val" id="t-total-count">0</span>
+            </div>
+            <div class="t-stat-item">
+                <span class="t-stat-label">Lap</span>
+                <span class="t-stat-val" id="t-lap-count">0</span>
+            </div>
+        </div>
+
+        <!-- Haptics/Sound Toggle -->
+        <div class="t-controls-bottom">
+            <button class="icon-btn" id="t-vibrate-toggle" title="Vibration"><i data-lucide="vibrate"></i></button>
+            <button class="icon-btn" id="t-sound-toggle" title="Sound"><i data-lucide="volume-2"></i></button>
+        </div>
+
+    </div>
+</section>

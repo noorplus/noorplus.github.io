@@ -2901,3 +2901,185 @@ img {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
 }
+
+/* =========================================
+   9. TASBIH PAGE STYLES
+   ========================================= */
+
+.page.tasbih {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.tasbih-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  gap: var(--space-xl);
+  padding-bottom: 100px;
+  /* Space for bottom nav */
+}
+
+/* Target Chips */
+.t-target-selector {
+  display: flex;
+  gap: var(--space-sm);
+  background: var(--surface);
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+}
+
+.t-chip {
+  background: none;
+  border: none;
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.t-chip.active {
+  background: var(--bg);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Counter Area */
+.t-counter-area {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.t-ring-bg {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  /* Floating effect */
+  z-index: 1;
+  transition: transform 0.1s;
+}
+
+.t-progress-ring {
+  position: absolute;
+  transform: rotate(-90deg);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.t-ring-circle {
+  transition: stroke-dashoffset 0.1s;
+  stroke-dasharray: 816;
+  /* 2 * PI * 130 */
+  stroke-dashoffset: 816;
+  /* Start empty */
+  stroke-linecap: round;
+}
+
+.t-counter-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.t-count {
+  font-size: 80px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--primary);
+  /* Vibrant count */
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+}
+
+.t-label {
+  font-size: 18px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+/* Interaction Effects */
+.t-ripple {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid var(--primary);
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes tasbih-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.t-counter-area:active .t-ring-bg {
+  transform: scale(0.96);
+  box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.1);
+  /* Pressed In */
+}
+
+.t-counter-area.pulsing .t-ripple {
+  animation: tasbih-pulse 0.4s ease-out;
+}
+
+/* Stats */
+.t-stats {
+  display: flex;
+  gap: var(--space-2xl);
+}
+
+.t-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.t-stat-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.t-stat-val {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Bottom Controls */
+.t-controls-bottom {
+  display: flex;
+  gap: var(--space-md);
+}

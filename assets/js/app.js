@@ -258,6 +258,7 @@ function loadPage(page) {
         else if (page === "quran") initQuranReadPage();
         else if (page === "audio-quran") initAudioQuranPage();
         else if (page === "prayer-time") initPrayerTimePage();
+        else if (page === "tasbih") initTasbihPage();
         else if (page === "menu") initMenuPage();
       })
       .catch(err => {
