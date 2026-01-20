@@ -140,8 +140,66 @@ const SettingsManager = {
 };
 
 /* ===============================
-   CORE UTILITIES
+   NOTIFICATION MANAGER (ADHAN)
 ================================ */
+const NotificationManager = {
+  audio: new Audio('https://www.islamcan.com/audio/adhan/azan1.mp3'), // Placeholder URL, reliable source needed or local file
+
+  defaults: {
+    enabled: false,
+    prayers: {
+      Fajr: true,
+      Dhuhr: true,
+      Asr: true,
+      Maghrib: true,
+      Isha: true
+    }
+  },
+
+  getSettings() {
+    try {
+      return JSON.parse(localStorage.getItem('notificationSettings')) || this.defaults;
+    } catch {
+      return this.defaults;
+    }
+  },
+
+  saveSettings(settings) {
+    localStorage.setItem('notificationSettings', JSON.stringify(settings));
+  },
+
+  async requestPermission() {
+    if (!('Notification' in window)) {
+      alert('This browser does not support notifications.');
+      return false;
+    }
+    if (Notification.permission === 'granted') return true;
+
+    const result = await Notification.requestPermission();
+    return result === 'granted';
+  },
+
+  playAdhan() {
+    this.audio.currentTime = 0;
+    this.audio.play().catch(e => console.log('Audio playback prevented:', e));
+  },
+
+  trigger(prayerName) {
+    const settings = this.getSettings();
+    if (!settings.enabled || !settings.prayers[prayerName]) return;
+
+    // Show Notification
+    if (Notification.permission === 'granted') {
+      new Notification(`Time for ${prayerName}`, {
+        body: 'Hayya alas-salah (Come to prayer)',
+        icon: 'assets/icons/icon-192.png' // Ensure this exists or use generic
+      });
+    }
+
+    // Play Audio
+    this.playAdhan();
+  }
+};
 function formatTo12h(time24) {
   if (!time24 || typeof time24 !== 'string') return "--:--";
   try {
@@ -298,8 +356,73 @@ function initMenuPage() {
       prayerDesc.textContent = `${loc} • ${method}`;
     }
 
+    // --- Notifications UI Wiring ---
+    const notifBtn = document.getElementById('notifications-btn');
+    const notifModal = document.getElementById('notification-settings-modal');
+    const closeNotifBtn = document.getElementById('close-notif-modal');
+    const saveNotifBtn = document.getElementById('save-notif-settings');
+    const masterToggle = document.getElementById('notif-master-toggle');
+
+    if (notifBtn) {
+      notifBtn.addEventListener('click', () => {
+        notifModal.style.display = 'flex'; // Changed to flex for modal centering
+        loadNotifModal();
+      });
+    }
+
+    if (closeNotifBtn) {
+      closeNotifBtn.addEventListener('click', () => {
+        notifModal.style.display = 'none';
+      });
+    }
+
+    if (masterToggle) {
+      masterToggle.addEventListener('change', async (e) => {
+        if (e.target.checked) {
+          const granted = await NotificationManager.requestPermission();
+          if (!granted) {
+            e.target.checked = false;
+            alert('Permission denied. Please enable notifications in your browser settings.');
+          }
+        }
+      });
+    }
+
+    if (saveNotifBtn) {
+      saveNotifBtn.addEventListener('click', () => {
+        const settings = {
+          enabled: masterToggle.checked,
+          prayers: {}
+        };
+        document.querySelectorAll('.notif-checkbox').forEach(cb => {
+          settings.prayers[cb.dataset.prayer] = cb.checked;
+        });
+        NotificationManager.saveSettings(settings);
+        alert('Notification settings saved!');
+        notifModal.style.display = 'none';
+      });
+    }
+
+    // Modal background click for notification modal
+    if (notifModal) {
+      notifModal.addEventListener('click', (e) => {
+        if (e.target === notifModal) {
+          notifModal.style.display = 'none';
+        }
+      });
+    }
+
+    function loadNotifModal() {
+      const settings = NotificationManager.getSettings();
+      if (masterToggle) masterToggle.checked = settings.enabled;
+      document.querySelectorAll('.notif-checkbox').forEach(cb => {
+        cb.checked = settings.prayers[cb.dataset.prayer];
+      });
+    }
+
     // Load current settings into modal
     loadPrayerSettingsModal();
+    if (window.lucide) window.lucide.createIcons();
   } catch (e) {
     console.error('initMenuPage error:', e);
   }
@@ -348,6 +471,8 @@ function loadPrayerSettingsModal() {
     asrRadios.forEach(radio => {
       radio.checked = radio.value === settings.asrMethod;
     });
+
+    if (window.lucide) window.lucide.createIcons();
   } catch (e) {
     console.error('loadPrayerSettingsModal error:', e);
   }
@@ -454,17 +579,27 @@ function savePrayerSettings() {
     SettingsManager.set('hijriAdjustment', hijriAdj);
     SettingsManager.set('highLatitudeRule', highLat);
 
-    alert('Prayer settings saved successfully!');
-    closePrayerSettingsModal();
-
-    // Reload prayer times if on home or prayer-time page
-    const currentPage = document.querySelector('.page:not([style*="display: none"])');
-    if (currentPage?.classList.contains('home') || currentPage?.classList.contains('prayer-time')) {
-      window.location.reload();
+    // Feedback & Reload
+    const saveBtn = document.getElementById('save-prayer-settings');
+    if (saveBtn) {
+      saveBtn.textContent = 'Saving...';
+      saveBtn.disabled = true;
+      saveBtn.style.opacity = '0.7';
     }
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+
   } catch (e) {
     console.error('savePrayerSettings error:', e);
     alert('Error saving settings');
+    const saveBtn = document.getElementById('save-prayer-settings');
+    if (saveBtn) {
+      saveBtn.textContent = 'Save Settings';
+      saveBtn.disabled = false;
+      saveBtn.style.opacity = '1';
+    }
   }
 }
 
@@ -1237,10 +1372,11 @@ function getForbiddenTimes(timings) {
   ];
 }
 
-function startAdvCountdown(timings) {
-  try {
-    if (window.prayerTimer) clearInterval(window.prayerTimer);
+// Global state to track notifications
+let lastNotified = { date: null, prayer: null };
 
+function updateCurrentPrayerDisplay(timings) {
+  try {
     const prayerSchedule = [
       { name: "Fajr", time: timings.Fajr },
       { name: "Dhuhr", time: timings.Dhuhr },
