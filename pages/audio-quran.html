@@ -1,0 +1,155 @@
+<section class="page audio-quran">
+
+  <!-- 1. Header -->
+  <header class="q-header sticky-header">
+    <div class="q-header-top">
+      <button class="icon-btn" onclick="loadPage('home')"><i data-lucide="chevron-left"></i></button>
+      <div class="q-header-info">
+        <h1 class="q-title">Audio Quran</h1>
+        <small class="q-subtitle">Listen to Recitations</small>
+      </div>
+      <button class="icon-btn" id="q-search-btn"><i data-lucide="search"></i></button>
+    </div>
+
+    <!-- Search -->
+    <div id="q-search-bar" class="q-search-bar hidden">
+      <input type="text" id="q-search-input" placeholder="Search Recitation..." autocomplete="off">
+    </div>
+  </header>
+
+  <!-- 2. Main Layout (List + Sticky Player) -->
+  <div id="quran-main-view" class="q-content">
+
+    <!-- Reciter Selection (Horizontal Scroll) -->
+    <div class="reciter-scroll-area">
+      <h3 class="section-label">Select Reciter</h3>
+      <div class="reciter-list" id="reciter-list">
+        <!-- JS will populate: Example structure -->
+        <div class="reciter-card active">
+          <div class="r-avatar">
+            <i data-lucide="mic"></i>
+          </div>
+          <span>Mishary</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Surah Playlist -->
+    <div class="playlist-header">
+      <h3>Surahs</h3>
+      <button class="icon-btn-sm"><i data-lucide="arrow-down-up"></i></button>
+    </div>
+
+    <div id="surah-list" class="q-list audio-list-mode">
+      <!-- Populated by JS -->
+      <div class="q-loading-state">
+        <i data-lucide="loader-2" class="animate-spin"></i>
+        <p>Loading Playlist...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Modern Full Player (Overlay/Modal) -->
+  <!-- Default hidden, triggers on Play -->
+  <div id="q-full-player" class="audio-player-modal hidden">
+    <div class="ap-bg-blur"></div>
+
+    <div class="ap-header">
+      <button class="icon-btn" id="q-fp-close"><i data-lucide="chevron-down"></i></button>
+      <span class="ap-pill">NOW PLAYING</span>
+      <button class="icon-btn"><i data-lucide="more-horizontal"></i></button>
+    </div>
+
+    <!-- Layout: 350px width centered -->
+    <div class="ap-body">
+
+      <!-- Album Art / Animation -->
+      <div class="ap-visualizer">
+        <div class="ap-art-ring"></div>
+        <div class="ap-art-ring delay-1"></div>
+        <div class="ap-art-ring delay-2"></div>
+        <div class="ap-album-art">
+          <div class="ap-art-inner">
+            <span id="q-fp-surah-num">1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Track Info -->
+      <div class="ap-info">
+        <h2 id="q-fp-title">Al-Fatiha</h2>
+        <p id="q-fp-reciter-name">Mishary Rashid Alafasy</p>
+        <div class="ap-badge">Meccan • 7 Ayahs</div>
+      </div>
+
+      <!-- Waveform (Simulated) -->
+      <div class="ap-waveform">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <!-- Progress -->
+      <div class="ap-progress-container">
+        <div class="ap-time-row">
+          <span id="q-fp-current">0:00</span>
+          <span id="q-fp-duration">0:00</span>
+        </div>
+        <input type="range" id="q-fp-seek" class="ap-seek-slider" value="0" min="0" max="100">
+      </div>
+
+      <!-- Controls -->
+      <div class="ap-controls">
+        <button class="icon-btn" id="q-fp-loop"><i data-lucide="repeat"></i></button>
+
+        <div class="ap-main-ctrls">
+          <button class="ap-skip-btn" id="q-fp-prev"><i data-lucide="skip-back"></i></button>
+          <button class="ap-play-btn" id="q-fp-play">
+            <i data-lucide="play" fill="currentColor"></i>
+          </button>
+          <button class="ap-skip-btn" id="q-fp-next"><i data-lucide="skip-forward"></i></button>
+        </div>
+
+        <button class="icon-btn" id="q-fp-speed">1x</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 4. Mini Player (Sticky) -->
+  <div id="q-mini-player" class="q-mini-player hidden">
+    <div class="q-progress-container">
+      <div class="q-progress-bar" id="q-mini-progress-bar"></div>
+    </div>
+    <div class="q-mp-body">
+      <div class="q-mp-info" id="q-mp-expand-area">
+        <p class="q-mp-title" id="q-mp-title">Select Surah</p>
+        <p class="q-mp-sub" id="q-mp-reciter">--</p>
+      </div>
+      <div class="q-mp-controls">
+        <button class="icon-btn-sm" id="q-mp-prev"><i data-lucide="skip-back"></i></button>
+        <button class="play-btn-main" id="q-mp-play"><i data-lucide="play" fill="currentColor"></i></button>
+        <button class="icon-btn-sm" id="q-mp-next"><i data-lucide="skip-forward"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Inline layout helpers */
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--nav-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+
+</section>

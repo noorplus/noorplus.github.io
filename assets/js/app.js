@@ -255,7 +255,8 @@ function loadPage(page) {
         initThemeToggle();
 
         if (page === "home") initHomePage();
-        else if (page === "quran") initQuranPage();
+        else if (page === "quran") initQuranReadPage();
+        else if (page === "audio-quran") initAudioQuranPage();
         else if (page === "prayer-time") initPrayerTimePage();
         else if (page === "menu") initMenuPage();
       })
@@ -1157,8 +1158,85 @@ const QuranUI = {
 };
 
 // --- CONTROLLER ---
-async function initQuranPage() {
-  console.log("Quran 3.0 Init");
+// --- READ CONTROLLER (Text Only) ---
+async function initQuranReadPage() {
+  console.log("Quran Reader Init");
+
+  if (!window.quranState) {
+    window.quranState = new QuranState();
+    // We don't init player here if not needed, or we share state
+  }
+  const qs = window.quranState;
+
+  // 1. Initial Render
+  const listContainer = document.getElementById('surah-list');
+  if (listContainer) {
+    listContainer.innerHTML = '<p class="q-loading">Loading Surahs...</p>';
+    try {
+      const list = await QuranDataService.getSurahList();
+      QuranUI.renderList(list, async (surah) => {
+        // Handle Surah Selection for Reading
+        document.getElementById('quran-main-view').classList.add('hidden');
+        document.getElementById('ayah-view').classList.remove('hidden');
+
+        const hTitle = document.getElementById('q-header-title');
+        if (hTitle) {
+          hTitle.classList.remove('hidden');
+          hTitle.textContent = surah.englishName;
+        }
+        document.getElementById('q-header-subtitle').textContent = "Reading Mode";
+
+        // Load Content
+        const ayahsContainer = document.getElementById('ayahs-container');
+        ayahsContainer.innerHTML = '<div class="q-loading">Loading Text...</div>';
+
+        try {
+          // Fetch text only if possible, or minimal data
+          const details = await QuranDataService.getSurahDetails(surah.number, qs.get().reciter);
+          qs.setSurah(details);
+
+          // Render Text Only (Simplified View)
+          QuranUI.renderAyahs(details.ayahs, (idx) => {
+            // On click ayah -> maybe play audio in future? 
+            // For now, just highlight or focus
+            qs.setAyah(idx);
+            QuranUI.highlightAyah(idx);
+          });
+        } catch (e) {
+          console.error("Read fetch error", e);
+          ayahsContainer.innerHTML = '<p class="q-error">Failed to load text.</p>';
+        }
+      });
+    } catch (e) {
+      console.error(e);
+      listContainer.innerHTML = '<p class="q-error">Failed to load list.</p>';
+    }
+  }
+
+  // Bind Back Button
+  const backBtn = document.getElementById('q-back-btn');
+  if (backBtn) {
+    backBtn.onclick = () => {
+      const ayahView = document.getElementById('ayah-view');
+      if (!ayahView.classList.contains('hidden')) {
+        ayahView.classList.add('hidden');
+        document.getElementById('quran-main-view').classList.remove('hidden');
+
+        const hTitle = document.getElementById('q-header-title');
+        if (hTitle) hTitle.classList.add('hidden');
+        document.getElementById('q-header-subtitle').textContent = "Select Surah";
+      } else {
+        loadPage('home');
+      }
+    };
+  }
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+// --- AUDIO CONTROLLER (Player Focus) ---
+async function initAudioQuranPage() {
+  console.log("Quran 3.0 Audio Init");
 
   // Globals check
   if (!window.quranState) {
@@ -1168,6 +1246,7 @@ async function initQuranPage() {
     // Subscribe once
     window.quranState.subscribe(state => {
       QuranUI.updatePlayer(state);
+      // Highlighting optional in audio page if looking at list
       QuranUI.highlightAyah(state.currentAyahIndex);
 
       // Speed sync
@@ -1200,7 +1279,7 @@ async function initQuranPage() {
         try {
           const details = await QuranDataService.getSurahDetails(surah.number, qs.get().reciter);
           qs.setSurah(details);
-          QuranUI.showReader(details.meta);
+          QuranUI.showReader(details.meta); // This handles view switching
           QuranUI.renderAyahs(details.ayahs, (idx) => {
             qs.setAyah(idx);
             player.loadAndPlay(details.ayahs[idx].audio);
