@@ -5,7 +5,8 @@
     <p class="page-subtitle">Personalize your experience</p>
   </header>
 
-  <!-- Menu List -->
+  <!-- Section: General -->
+  <h3 class="menu-section-header">General</h3>
   <div class="menu-list">
     <!-- Theme Toggle -->
     <div class="menu-item" id="theme-toggle">
@@ -18,23 +19,31 @@
       </div>
       <div class="toggle-switch"></div>
     </div>
+  </div>
 
+  <!-- Section: Worship -->
+  <h3 class="menu-section-header">Worship</h3>
+  <div class="menu-list">
     <!-- Prayer Settings -->
     <button class="menu-item" id="prayer-settings-btn"
-      style="background: none; border: none; cursor: pointer; width: 100%;">
+      style="background: none; border: none; cursor: pointer; width: 100%; text-align: left;">
       <div class="menu-item-left">
         <i data-lucide="settings" class="menu-icon"></i>
         <div class="menu-info">
           <span class="menu-label">Prayer Settings</span>
-          <p class="menu-description">Configure location & prayer times</p>
+          <p class="menu-description" id="menu-prayer-settings-desc">Location • Calculation</p>
         </div>
       </div>
       <i data-lucide="chevron-right" class="menu-icon"></i>
     </button>
+  </div>
 
+  <!-- Section: System -->
+  <h3 class="menu-section-header">System</h3>
+  <div class="menu-list">
     <!-- Clear Cache -->
     <button class="menu-item" id="clear-cache-btn"
-      style="background: none; border: none; cursor: pointer; width: 100%;">
+      style="background: none; border: none; cursor: pointer; width: 100%; text-align: left;">
       <div class="menu-item-left">
         <i data-lucide="trash-2" class="menu-icon"></i>
         <div class="menu-info">
@@ -44,6 +53,11 @@
       </div>
       <i data-lucide="chevron-right" class="menu-icon"></i>
     </button>
+  </div>
+
+  <!-- Footer -->
+  <div class="menu-footer">
+    <p>NoorPlus v1.2.0 • Build 2026</p>
   </div>
 
   <!-- Prayer Settings Modal -->

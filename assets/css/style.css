@@ -287,6 +287,31 @@ img {
   color: var(--text-muted);
 }
 
+.menu-section-header {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin: 24px 16px 8px 16px;
+}
+
+.menu-footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-disabled);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.menu-list {
+  background-color: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--divider);
+  overflow: hidden;
+  margin-bottom: 8px; /* small gap if adjacent, though usually separated by header */
+}
+
 /* --- Toggles & Buttons --- */
 .toggle-switch {
   width: 44px;

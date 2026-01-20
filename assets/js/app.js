@@ -289,6 +289,15 @@ function initMenuPage() {
       saveBtn.addEventListener('click', savePrayerSettings);
     }
 
+    // Dynamic Subtitles
+    const prayerDesc = document.getElementById('menu-prayer-settings-desc');
+    if (prayerDesc) {
+      const settings = SettingsManager.getAll();
+      const loc = settings.userLocation || 'Setup Required'; // userLocation is the key we saved
+      const method = settings.calculationMethod || 'Karachi';
+      prayerDesc.textContent = `${loc} • ${method}`;
+    }
+
     // Load current settings into modal
     loadPrayerSettingsModal();
   } catch (e) {
