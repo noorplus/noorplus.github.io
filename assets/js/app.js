@@ -1310,20 +1310,28 @@ async function fetchAdvPrayerTimes(lat, lon) {
 
     // Update Date with Hijri
     const dateEl = document.getElementById("adv-date");
-    const dateHijriEl = document.getElementById("date-hijri");
-    const dateGregEl = document.getElementById("date-gregorian");
+    let dateHijriEl = document.getElementById("date-hijri");
+    let dateGregEl = document.getElementById("date-gregorian");
 
     if (dateData && dateData.hijri) {
       const h = dateData.hijri;
       const g = dateData.gregorian;
 
+      // Self-healing: If slider structure invalid, inject it
+      if (dateEl && (!dateHijriEl || !dateGregEl)) {
+        dateEl.innerHTML = `
+            <div class="h-date-slider">
+                <div class="h-date-item" id="date-hijri"></div>
+                <div class="h-date-item" id="date-gregorian"></div>
+            </div>
+          `;
+        dateHijriEl = document.getElementById("date-hijri");
+        dateGregEl = document.getElementById("date-gregorian");
+      }
+
       if (dateHijriEl && dateGregEl) {
-        // New Slider Structure
         dateHijriEl.textContent = `${h.day} ${h.month.en} ${h.year}`;
         dateGregEl.textContent = `${g.day} ${g.month.en} ${g.year}`;
-      } else if (dateEl) {
-        // Fallback legacy structure
-        dateEl.innerHTML = `${h.day} ${h.month.en} ${h.year} <span style="opacity:0.6; margin: 0 6px;">•</span> ${g.day} ${g.month.en} ${g.year}`;
       }
     }
 

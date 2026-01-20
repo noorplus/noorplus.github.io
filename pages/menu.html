@@ -77,49 +77,48 @@
   <div id="prayer-settings-modal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
 
-      <!-- Modal Header -->
-      <div
-        style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="margin: 0; font-size: 20px; font-weight: 700;">Prayer Settings</h2>
-        <button id="close-settings-modal"
-          style="background: none; border: none; cursor: pointer; padding: 4px; color: var(--text-secondary);">
-          <i data-lucide="x"></i>
-        </button>
-      </div>
+      <!-- Close Button (Absolute) -->
+      <button id="close-settings-modal"
+        style="position: absolute; top: 20px; right: 20px; background: none; border: none; cursor: pointer; color: var(--text-secondary); z-index: 10;">
+        <i data-lucide="x"></i>
+      </button>
 
-      <!-- Modal Body -->
-      <div style="padding: 24px; overflow-y: auto; flex: 1;">
+      <!-- Step 1: Location & Calculation -->
+      <div id="wizard-step-1" class="concept-step active" style="padding: 32px 24px;">
 
-        <!-- Section: Location -->
-        <h3
-          style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 12px; margin-top: 0; display: flex; align-items: center; gap: 8px;">
-          <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i> Location
-        </h3>
-        <div style="margin-bottom: 24px;">
-          <label style="display: block; margin-bottom: 8px; font-weight: 500;">Your City</label>
-          <div style="display: flex; gap: 8px;">
-            <input type="text" id="settings-location-input" class="onb-input"
-              placeholder="Enter city or use auto-detect" style="flex: 1;">
-            <button id="settings-location-detect-btn" class="onb-btn-icon" style="padding: 10px;" title="Auto Detect">
-              <i data-lucide="navigation" style="width: 20px; height: 20px;"></i>
-            </button>
-          </div>
-          <small style="display: block; margin-top: 4px; color: var(--text-secondary);">Current: <span
-              id="current-location">Not set</span></small>
+        <!-- Illustration -->
+        <div class="concept-illustration">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+            stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);">
+            <!-- Map / Globe Icon -->
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+            <path d="M2 12h20"></path>
+          </svg>
         </div>
 
-        <div style="height: 1px; background: var(--border-color); margin-bottom: 24px;"></div>
+        <h2 class="concept-title">Your Location</h2>
+        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">
+          <span id="wizard-location-text">Detected Location</span><br>
+          <span style="font-size: 11px; opacity: 0.7;">Time Zone: <span id="wizard-timezone">...</span></span>
+        </div>
 
-        <!-- Section: Calculation -->
-        <h3
-          style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-          <i data-lucide="calculator" style="width: 16px; height: 16px;"></i> Calculation
-        </h3>
+        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; width: 100%; text-align: left;">Prayer Time
+          Calculation</h3>
+        <p style="font-size: 12px; color: var(--text-secondary); text-align: left; margin-bottom: 16px; width: 100%;">
+          Select your preferred calculation method or let the app find it for accurate prayer times in your area.
+        </p>
 
-        <!-- Method -->
-        <div style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 8px; font-weight: 500;">Calculation Method</label>
-          <select id="settings-calculation-method" class="onb-select">
+        <!-- Method Card -->
+        <div class="input-card" style="position: relative;">
+          <div>
+            <span class="input-card-label">Calculation Method</span>
+            <span class="input-card-value" id="disp-calc-method">Karachi</span>
+          </div>
+          <i data-lucide="chevron-down" style="width: 16px; opacity: 0.5;"></i>
+          <!-- Hidden Select Overlay -->
+          <select id="settings-calculation-method" class="onb-select"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
             <option value="Karachi">Karachi (Shafi)</option>
             <option value="ISNA">ISNA (North American)</option>
             <option value="MWL">Muslim World League</option>
@@ -134,81 +133,84 @@
           </select>
         </div>
 
-        <!-- Asr -->
-        <div style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 8px; font-weight: 500;">Asr Juristic Method</label>
-          <div style="background: var(--bg-secondary); padding: 4px; border-radius: 8px; display: flex;">
-            <label style="flex: 1; text-align: center; cursor: pointer; padding: 8px;">
-              <input type="radio" name="settings-asr-method" value="Shafi" class="hidden-radio" checked>
-              <span class="radio-tile">Standard (Shafi)</span>
-            </label>
-            <label style="flex: 1; text-align: center; cursor: pointer; padding: 8px;">
-              <input type="radio" name="settings-asr-method" value="Hanafi" class="hidden-radio">
-              <span class="radio-tile">Hanafi</span>
-            </label>
+        <!-- Asr Card -->
+        <div class="input-card" style="position: relative;">
+          <div>
+            <span class="input-card-label">Asr Calculation</span>
+            <span class="input-card-value" id="disp-asr-method">Standard (Shafi)</span>
           </div>
-          <style>
-            .hidden-radio {
-              display: none;
-            }
-
-            .radio-tile {
-              display: block;
-              padding: 8px;
-              border-radius: 6px;
-              font-weight: 500;
-              color: var(--text-secondary);
-              transition: 0.2s;
-            }
-
-            .hidden-radio:checked+.radio-tile {
-              background: var(--bg-primary);
-              color: var(--text-primary);
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-          </style>
-        </div>
-
-        <!-- High Latitude -->
-        <div style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 8px; font-weight: 500;">High Latitude Rule</label>
-          <select id="settings-high-lat" class="onb-select">
-            <option value="0">None (Default)</option>
-            <option value="1">Midnight (Recommended for UK/Canada)</option>
-            <option value="2">One Seventh</option>
-            <option value="3">Angle Based</option>
+          <i data-lucide="chevron-down" style="width: 16px; opacity: 0.5;"></i>
+          <!-- Hidden Select/Radio Overlay Hack for standard select behavior -->
+          <select id="settings-asr-method-select" class="onb-select"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+            <option value="Shafi">Standard (Shafi)</option>
+            <option value="Hanafi">Hanafi</option>
           </select>
-          <small style="color: var(--text-muted);">Fixes missing prayers in summer for high latitudes.</small>
         </div>
+        <!-- High Lat Hidden for simpler UI or add as advanced? Keeping strict to concept -> strict concept doesn't show it. I will hide it or put it in Step 2. Let's put it in Step 2 or keep hidden for now. User said "get data like these images". I'll skip it in UI but keep logic safe. -->
 
-        <div style="height: 1px; background: var(--border-color); margin-bottom: 24px;"></div>
+        <p style="font-size: 11px; color: var(--success); margin-top: 12px;">
+          The calculation method is set automatically; you can change it if needed.
+        </p>
 
-        <!-- Section: Adjustments -->
-        <h3
-          style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-          <i data-lucide="calendar-clock" style="width: 16px; height: 16px;"></i> Adjustments
-        </h3>
+        <!-- Footer -->
+        <div class="wizard-footer">
+          <!-- See Country List (Secondary) -->
+          <button class="wizard-btn-text" style="margin-bottom: 16px; font-size: 13px; padding: 10px;">See Country &
+            Method List</button>
 
-        <!-- Hijri -->
-        <div style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 8px; font-weight: 500;">Hijri Date (+/- Days)</label>
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <button type="button" onclick="document.getElementById('settings-hijri-adj').stepDown()"
-              style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); cursor: pointer;">-</button>
-            <input type="number" id="settings-hijri-adj" class="onb-input" min="-2" max="2" value="0"
-              style="text-align: center; font-weight: bold; width: 60px;">
-            <button type="button" onclick="document.getElementById('settings-hijri-adj').stepUp()"
-              style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); cursor: pointer;">+</button>
-          </div>
+          <!-- Next Button -->
+          <button id="wizard-next-btn" class="wizard-btn">
+            <i data-lucide="chevron-right"></i>
+          </button>
         </div>
-
       </div>
 
-      <!-- Modal Footer -->
-      <div style="padding: 20px; border-top: 1px solid var(--border-color);">
-        <button id="save-prayer-settings"
-          style="width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s;">
-          Save Changes
+      <!-- Step 2: Hijri Adjustment -->
+      <div id="wizard-step-2" class="concept-step" style="padding: 32px 24px;">
+
+        <!-- Illustration -->
+        <div class="concept-illustration" style="background: #2D3142;">
+          <!-- Planet SVG -->
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+            <circle cx="12" cy="12" r="6" fill="#F4B400" stroke="none"></circle> <!-- Sun -->
+            <circle cx="4" cy="18" r="2" fill="#4285F4" stroke="none"></circle> <!-- Earth -->
+            <path d="M12 2a10 10 0 0 1 10 10" stroke="#fff" stroke-dasharray="4 4"></path>
+          </svg>
+        </div>
+
+        <h2 class="concept-title">Adjust Hijri Date</h2>
+        <p class="concept-desc">
+          Some countries are 1 day behind from Saudi Arabia in terms of moon sighting. You may adjust Hijri date by your
+          location.
+        </p>
+
+        <!-- Pill Selector -->
+        <!-- Replaces number input -->
+        <input type="hidden" id="settings-hijri-adj" value="0">
+        <div class="pill-container">
+          <button class="pill-btn" data-val="-2">-2</button>
+          <button class="pill-btn" data-val="-1">-1</button>
+          <button class="pill-btn active" data-val="0">0</button>
+          <button class="pill-btn" data-val="1">+1</button>
+          <button class="pill-btn" data-val="2">+2</button>
+        </div>
+
+        <p id="hijri-desc-text" style="font-size: 13px; color: var(--text-primary); font-weight: 500;">
+          Same day as Saudi Arabia
+        </p>
+
+        <!-- Footer -->
+        <div class="wizard-footer">
+          <button id="wizard-save-btn" class="wizard-btn">
+            <i data-lucide="check"></i>
+          </button>
+        </div>
+
+        <!-- Back Button (Small) -->
+        <button id="wizard-back-btn"
+          style="background:none; border:none; color: var(--text-secondary); margin-top: 16px; cursor: pointer; font-size: 12px;">
+          Back to Location
         </button>
       </div>
 
