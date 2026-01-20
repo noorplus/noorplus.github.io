@@ -576,27 +576,33 @@ function getDefaultsForCountry(countryCode) {
 
   const code = countryCode.toUpperCase();
 
-  // South Asia -> Karachi & Hanafi
-  if (['PK', 'BD', 'IN', 'AF'].includes(code)) {
+  // South Asia (Karachi)
+  if (['PK', 'BD', 'IN', 'AF', 'LK'].includes(code)) {
     return { method: 'Karachi', asr: 'Hanafi' };
   }
 
-  // North America -> ISNA
+  // North America (ISNA)
   if (['US', 'CA'].includes(code)) {
     return { method: 'ISNA', asr: 'Shafi' };
   }
 
-  // UK/Europe -> MWL or London (using MWL as safe default)
-  if (['GB', 'FR', 'DE', 'ES', 'IT', 'NL'].includes(code)) {
+  // Europe (Muslim World League)
+  // GB, FR, DE, ES, IT, NL, BE, CH, SE, NO, DK, FI, AT, IE, PT, GR
+  if (['GB', 'FR', 'DE', 'ES', 'IT', 'NL', 'BE', 'CH', 'SE', 'NO', 'DK', 'FI', 'AT', 'IE', 'PT', 'GR', 'RU'].includes(code)) {
     return { method: 'MWL', asr: 'Shafi' };
   }
 
-  // Gulf -> Makkah/Dubai
-  if (['SA'].includes(code)) return { method: 'Makkah', asr: 'Shafi' };
-  if (['AE', 'KW', 'QA', 'BH', 'OM'].includes(code)) return { method: 'Dubai', asr: 'Shafi' };
+  // Gulf Region
+  if (code === 'SA') return { method: 'Makkah', asr: 'Shafi' }; // Saudi -> Umm Al-Qura
+  if (code === 'AE') return { method: 'Dubai', asr: 'Shafi' };  // UAE -> Dubai
+  if (code === 'KW') return { method: 'Kuwait', asr: 'Shafi' }; // Kuwait
+  if (code === 'QA') return { method: 'Qatar', asr: 'Shafi' };  // Qatar
+  if (['BH', 'OM', 'YE'].includes(code)) return { method: 'Makkah', asr: 'Shafi' }; // Others -> Umm Al-Qura
 
-  // Egypt
-  if (code === 'EG') return { method: 'Egypt', asr: 'Shafi' };
+  // Arab World / Africa (Egyptian General Authority)
+  if (['EG', 'SD', 'LY', 'DZ', 'MA', 'TN', 'SY', 'LB', 'JO', 'PS', 'IQ'].includes(code)) {
+    return { method: 'Egypt', asr: 'Shafi' };
+  }
 
   // Turkey
   if (code === 'TR') return { method: 'Turkey', asr: 'Hanafi' };
@@ -604,8 +610,9 @@ function getDefaultsForCountry(countryCode) {
   // Iran
   if (code === 'IR') return { method: 'Tehran', asr: 'Shafi' };
 
-  // Indonesia, Malaysia, Singapore -> Singapore/Makkah
-  if (['ID', 'MY', 'SG'].includes(code)) return { method: 'Singapore', asr: 'Shafi' };
+  // SE Asia (Singapore/Makkah)
+  if (code === 'SG') return { method: 'Singapore', asr: 'Shafi' };
+  if (['ID', 'MY', 'BN'].includes(code)) return { method: 'Singapore', asr: 'Shafi' }; // often mapped to Singapore or Makkah
 
   return { method: 'MWL', asr: 'Shafi' };
 }
