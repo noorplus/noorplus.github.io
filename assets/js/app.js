@@ -297,186 +297,269 @@ function initThemeToggle() {
   }
 }
 
+// ==========================================
+// MENU & SETTINGS (Rebuild)
+// ==========================================
+
 function initMenuPage() {
-  try {
-    // Prayer Settings button
-    const prayerSettingsBtn = document.getElementById('prayer-settings-btn');
-    if (prayerSettingsBtn) {
-      prayerSettingsBtn.addEventListener('click', () => {
-        openPrayerSettingsModal();
-      });
-    }
+  console.log("Initializing Menu Page (Rebuild)...");
 
-    // Clear Cache button
-    const clearCacheBtn = document.getElementById('clear-cache-btn');
-    if (clearCacheBtn) {
-      clearCacheBtn.addEventListener('click', () => {
-        if (confirm('Clear all cached data?')) {
-          clearAppCache();
-          localStorage.setItem('noorplus_cache_timestamp', Date.now());
-          alert('Cache cleared successfully');
-        }
-      });
-    }
+  // 1. Prayer Settings Modal & Wizard
+  const prayerBtn = document.getElementById('prayer-settings-btn');
+  const prayerModal = document.getElementById('prayer-settings-modal');
+  const closePrayer = document.getElementById('close-settings-modal');
 
-    // Close Modal button
-    const closeBtn = document.getElementById('close-settings-modal');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closePrayerSettingsModal);
-    }
-
-    // Modal background click
-    const modal = document.getElementById('prayer-settings-modal');
-    if (modal) {
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          closePrayerSettingsModal();
-        }
-      });
-    }
-
-    // Location detect button in settings
-    const detectBtn = document.getElementById('settings-location-detect-btn');
-    if (detectBtn) {
-      detectBtn.addEventListener('click', detectPrayerSettingsLocation);
-    }
-
-    // Save button
-    const saveBtn = document.getElementById('save-prayer-settings');
-    if (saveBtn) {
-      saveBtn.addEventListener('click', savePrayerSettings);
-    }
-
-    // Dynamic Subtitles
-    const prayerDesc = document.getElementById('menu-prayer-settings-desc');
-    if (prayerDesc) {
-      const settings = SettingsManager.getAll();
-      const loc = settings.userLocation || 'Setup Required'; // userLocation is the key we saved
-      const method = settings.calculationMethod || 'Karachi';
-      prayerDesc.textContent = `${loc} • ${method}`;
-    }
-
-    // --- Notifications UI Wiring ---
-    const notifBtn = document.getElementById('notifications-btn');
-    const notifModal = document.getElementById('notification-settings-modal');
-    const closeNotifBtn = document.getElementById('close-notif-modal');
-    const saveNotifBtn = document.getElementById('save-notif-settings');
-    const masterToggle = document.getElementById('notif-master-toggle');
-
-    if (notifBtn) {
-      notifBtn.addEventListener('click', () => {
-        notifModal.style.display = 'flex'; // Changed to flex for modal centering
-        loadNotifModal();
-      });
-    }
-
-    if (closeNotifBtn) {
-      closeNotifBtn.addEventListener('click', () => {
-        notifModal.style.display = 'none';
-      });
-    }
-
-    if (masterToggle) {
-      masterToggle.addEventListener('change', async (e) => {
-        if (e.target.checked) {
-          const granted = await NotificationManager.requestPermission();
-          if (!granted) {
-            e.target.checked = false;
-            alert('Permission denied. Please enable notifications in your browser settings.');
-          }
-        }
-      });
-    }
-
-    if (saveNotifBtn) {
-      saveNotifBtn.addEventListener('click', () => {
-        const settings = {
-          enabled: masterToggle.checked,
-          prayers: {}
-        };
-        document.querySelectorAll('.notif-checkbox').forEach(cb => {
-          settings.prayers[cb.dataset.prayer] = cb.checked;
-        });
-        NotificationManager.saveSettings(settings);
-        alert('Notification settings saved!');
-        notifModal.style.display = 'none';
-      });
-    }
-
-    // Modal background click for notification modal
-    if (notifModal) {
-      notifModal.addEventListener('click', (e) => {
-        if (e.target === notifModal) {
-          notifModal.style.display = 'none';
-        }
-      });
-    }
-
-    function loadNotifModal() {
-      const settings = NotificationManager.getSettings();
-      if (masterToggle) masterToggle.checked = settings.enabled;
-      document.querySelectorAll('.notif-checkbox').forEach(cb => {
-        cb.checked = settings.prayers[cb.dataset.prayer];
-      });
-    }
-
-    // Load current settings into modal
-    loadPrayerSettingsModal();
-    if (window.lucide) window.lucide.createIcons();
-  } catch (e) {
-    console.error('initMenuPage error:', e);
-  }
-}
-
-function openPrayerSettingsModal() {
-  try {
-    const modal = document.getElementById('prayer-settings-modal');
-    if (modal) {
-      modal.style.display = 'flex';
+  if (prayerBtn && prayerModal) {
+    prayerBtn.onclick = () => {
       loadPrayerSettingsModal();
-    }
-  } catch (e) {
-    console.error('openPrayerSettingsModal error:', e);
+      prayerModal.classList.remove('hidden');
+    };
   }
-}
+  if (closePrayer && prayerModal) {
+    closePrayer.onclick = () => prayerModal.classList.add('hidden');
+  }
 
-function closePrayerSettingsModal() {
-  try {
-    const modal = document.getElementById('prayer-settings-modal');
-    if (modal) {
-      modal.style.display = 'none';
-    }
-  } catch (e) {
-    console.error('closePrayerSettingsModal error:', e);
+  // Modal Background Click (Prayer)
+  if (prayerModal) {
+    prayerModal.onclick = (e) => {
+      if (e.target === prayerModal) prayerModal.classList.add('hidden');
+    };
   }
+
+  // Wizard Nav
+  const nextBtn = document.getElementById('wizard-next-btn');
+  const backBtn = document.getElementById('wizard-back-btn');
+  const saveBtn = document.getElementById('wizard-save-btn');
+
+  if (nextBtn) {
+    nextBtn.onclick = () => {
+      document.getElementById('wizard-step-1').classList.remove('active');
+      document.getElementById('wizard-step-2').classList.add('active');
+    };
+  }
+  if (backBtn) {
+    backBtn.onclick = () => {
+      document.getElementById('wizard-step-2').classList.remove('active');
+      document.getElementById('wizard-step-1').classList.add('active');
+    };
+  }
+  if (saveBtn) {
+    saveBtn.onclick = savePrayerSettings;
+  }
+
+  // 2. Notifications Modal
+  const notifBtn = document.getElementById('notifications-btn');
+  const notifModal = document.getElementById('notification-settings-modal');
+  const closeNotif = document.getElementById('close-notif-modal');
+  const saveNotif = document.getElementById('save-notif-settings');
+
+  if (notifBtn && notifModal) {
+    notifBtn.onclick = () => {
+      loadNotificationSettings();
+      notifModal.classList.remove('hidden');
+    };
+  }
+  if (closeNotif && notifModal) {
+    closeNotif.onclick = () => notifModal.classList.add('hidden');
+  }
+
+  // Modal Background Click (Notif)
+  if (notifModal) {
+    notifModal.onclick = (e) => {
+      if (e.target === notifModal) notifModal.classList.add('hidden');
+    };
+  }
+
+  if (saveNotif) {
+    saveNotif.onclick = async () => {
+      // Gather settings
+      const settings = {
+        enabled: document.getElementById('notif-master-toggle')?.checked || false,
+        prayers: {}
+      };
+      document.querySelectorAll('.notif-checkbox').forEach(cb => {
+        settings.prayers[cb.dataset.prayer] = cb.checked;
+      });
+
+      NotificationManager.saveSettings(settings); // Assume exists
+
+      saveNotif.textContent = "Saved";
+      setTimeout(() => {
+        notifModal.classList.add('hidden');
+        saveNotif.textContent = "Save Preferences";
+      }, 800);
+    };
+  }
+
+  // Notification Master Toggle Logic
+  const masterToggle = document.getElementById('notif-master-toggle');
+  if (masterToggle) {
+    masterToggle.addEventListener('change', async (e) => {
+      if (e.target.checked) {
+        const granted = await NotificationManager.requestPermission();
+        if (!granted) {
+          e.target.checked = false;
+          alert("Notifications permission denied. Please enable in browser settings.");
+        }
+      }
+    });
+  }
+
+  // 3. System
+  const clearCacheBtn = document.getElementById('clear-cache-btn');
+  if (clearCacheBtn) {
+    clearCacheBtn.onclick = () => {
+      if (confirm('Reset all app data? This cannot be undone.')) {
+        localStorage.clear();
+        window.location.reload();
+      }
+    };
+  }
+
+  // 4. Dynamic Description
+  const prayerDesc = document.getElementById('menu-prayer-settings-desc');
+  if (prayerDesc) {
+    const s = SettingsManager.getAll();
+    prayerDesc.textContent = `${s.userLocation || 'Location'} • ${s.calculationMethod || 'Karachi'}`;
+  }
+
+  // 5. Select & Pill Logic (Wizard)
+  const calcSelect = document.getElementById('settings-calculation-method');
+  if (calcSelect) {
+    calcSelect.addEventListener('change', (e) => {
+      document.getElementById('disp-calc-method').textContent = e.target.options[e.target.selectedIndex].text.split('(')[0].trim();
+    });
+  }
+  const asrSelect = document.getElementById('settings-asr-method-select');
+  if (asrSelect) {
+    asrSelect.addEventListener('change', (e) => {
+      document.getElementById('disp-asr-method').textContent = e.target.options[e.target.selectedIndex].text;
+    });
+  }
+
+  document.querySelectorAll('.pill-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      const val = parseInt(e.currentTarget.dataset.val);
+      document.getElementById('settings-hijri-adj').value = val;
+      updateHijriDescription(val);
+    };
+  });
+
+  if (window.lucide) window.lucide.createIcons();
+  initThemeToggle();
 }
 
 function loadPrayerSettingsModal() {
+  console.log("Loading Prayer Settings...");
+  const s = SettingsManager.getAll();
+
+  // Step 1 Reset
+  document.getElementById('wizard-step-1').classList.add('active');
+  document.getElementById('wizard-step-2').classList.remove('active');
+
+  // Location
+  document.getElementById('wizard-location-text').textContent = s.userLocation || "Auto Detected";
   try {
-    const settings = SettingsManager.getAll();
+    document.getElementById('wizard-timezone').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  } catch { }
 
-    const locationInput = document.getElementById('settings-location-input');
-    const currentLocationSpan = document.getElementById('current-location');
-    const calcSelect = document.getElementById('settings-calculation-method');
-    const asrRadios = document.querySelectorAll('input[name="settings-asr-method"]');
-    const hijriInput = document.getElementById('settings-hijri-adj');
-    const highLatSelect = document.getElementById('settings-high-lat');
+  // Calc Method
+  const calcSelect = document.getElementById('settings-calculation-method');
+  if (calcSelect) {
+    calcSelect.value = s.calculationMethod;
+    const selText = calcSelect.options[calcSelect.selectedIndex]?.text.split('(')[0].trim();
+    document.getElementById('disp-calc-method').textContent = selText || s.calculationMethod;
+  }
 
-    if (locationInput) locationInput.value = settings.location === 'Not set' || !settings.location ? '' : settings.location;
-    if (currentLocationSpan) currentLocationSpan.textContent = settings.location || 'Not set';
-    if (calcSelect) calcSelect.value = settings.calculationMethod;
-    if (hijriInput) hijriInput.value = settings.hijriAdjustment;
-    if (highLatSelect) highLatSelect.value = settings.highLatitudeRule;
+  // Asr Method
+  const asrSelect = document.getElementById('settings-asr-method-select');
+  if (asrSelect) {
+    asrSelect.value = s.asrMethod;
+    const selText = asrSelect.options[asrSelect.selectedIndex]?.text;
+    document.getElementById('disp-asr-method').textContent = selText || s.asrMethod;
+  }
 
-    asrRadios.forEach(radio => {
-      radio.checked = radio.value === settings.asrMethod;
-    });
+  // Hijri
+  const hAdj = parseInt(s.hijriAdjustment || 0);
+  document.getElementById('settings-hijri-adj').value = hAdj;
+  document.querySelectorAll('.pill-btn').forEach(btn => {
+    if (parseInt(btn.dataset.val) === hAdj) btn.classList.add('active');
+    else btn.classList.remove('active');
+  });
+  updateHijriDescription(hAdj);
 
-    if (window.lucide) window.lucide.createIcons();
-  } catch (e) {
-    console.error('loadPrayerSettingsModal error:', e);
+  // Save Btn Reset
+  const btn = document.getElementById('wizard-save-btn');
+  if (btn) {
+    btn.classList.remove('success'); // Reset state
+    btn.innerHTML = '<i data-lucide="check"></i>';
+    btn.disabled = false;
+  }
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function updateHijriDescription(val) {
+  const el = document.getElementById('hijri-desc-text');
+  if (el) {
+    if (val === 0) el.textContent = "Matches Saudi Arabia";
+    else if (val > 0) el.textContent = `${val} days ahead of Saudi Arabia`;
+    else el.textContent = `${Math.abs(val)} days behind Saudi Arabia`;
   }
 }
+
+async function savePrayerSettings() {
+  const saveBtn = document.getElementById('wizard-save-btn');
+  if (saveBtn) {
+    saveBtn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i>';
+    saveBtn.disabled = true;
+  }
+
+  try {
+    const calc = document.getElementById('settings-calculation-method').value;
+    const asr = document.getElementById('settings-asr-method-select').value;
+    const hijri = document.getElementById('settings-hijri-adj').value;
+
+    SettingsManager.set('calculationMethod', calc);
+    SettingsManager.set('asrMethod', asr);
+    SettingsManager.set('hijriAdjustment', hijri);
+
+    // Simulate save delay
+    await new Promise(r => setTimeout(r, 600));
+
+    // Save location if not set (Auto-detect logic elsewhere, but ensure we keep it)
+    // Note: We aren't changing loc here, just keeping it.
+
+    window.location.reload(); // Hard reload to apply calculation changes to schedule
+
+  } catch (e) {
+    console.error("Save error", e);
+    if (saveBtn) {
+      saveBtn.textContent = "Error";
+      saveBtn.disabled = false;
+    }
+  }
+}
+
+function loadNotificationSettings() {
+  const config = NotificationManager.getSettings(); // Assume returns {enabled: bool, prayers: {Fajr: bool...}}
+
+  // Master
+  const master = document.getElementById('notif-master-toggle');
+  if (master) master.checked = (config.enabled !== false);
+
+  // Individual
+  document.querySelectorAll('.notif-checkbox').forEach(cb => {
+    const p = cb.dataset.prayer;
+    if (config.prayers && typeof config.prayers[p] !== 'undefined') {
+      cb.checked = config.prayers[p];
+    } else {
+      cb.checked = true; // Default true
+    }
+  });
+}
+
 
 function detectPrayerSettingsLocation() {
   try {
