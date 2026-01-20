@@ -636,55 +636,9 @@ function detectPrayerSettingsLocation() {
   }
 }
 
-function savePrayerSettings() {
-  try {
-    const locationInput = document.getElementById('settings-location-input');
-    const calcSelect = document.getElementById('settings-calculation-method');
-    const asrRadio = document.querySelector('input[name="settings-asr-method"]:checked');
-    const hijriInput = document.getElementById('settings-hijri-adj');
-    const highLatSelect = document.getElementById('settings-high-lat');
 
-    const location = locationInput?.value.trim();
-    if (!location) {
-      alert('Please enter a location');
-      return;
-    }
+// (Duplicate savePrayerSettings removed)
 
-    const calcMethod = calcSelect?.value || 'Karachi';
-    const asrMethod = asrRadio?.value || 'Shafi';
-    const hijriAdj = hijriInput?.value || '0';
-    const highLat = highLatSelect?.value || '0';
-
-    // Save via SettingsManager
-    SettingsManager.set('userLocation', location);
-    SettingsManager.set('calculationMethod', calcMethod);
-    SettingsManager.set('asrMethod', asrMethod);
-    SettingsManager.set('hijriAdjustment', hijriAdj);
-    SettingsManager.set('highLatitudeRule', highLat);
-
-    // Feedback & Reload
-    const saveBtn = document.getElementById('save-prayer-settings');
-    if (saveBtn) {
-      saveBtn.textContent = 'Saving...';
-      saveBtn.disabled = true;
-      saveBtn.style.opacity = '0.7';
-    }
-
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
-
-  } catch (e) {
-    console.error('savePrayerSettings error:', e);
-    alert('Error saving settings');
-    const saveBtn = document.getElementById('save-prayer-settings');
-    if (saveBtn) {
-      saveBtn.textContent = 'Save Settings';
-      saveBtn.disabled = false;
-      saveBtn.style.opacity = '1';
-    }
-  }
-}
 
 
 /* ===============================
@@ -918,358 +872,427 @@ async function autoConfigureSettings(lat, lon) {
   }
 })();
 
-/* ===============================
-   GLOBAL QURAN MODULE
-================================ */
-let currentAudio = null;
-let currentPlayBtn = null;
+// ==========================================
+// GLOBAL QURAN MODULE (3-Layer Architecture)
+// ==========================================
 
-function initQuranPage() {
-  try {
-    const surahListEl = document.getElementById("surah-list");
-    const qMainViewEl = document.getElementById("quran-main-view");
-    const ayahViewEl = document.getElementById("ayah-view");
-    const ayahListEl = document.getElementById("ayah-list");
-    const qBackBtn = document.getElementById("q-back-btn");
-    const qSearchInput = document.getElementById("q-search-input");
-    const qSearchContainer = document.querySelector(".q-search-container");
-    const qHeaderAction = document.getElementById("q-header-action");
-    const qPlayer = document.getElementById("q-player");
-    const qTabs = document.querySelectorAll(".q-tab");
+// --- 1. DATA LAYER ---
+const QuranDataService = {
+  cache: {},
 
-    if (!surahListEl) return;
-
-    // Cache/State
-    window.quranSurahs = window.quranSurahs || [];
-
-    // Reset Header state
-    if (qSearchContainer) qSearchContainer.style.display = "flex";
-    const qHeaderTitle = document.getElementById("q-header-title");
-    if (qHeaderTitle) qHeaderTitle.classList.add("hidden");
-
-    // Search Logic (Debounced) - with proper cleanup
-    let searchTimeout;
-    if (qSearchInput) {
-      qSearchInput.value = "";
-      qSearchInput.oninput = (e) => {
-        // Clear previous timeout
-        if (searchTimeout) clearTimeout(searchTimeout);
-
-        searchTimeout = trackTimeout(setTimeout(() => {
-          const term = e.target.value.toLowerCase();
-          const filtered = window.quranSurahs.filter(s =>
-            s.englishName.toLowerCase().includes(term) || s.name.includes(term) || s.number.toString() === term
-          );
-          renderSurahList(filtered);
-        }, 150));
-      };
+  async getSurahList() {
+    if (this.cache.list) return this.cache.list;
+    const local = localStorage.getItem('quran_surah_list');
+    if (local) {
+      this.cache.list = JSON.parse(local);
+      return this.cache.list;
     }
 
-    // Tab Events
-    if (qTabs && qTabs.length > 0) {
-      qTabs.forEach(tab => {
-        tab.onclick = () => {
-          qTabs.forEach(t => t.classList.remove("active"));
-          tab.classList.add("active");
-          handleCategorySwitch(tab.dataset.tab);
-        };
-      });
-    }
+    const res = await fetch("https://api.alquran.cloud/v1/surah");
+    const data = await res.json();
+    this.cache.list = data.data;
+    localStorage.setItem('quran_surah_list', JSON.stringify(data.data));
+    return data.data;
+  },
 
-    // Back Button
-    if (qBackBtn) {
-      qBackBtn.onclick = () => {
-        if (!ayahViewEl.classList.contains("hidden")) {
-          ayahViewEl.classList.add("hidden");
-          qMainViewEl.classList.remove("hidden");
-          qPlayer.classList.add("hidden");
-          if (qSearchContainer) qSearchContainer.style.display = "flex";
-          if (qHeaderTitle) qHeaderTitle.classList.add("hidden");
-        } else {
-          loadPage("home");
-        }
-      };
-    }
+  async getSurahDetails(number, reciterId) {
+    const key = `surah_${number}_${reciterId}`;
+    if (this.cache[key]) return this.cache[key];
 
-    function handleCategorySwitch(cat) {
-      surahListEl.innerHTML = `<p class="q-loading">Loading ${cat}...</p>`;
-      if (cat === "surah") renderSurahList(window.quranSurahs);
-      else if (cat === "juz") renderJuzView();
-      else if (cat === "page") renderPageView();
-      else if (cat === "ruku") renderRukuView();
-      else if (cat === "topic") renderTopicView();
-      else if (cat === "ayah") renderAyahSearchView();
-    }
+    const apiUrl = `https://api.alquran.cloud/v1/surah/${number}/editions/${reciterId},en.sahih`;
+    const res = await fetch(apiUrl);
+    const json = await res.json();
 
-    function renderSurahList(list) {
-      if (list.length === 0) {
-        surahListEl.innerHTML = '<p class="q-loading">No results found.</p>';
-        return;
-      }
-      const frag = document.createDocumentFragment();
-      list.forEach(s => {
-        const item = document.createElement("div");
-        item.className = "q-item";
-        item.onclick = () => window.loadAyahView(`surah/${s.number}`, s.englishName);
-        item.innerHTML = `
-          <div class="q-star-badge">${s.number}</div>
-          <div class="q-item-info">
-            <span class="q-item-name">${s.englishName}</span>
-            <span class="q-item-meta">Verses: ${s.numberOfAyahs} | ${s.revelationType}</span>
-          </div>
-          <span class="q-item-ar">${s.name}</span>
-        `;
-        frag.appendChild(item);
-      });
-      surahListEl.innerHTML = "";
-      surahListEl.appendChild(frag);
-    }
+    // Normalize: json.data[0] = Audio/Arabic, json.data[1] = Translation
+    const audioData = json.data[0];
+    const textData = json.data[1];
 
-    function renderJuzView() {
-      const grid = document.createElement("div");
-      grid.className = "q-badge-grid";
-      for (let i = 1; i <= 30; i++) {
-        const b = document.createElement("div");
-        b.className = "q-badge";
-        b.onclick = () => window.loadAyahView(`juz/${i}`, `Juz ${i}`);
-        b.innerHTML = `<span class="q-badge-num">${i}</span><span class="q-badge-label">Juz</span>`;
-        grid.appendChild(b);
-      }
-      surahListEl.innerHTML = "";
-      surahListEl.appendChild(grid);
-    }
+    const ayahs = audioData.ayahs.map((ayah, index) => ({
+      number: ayah.number,
+      numberInSurah: ayah.numberInSurah,
+      text: ayah.text,
+      audio: ayah.audio,
+      translation: textData.ayahs[index] ? textData.ayahs[index].text : ""
+    }));
 
-    function renderPageView() {
-      const grid = document.createElement("div");
-      grid.className = "q-badge-grid";
-      for (let i = 1; i <= 604; i++) {
-        const b = document.createElement("div");
-        b.className = "q-badge";
-        b.onclick = () => window.loadAyahView(`page/${i}`, `Page ${i}`);
-        b.innerHTML = `<span class="q-badge-num">${i}</span><span class="q-badge-label">Page</span>`;
-        grid.appendChild(b);
-      }
-      surahListEl.innerHTML = "";
-      surahListEl.appendChild(grid);
-    }
-
-    function renderRukuView() {
-      surahListEl.innerHTML = '<div class="q-badge-grid"></div>';
-      const grid = surahListEl.querySelector(".q-badge-grid");
-      for (let i = 1; i <= 556; i++) {
-        const b = document.createElement("div");
-        b.className = "q-badge";
-        b.onclick = () => window.loadAyahView(`ruku/${i}`, `Ruku ${i}`);
-        b.innerHTML = `<span class="q-badge-num">${i}</span><span class="q-badge-label">Ruku</span>`;
-        grid.appendChild(b);
-      }
-    }
-
-    function renderTopicView() {
-      const topics = [
-        { name: "Belief (Iman)", icon: "shield-check" },
-        { name: "Prayer (Salah)", icon: "hand-metal" },
-        { name: "Charity (Zakat)", icon: "heart-handshake" },
-        { name: "Stories (Qisas)", icon: "book-open" },
-        { name: "Ethics (Akhlaq)", icon: "sparkles" },
-        { name: "Hereafter", icon: "cloud" }
-      ];
-      const grid = document.createElement("div");
-      grid.className = "q-topic-grid";
-      topics.forEach(t => {
-        const card = document.createElement("div");
-        card.className = "q-topic-card";
-        card.innerHTML = `
-          <div class="q-topic-icon"><i data-lucide="${t.icon}"></i></div>
-          <span class="q-topic-name">${t.name}</span>
-        `;
-        card.onclick = () => alert(t.name + " topics coming soon.");
-        grid.appendChild(card);
-      });
-      surahListEl.innerHTML = "";
-      surahListEl.appendChild(grid);
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function renderAyahSearchView() {
-      surahListEl.innerHTML = `
-        <div style="padding: 24px; text-align: center; color: var(--text-muted);">
-          <i data-lucide="search" style="width:48px; height:48px; opacity: 0.3; margin-bottom: 12px;"></i>
-          <p>Search for specific Ayahs using the search bar above.</p>
-          <p style="font-size: 12px; margin-top: 8px;">Try "Baqarah 255" or "1:1"</p>
-        </div>
-      `;
-      if (window.lucide) lucide.createIcons();
-    }
-
-    // Load Data
-    if (window.quranSurahs.length > 0) renderSurahList(window.quranSurahs);
-    else {
-      fetch("https://api.alquran.cloud/v1/surah")
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to fetch Surah list');
-          return res.json();
-        })
-        .then(d => {
-          if (d.data && d.data.length > 0) {
-            window.quranSurahs = d.data;
-            renderSurahList(d.data);
-          }
-        })
-        .catch(err => {
-          console.error("Failed to load Quran data:", err);
-          surahListEl.innerHTML = '<p class="q-loading" style="color:var(--alert);">Failed to load Surahs. Check your connection.</p>';
-        });
-    }
-
-    // Load Ayah View (Global Helper)
-    window.loadAyahView = function (endpoint, title) {
-      try {
-        if (qSearchContainer) qSearchContainer.style.display = "none";
-        if (qHeaderTitle) { qHeaderTitle.textContent = title; qHeaderTitle.classList.remove("hidden"); }
-
-        qMainViewEl.classList.add("hidden");
-        ayahViewEl.classList.remove("hidden");
-        ayahListEl.innerHTML = '<p class="q-loading">Loading Verses...</p>';
-
-        fetch(`https://api.alquran.cloud/v1/${endpoint}/editions/quran-uthmani,en.transliteration,en.asad`)
-          .then(res => {
-            if (!res.ok) throw new Error('Failed to fetch Ayahs');
-            return res.json();
-          })
-          .then(data => {
-            if (!data.data || data.data.length === 0) throw new Error('No data received');
-
-            ayahListEl.innerHTML = "";
-            const ar = data.data[0];
-            const tr = data.data[1];
-            const en = data.data[2];
-
-            // Hide detail card for Juz/Page as it's surah-centric
-            const detailCard = document.querySelector(".q-detail-card");
-            if (endpoint.startsWith("surah")) {
-              detailCard.style.display = "flex";
-              const meta = window.quranSurahs.find(s => endpoint.includes(s.number));
-              if (meta) {
-                document.getElementById("det-name").textContent = meta.englishName;
-                document.getElementById("det-meaning").textContent = meta.englishNameTranslation;
-                document.getElementById("det-revelation").textContent = meta.revelationType;
-                document.getElementById("det-ayahs").textContent = meta.numberOfAyahs;
-              }
-            } else {
-              detailCard.style.display = "none";
-            }
-
-            const frag = document.createDocumentFragment();
-            ar.ayahs.forEach((ayah, i) => {
-              const item = document.createElement("div");
-              item.className = "ayah-item";
-              item.innerHTML = `
-                <div class="ayah-header-bar">
-                  <span class="ayah-num">${ayah.numberInSurah || ayah.number}</span>
-                  <div class="ayah-actions">
-                    <i data-lucide="play" onclick="playSurahAudio(${ayah.surah?.number || ayah.number}, this)"></i>
-                    <i data-lucide="bookmark"></i>
-                    <i data-lucide="share-2"></i>
-                  </div>
-                </div>
-                <div class="ayah-content">
-                  <p class="ayah-ar">${ayah.text}</p>
-                  <p class="ayah-trans">${tr.ayahs[i].text}</p>
-                  <p class="ayah-en">${en.ayahs[i].text}</p>
-                </div>
-              `;
-              frag.appendChild(item);
-            });
-            ayahListEl.appendChild(frag);
-            if (window.lucide) lucide.createIcons();
-          })
-          .catch(err => {
-            console.error("Failed to load Ayahs:", err);
-            ayahListEl.innerHTML = '<p class="q-loading" style="color:var(--alert);">Failed to load verses. Check your connection.</p>';
-          });
-      } catch (e) {
-        console.error("loadAyahView error:", e);
-      }
+    const result = {
+      meta: {
+        name: audioData.name,
+        englishName: audioData.englishName,
+        englishNameTranslation: audioData.englishNameTranslation,
+        revelationType: audioData.revelationType,
+        numberOfAyahs: audioData.numberOfAyahs,
+        number: audioData.number
+      },
+      ayahs: ayahs
     };
-  } catch (e) {
-    console.error("initQuranPage error:", e);
+
+    this.cache[key] = result;
+    return result;
+  }
+};
+
+// --- 2. STATE LAYER ---
+class QuranState {
+  constructor() {
+    this.state = {
+      currentSurah: null,
+      currentAyahIndex: 0,
+      isPlaying: false,
+      reciter: localStorage.getItem('quran_reciter') || 'ar.alafasy',
+      playbackSpeed: parseFloat(localStorage.getItem('quran_speed') || '1.0')
+    };
+    this.listeners = [];
+  }
+
+  get() { return this.state; }
+
+  setSurah(surahData) {
+    this.state.currentSurah = surahData;
+    this.state.currentAyahIndex = 0;
+    this.notify();
+  }
+
+  setAyah(index) {
+    if (!this.state.currentSurah) return;
+    if (index >= 0 && index < this.state.currentSurah.ayahs.length) {
+      this.state.currentAyahIndex = index;
+      this.notify();
+    }
+  }
+
+  setPlaying(bool) {
+    this.state.isPlaying = bool;
+    this.notify();
+  }
+
+  setReciter(id) {
+    this.state.reciter = id;
+    localStorage.setItem('quran_reciter', id);
+  }
+
+  setSpeed(speed) {
+    this.state.playbackSpeed = speed;
+    localStorage.setItem('quran_speed', speed);
+    this.notify();
+  }
+
+  subscribe(fn) { this.listeners.push(fn); }
+  notify() { this.listeners.forEach(fn => fn(this.state)); }
+}
+
+// --- 3. AUDIO ENGINE ---
+class AyahPlayer {
+  constructor(stateManager) {
+    this.audio = new Audio();
+    this.stateManager = stateManager;
+
+    this.audio.onended = () => this.onTrackEnd();
+    this.audio.onerror = (e) => console.error("Audio Error", e);
+    this.audio.onplay = () => stateManager.setPlaying(true);
+    this.audio.onpause = () => stateManager.setPlaying(false);
+    this.audio.ontimeupdate = () => this.emitProgress();
+  }
+
+  loadAndPlay(url) {
+    if (!url) return;
+    this.audio.src = url;
+    this.audio.playbackRate = this.stateManager.get().playbackSpeed;
+    this.audio.play().catch(e => console.warn("Autoplay blocked", e));
+  }
+
+  play() { this.audio.play(); }
+  pause() { this.audio.pause(); }
+
+  onTrackEnd() {
+    const s = this.stateManager.get();
+    const nextIdx = s.currentAyahIndex + 1;
+    if (s.currentSurah && nextIdx < s.currentSurah.ayahs.length) {
+      this.stateManager.setAyah(nextIdx);
+    } else {
+      this.stateManager.setPlaying(false);
+    }
+  }
+
+  emitProgress() {
+    const pct = (this.audio.currentTime / this.audio.duration) * 100 || 0;
+    document.dispatchEvent(new CustomEvent('quran-progress', {
+      detail: {
+        current: this.audio.currentTime,
+        total: this.audio.duration || 0,
+        percent: pct
+      }
+    }));
+  }
+
+  seek(pct) {
+    if (this.audio.duration) {
+      this.audio.currentTime = (pct / 100) * this.audio.duration;
+    }
+  }
+
+  updateSpeed() {
+    this.audio.playbackRate = this.stateManager.get().playbackSpeed;
   }
 }
-let quranAudio = new Audio();
-let isPlaying = false;
 
-window.playSurahAudio = function (number, btn) {
-  try {
-    const player = document.getElementById("q-player");
-    const playBtn = document.getElementById("p-play");
-    const stopBtn = document.getElementById("p-stop");
+// --- 4. UI LAYER ---
+const QuranUI = {
+  renderList(list, onSelect) {
+    const container = document.getElementById('surah-list');
+    if (!container) return;
+    container.innerHTML = '';
 
-    if (!player || !playBtn || !stopBtn) {
-      console.error('Audio player elements not found');
-      return;
+    list.forEach(surah => {
+      const el = document.createElement('div');
+      el.className = 'q-item';
+      el.innerHTML = `
+                <div class="q-item-num">${surah.number}</div>
+                <div class="q-item-info">
+                   <h4>${surah.englishName}</h4>
+                   <p>${surah.englishNameTranslation} • ${surah.numberOfAyahs} Ayahs</p>
+                </div>
+                <div class="q-item-ar">${surah.name.replace('سُورَةُ ', '')}</div>
+            `;
+      el.onclick = () => onSelect(surah);
+      container.appendChild(el);
+    });
+  },
+
+  showReader(meta) {
+    document.getElementById('quran-main-view').classList.add('hidden');
+    document.getElementById('ayah-view').classList.remove('hidden');
+
+    // Header
+    const hTitle = document.getElementById('q-header-title');
+    if (hTitle) {
+      hTitle.textContent = meta.englishName;
+      hTitle.classList.remove('hidden');
+    }
+    document.getElementById('q-header-subtitle').textContent = meta.englishNameTranslation;
+
+    // Card
+    document.getElementById('det-name-ar').textContent = meta.name;
+    document.getElementById('det-name-en').textContent = meta.englishName;
+    document.getElementById('det-place').textContent = meta.revelationType;
+    document.getElementById('det-ayahs-count').textContent = meta.numberOfAyahs;
+  },
+
+  renderAyahs(ayahs, onPlay) {
+    const container = document.getElementById('ayah-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    ayahs.forEach((ayah, idx) => {
+      const el = document.createElement('div');
+      el.className = 'ayah-item';
+      el.id = `ayah-row-${idx}`;
+      el.innerHTML = `
+               <div class="ayah-top"> <!-- Changed class from top to header-bar if needed, but css uses .ayah-top -->
+                  <div style="font-size:12px;width:24px;height:24px;background:#eee;border-radius:50%;display:flex;align-items:center;justify-content:center;">${ayah.numberInSurah}</div>
+                  <button class="icon-btn-sm btn-play-ayah"><i data-lucide="play" style="width:14px"></i></button>
+               </div>
+               <div class="ayah-text-ar">${ayah.text}</div>
+               <div class="ayah-text-en">${ayah.translation}</div>
+            `;
+
+      el.querySelector('.btn-play-ayah').onclick = (e) => {
+        e.stopPropagation();
+        onPlay(idx);
+      };
+
+      container.appendChild(el);
+    });
+    if (window.lucide) lucide.createIcons();
+  },
+
+  highlightAyah(index) {
+    document.querySelectorAll('.ayah-item.active').forEach(e => e.classList.remove('active'));
+    const el = document.getElementById(`ayah-row-${index}`);
+    if (el) {
+      el.classList.add('active');
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  },
+
+  updatePlayer(state) {
+    const icon = state.isPlaying ? '<i data-lucide="pause"></i>' : '<i data-lucide="play"></i>';
+
+    // Mini Player
+    const mb = document.getElementById('q-mp-play');
+    if (mb) { mb.innerHTML = icon; mb.setAttribute('fill', 'currentColor'); }
+
+    // Full Player
+    const fb = document.getElementById('q-fp-play');
+    if (fb) { fb.innerHTML = icon; fb.setAttribute('fill', 'currentColor'); }
+
+    // Info
+    if (state.currentSurah) {
+      const curAyah = state.currentSurah.ayahs[state.currentAyahIndex];
+      const title = `${state.currentSurah.meta.englishName} : ${curAyah.numberInSurah}`;
+
+      const miniTitle = document.getElementById('q-mp-title');
+      if (miniTitle) miniTitle.textContent = title;
+
+      const fullAr = document.getElementById('q-fp-title-ar');
+      if (fullAr) fullAr.textContent = state.currentSurah.meta.name;
+
+      const fullTitle = document.getElementById('q-fp-title');
+      if (fullTitle) fullTitle.textContent = title;
     }
 
-    player.classList.remove("hidden");
-
-    if (isPlaying && quranAudio.src.includes(`/${number}.mp3`)) {
-      quranAudio.pause();
-      isPlaying = false;
-      playBtn.innerHTML = `<i data-lucide="play"></i>`;
-    } else {
-      quranAudio.src = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${number}.mp3`;
-      quranAudio.play().catch(err => {
-        console.error('Audio play error:', err);
-        alert('Failed to play audio. Check your connection.');
-      });
-      isPlaying = true;
-      playBtn.innerHTML = `<i data-lucide="pause"></i>`;
+    // Show Mini Player if playing or surah loaded
+    if (state.currentSurah) {
+      document.getElementById('q-mini-player').classList.remove('hidden');
     }
 
     if (window.lucide) lucide.createIcons();
-
-    // Reset stop button handler
-    stopBtn.onclick = () => {
-      quranAudio.pause();
-      quranAudio.currentTime = 0;
-      isPlaying = false;
-      player.classList.add("hidden");
-      playBtn.innerHTML = `<i data-lucide="play"></i>`;
-      if (window.lucide) lucide.createIcons();
-    };
-
-    // Reset play button handler
-    playBtn.onclick = () => {
-      if (isPlaying) {
-        quranAudio.pause();
-        isPlaying = false;
-        playBtn.innerHTML = `<i data-lucide="play"></i>`;
-      } else {
-        quranAudio.play().catch(err => console.error('Play error:', err));
-        isPlaying = true;
-        playBtn.innerHTML = `<i data-lucide="pause"></i>`;
-      }
-      if (window.lucide) lucide.createIcons();
-    };
-
-    // Audio end handler
-    quranAudio.onended = () => {
-      isPlaying = false;
-      playBtn.innerHTML = `<i data-lucide="play"></i>`;
-      if (window.lucide) lucide.createIcons();
-    };
-
-    // Error handler
-    quranAudio.onerror = () => {
-      console.error('Audio loading error');
-      isPlaying = false;
-      playBtn.innerHTML = `<i data-lucide="play"></i>`;
-      alert('Failed to load audio. Please check your connection.');
-    };
-  } catch (e) {
-    console.error('playSurahAudio error:', e);
   }
 };
+
+// --- CONTROLLER ---
+async function initQuranPage() {
+  console.log("Quran 3.0 Init");
+
+  // Globals check
+  if (!window.quranState) {
+    window.quranState = new QuranState();
+    window.quranPlayer = new AyahPlayer(window.quranState);
+
+    // Subscribe once
+    window.quranState.subscribe(state => {
+      QuranUI.updatePlayer(state);
+      QuranUI.highlightAyah(state.currentAyahIndex);
+
+      // Speed sync
+      window.quranPlayer.updateSpeed();
+    });
+
+    // Play Hook
+    const originalSetAyah = window.quranState.setAyah.bind(window.quranState);
+    window.quranState.setAyah = (index) => {
+      originalSetAyah(index);
+      const s = window.quranState.get();
+      if (s.currentSurah && s.currentSurah.ayahs[index]) {
+        window.quranPlayer.loadAndPlay(s.currentSurah.ayahs[index].audio);
+      }
+    };
+  }
+
+  const qs = window.quranState;
+  const player = window.quranPlayer;
+
+  // 1. Initial Render
+  try {
+    const listContainer = document.getElementById('surah-list');
+    if (listContainer) {
+      listContainer.innerHTML = '<p class="q-loading">Loading Surahs...</p>';
+      const list = await QuranDataService.getSurahList();
+      QuranUI.renderList(list, async (surah) => {
+        // Select Surah
+        listContainer.innerHTML = '<p class="q-loading">Loading Details...</p>';
+        try {
+          const details = await QuranDataService.getSurahDetails(surah.number, qs.get().reciter);
+          qs.setSurah(details);
+          QuranUI.showReader(details.meta);
+          QuranUI.renderAyahs(details.ayahs, (idx) => {
+            qs.setAyah(idx);
+            player.loadAndPlay(details.ayahs[idx].audio);
+          });
+        } catch (e) {
+          console.warn("Details Fetch Failed", e);
+          listContainer.innerHTML = '<p class="q-error">Failed to load details.</p>';
+        }
+      });
+    }
+  } catch (e) {
+    console.error("Init Error", e);
+  }
+
+  // 2. Event Binding (Re-binds on every init is okay if elements are replaced, 
+  // but typically initQuranPage is called on nav. We should be careful not to duplicate listeners if elements persist.)
+  // Note: in loadPage, main.innerHTML is replaced, so elements are fresh. Listeners need re-binding.
+
+  const togglePlay = () => {
+    const s = qs.get();
+    s.isPlaying ? player.pause() : player.play();
+  };
+
+  // Bind Controls
+  const bindClick = (id, fn) => {
+    const el = document.getElementById(id);
+    if (el) el.onclick = fn;
+  };
+
+  bindClick('q-mp-play', togglePlay);
+  bindClick('q-fp-play', togglePlay);
+
+  const doNext = () => qs.setAyah(qs.get().currentAyahIndex + 1);
+  const doPrev = () => qs.setAyah(qs.get().currentAyahIndex - 1);
+
+  bindClick('q-mp-next', doNext);
+  bindClick('q-fp-next', doNext);
+  bindClick('q-mp-prev', doPrev);
+  bindClick('q-fp-prev', doPrev);
+
+  // Expand
+  const expandArea = document.getElementById('q-mp-expand-area');
+  if (expandArea) expandArea.onclick = () => {
+    document.getElementById('q-full-player').style.display = 'flex';
+  };
+  bindClick('q-fp-close', () => document.getElementById('q-full-player').style.display = 'none');
+
+  // Seek
+  const onSeek = (e) => player.seek(e.target.value);
+  const miniSeek = document.getElementById('q-mini-seek');
+  if (miniSeek) miniSeek.oninput = onSeek;
+  const fullSeek = document.getElementById('q-fp-seek');
+  if (fullSeek) fullSeek.oninput = onSeek;
+
+  // Progress Listener (Global)
+  if (!window.qProgressBound) {
+    document.addEventListener('quran-progress', (e) => {
+      const { percent, current, total } = e.detail;
+      const mb = document.getElementById('q-mini-progress-bar');
+      if (mb) mb.style.width = `${percent}%`;
+
+      const ms = document.getElementById('q-mini-seek');
+      if (ms) ms.value = percent;
+
+      const fs = document.getElementById('q-fp-seek');
+      if (fs) fs.value = percent;
+
+      const fmt = (t) => {
+        const m = Math.floor(t / 60);
+        const s = Math.floor(t % 60);
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+      };
+      const currEl = document.getElementById('q-fp-current');
+      if (currEl) currEl.textContent = fmt(current);
+      const durEl = document.getElementById('q-fp-duration');
+      if (durEl) durEl.textContent = fmt(total);
+    });
+    window.qProgressBound = true;
+  }
+
+  // Back Btn
+  bindClick('q-back-btn', () => {
+    const ayahView = document.getElementById('ayah-view');
+    if (!ayahView.classList.contains('hidden')) {
+      ayahView.classList.add('hidden');
+      document.getElementById('quran-main-view').classList.remove('hidden');
+      const hTitle = document.getElementById('q-header-title');
+      if (hTitle) hTitle.classList.add('hidden');
+      document.getElementById('q-header-subtitle').textContent = "Select Surah";
+    } else {
+      // Home
+      loadPage('home'); // Use internal loadPage
+    }
+  });
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
 
 /* ===============================
    ADVANCED DASHBOARD MODULE
