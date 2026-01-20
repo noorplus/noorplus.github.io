@@ -1310,10 +1310,21 @@ async function fetchAdvPrayerTimes(lat, lon) {
 
     // Update Date with Hijri
     const dateEl = document.getElementById("adv-date");
-    if (dateEl && dateData && dateData.hijri) {
+    const dateHijriEl = document.getElementById("date-hijri");
+    const dateGregEl = document.getElementById("date-gregorian");
+
+    if (dateData && dateData.hijri) {
       const h = dateData.hijri;
       const g = dateData.gregorian;
-      dateEl.innerHTML = `${h.day} ${h.month.en} ${h.year} <span style="opacity:0.6; margin: 0 6px;">•</span> ${g.day} ${g.month.en} ${g.year}`;
+
+      if (dateHijriEl && dateGregEl) {
+        // New Slider Structure
+        dateHijriEl.textContent = `${h.day} ${h.month.en} ${h.year}`;
+        dateGregEl.textContent = `${g.day} ${g.month.en} ${g.year}`;
+      } else if (dateEl) {
+        // Fallback legacy structure
+        dateEl.innerHTML = `${h.day} ${h.month.en} ${h.year} <span style="opacity:0.6; margin: 0 6px;">•</span> ${g.day} ${g.month.en} ${g.year}`;
+      }
     }
 
     const suhurEl = document.getElementById("adv-suhur");

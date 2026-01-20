@@ -2,7 +2,12 @@
 
     <!-- 1. Header: Date (L) & Location (R) -->
     <header class="adv-header">
-        <div class="h-date" id="adv-date">-- ---, ---</div>
+        <div class="h-date" id="adv-date">
+            <div class="h-date-slider">
+                <div class="h-date-item" id="date-hijri">-- ---, ---</div>
+                <div class="h-date-item" id="date-gregorian">-- ---, ---</div>
+            </div>
+        </div>
         <div class="h-loc" id="adv-location">Detecting...</div>
     </header>
 
@@ -10,16 +15,16 @@
     <div class="hero-dash">
         <!-- Left: Status & Info -->
         <div class="hero-left">
-                        <div class="info-grid">
+            <div class="info-grid">
                 <div class="info-item" id="f-row" style="display:none;">
                     <span class="info-label">Forbidden Time:</span>
                     <span class="info-val" id="f-range">--:-- am - --:-- am</span>
                 </div>
-            <div class="h-now-row">
-                <span class="h-label-sm">Now:</span>
-                <span class="h-val-md" id="adv-p-now">--</span>
-                <span class="h-status-dot" id="adv-status-dot"></span>
-            </div>
+                <div class="h-now-row">
+                    <span class="h-label-sm">Now:</span>
+                    <span class="h-val-md" id="adv-p-now">--</span>
+                    <span class="h-status-dot" id="adv-status-dot"></span>
+                </div>
                 <div class="info-item">
                     <span class="info-label">Start Time:</span>
                     <span class="info-val" id="adv-p-start">--:-- am</span>
