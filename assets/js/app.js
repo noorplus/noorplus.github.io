@@ -1375,6 +1375,48 @@ function getForbiddenTimes(timings) {
 // Global state to track notifications
 let lastNotified = { date: null, prayer: null };
 
+function startAdvCountdown(timings) {
+  try {
+    if (window.advInterval) clearInterval(window.advInterval);
+
+    function update() {
+      // Update UI
+      updateCurrentPrayerDisplay(timings);
+
+      // Notification Check
+      try {
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        const dateStr = now.toDateString();
+
+        // Reset notification state if new day
+        if (lastNotified.date !== dateStr) {
+          lastNotified = { date: dateStr, prayer: null };
+        }
+
+        ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"].forEach(prayer => {
+          // Check if timings[prayer] exists and matches current time
+          // timing string format "HH:MM" or "HH:MM (EST)"
+          if (!timings[prayer]) return;
+          const pTime = timings[prayer].split(' ')[0];
+
+          if (timeStr === pTime && lastNotified.prayer !== prayer) {
+            lastNotified.prayer = prayer; // latch
+            NotificationManager.trigger(prayer);
+          }
+        });
+      } catch (e) {
+        console.error('Notification check error:', e);
+      }
+    }
+
+    update();
+    window.advInterval = setInterval(update, 1000);
+  } catch (e) {
+    console.error('startAdvCountdown error:', e);
+  }
+}
+
 function updateCurrentPrayerDisplay(timings) {
   try {
     const prayerSchedule = [
