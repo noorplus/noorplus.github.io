@@ -15,30 +15,45 @@
 
 /* 1. DESIGN TOKENS */
 :root {
-  /* --- Colors (Light Theme) --- */
+  /* --- Premium Palette (Light) --- */
+  --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
   --bg: #FFFFFF;
+  /* Fallback */
   --bg-rgb: 255, 255, 255;
-  --surface: #F1F3F5;
-  --surface-soft: #F7F8FA;
-  --nav-bg: #F6F7F9;
-  --divider: #E3E6EA;
 
+  /* Glassmorphism Tokens */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --backdrop-blur: blur(12px);
+
+  --surface: rgba(255, 255, 255, 0.5);
+  --surface-soft: rgba(255, 255, 255, 0.3);
+  --nav-bg: rgba(255, 255, 255, 0.8);
+  --divider: rgba(0, 0, 0, 0.06);
+
+  /* Brand Colors */
   --primary: #2E7E9D;
   --primary-soft: #6BB3D1;
-  --success: #48B572;
-  --alert: #E14B4B;
+  --primary-gradient: linear-gradient(135deg, #2E7E9D 0%, #6BB3D1 100%);
 
-  --text-primary: #1C2730;
-  --text-secondary: #5C6C78;
-  --text-muted: #8C99A5;
-  --text-disabled: #B7C0C8;
+  --success: #10B981;
+  --alert: #EF4444;
+  --warning: #F59E0B;
 
+  /* Text Colors */
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #9CA3AF;
+  --text-disabled: #D1D5DB;
+
+  /* Icon Colors */
   --icon-active: #2E7E9D;
-  --icon-default: #5C6C78;
-  --icon-muted: #9AA6AF;
+  --icon-default: #6B7280;
+  --icon-muted: #9CA3AF;
 
-  --progress-track: #D4D9DE;
-  --progress-fill: #000000;
+  --progress-track: rgba(0, 0, 0, 0.05);
+  --progress-fill: #111827;
 
   /* --- Sizing & Spacing Scale --- */
   --space-2xs: 4px;
@@ -49,62 +64,75 @@
   --space-xl: 32px;
   --space-2xl: 48px;
 
-  --top-bar-height: 56px;
-  --bottom-bar-height: 64px;
+  --top-bar-height: 60px;
+  --bottom-bar-height: 80px;
+  /* Taller for floating dock */
   --page-padding: var(--space-md);
   --section-gap: var(--space-lg);
-  --card-gap: var(--space-sm);
+  --card-gap: var(--space-md);
 
   /* --- Shapes & Radius --- */
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 18px;
-  --radius-pill: 999px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
 
   /* --- Typography --- */
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family: 'DM Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  /* DM Sans is friendlier */
   --font-xs: 11px;
   --font-sm: 13px;
   --font-md: 15px;
   --font-lg: 18px;
-  --font-xl: 22px;
+  --font-xl: 24px;
+  --font-2xl: 32px;
 
   /* --- Assets --- */
   --icon-sm: 18px;
   --icon-md: 22px;
-  --icon-lg: 26px;
+  --icon-lg: 28px;
 
   /* --- Effects --- */
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-float: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 /* --- Dark Theme Overrides --- */
 :root[data-theme="dark"] {
-  --bg: #0E1623;
-  --bg-rgb: 14, 22, 35;
-  --surface: #1A2433;
-  --surface-soft: #283244;
-  --nav-bg: #141D2B;
-  --divider: #2E3A4D;
+  --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --bg: #0f172a;
+  --bg-rgb: 15, 23, 42;
 
-  --primary: #4C8DB6;
-  --primary-soft: #6EAED0;
-  --success: #48B572;
-  --alert: #E14B4B;
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 
-  --text-primary: #FFFFFF;
-  --text-secondary: #C4CEDA;
-  --text-muted: #9AA6B2;
-  --text-disabled: #6C7886;
+  --surface: rgba(30, 41, 59, 0.5);
+  --surface-soft: rgba(51, 65, 85, 0.3);
+  --nav-bg: rgba(15, 23, 42, 0.85);
+  --divider: rgba(255, 255, 255, 0.1);
 
-  --icon-active: #6EAED0;
-  --icon-default: #C4CEDA;
-  --icon-muted: #7B8795;
+  --primary: #38BDF8;
+  --primary-soft: #7DD3FC;
+  --primary-gradient: linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%);
 
-  --progress-track: #3A4558;
-  --progress-fill: #FFFFFF;
+  --text-primary: #F9FAFB;
+  --text-secondary: #D1D5DB;
+  --text-muted: #9CA3AF;
+  --text-disabled: #6B7280;
+
+  --icon-active: #38BDF8;
+  --icon-default: #9CA3AF;
+  --icon-muted: #6B7280;
+
+  --progress-track: rgba(255, 255, 255, 0.1);
+  --progress-fill: #F9FAFB;
 }
 
 /* 2. RESET & BASE STYLES */
@@ -117,7 +145,7 @@
 
 body {
   font-family: var(--font-family);
-  background-color: var(--surface-soft);
+  background: var(--bg-gradient);
   color: var(--text-primary);
   line-height: 1.5;
   transition: background-color var(--transition-normal), color var(--transition-normal);
@@ -131,6 +159,8 @@ h1,
 h2,
 h3 {
   color: var(--text-primary);
+  letter-spacing: -0.02em;
+  /* Tighter headings */
 }
 
 ul {
@@ -146,10 +176,12 @@ img {
 #app-shell {
   width: 100%;
   max-width: 480px;
-  background-color: var(--bg);
+  /* Make generic bg transparent to show body gradient, OR use slight overlay */
+  background-color: transparent;
   min-height: 100vh;
   position: relative;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.05);
+  /* Shadow for the "phone" look on desktop */
+  box-shadow: var(--shadow-2xl, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
   display: flex;
   flex-direction: column;
 }
@@ -159,25 +191,38 @@ img {
   padding: var(--page-padding);
   padding-bottom: calc(var(--bottom-bar-height) + var(--space-lg));
   overflow-y: auto;
+  /* Smooth scroll */
+  scroll-behavior: smooth;
 }
 
+/* Floating Dock Navigation */
 .bottom-nav {
   position: fixed !important;
-  bottom: 0;
+  bottom: 24px;
+  /* Floating off bottom */
   left: 50%;
   transform: translateX(-50%);
-  width: 100%;
-  max-width: 480px;
-  background: rgba(var(--bg-rgb), 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid var(--divider);
+  width: calc(100% - 40px);
+  /* 20px padding each side */
+  max-width: 440px;
+  /* 480 - 40 */
+
+  background: var(--nav-bg);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+
+  border: var(--glass-border);
+  border-radius: var(--radius-lg);
+  /* Pill shape container, or large radius */
+  box-shadow: var(--shadow-float);
+
   z-index: 1000;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: var(--bottom-bar-height);
-  padding-bottom: env(safe-area-inset-bottom);
+  height: 64px;
+  /* Compact height */
+  padding: 0 var(--space-xs);
 }
 
 .bottom-nav button {
@@ -185,42 +230,65 @@ img {
   border: none;
   color: var(--icon-default);
   cursor: pointer;
-  padding: 12px;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+  padding: 8px;
+  border-radius: 12px;
+  transition: all var(--transition-bounce);
+  /* Bouncy interaction */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+
+.bottom-nav button:active {
+  transform: scale(0.9);
 }
 
 .bottom-nav button.active {
   color: var(--icon-active);
+  background: rgba(46, 126, 157, 0.1);
+  /* Subtle active bg */
+}
+
+/* Active Indicator Dot */
+.bottom-nav button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--primary);
 }
 
 .bottom-nav button .lucide {
-  width: var(--icon-md);
-  height: var(--icon-md);
+  width: 24px;
+  height: 24px;
   stroke-width: 2px;
 }
 
 .bottom-nav button.home .lucide {
-  width: var(--icon-lg);
-  height: var(--icon-lg);
+  width: 28px;
+  height: 28px;
   stroke-width: 2.5px;
 }
 
 /* 4. GLOBAL UI COMPONENTS */
 
-/* --- Card Base --- */
+/* --- Card Base (Glassmorphism) --- */
 .card {
-  background-color: var(--surface);
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   margin-bottom: var(--card-gap);
-  border: 1px solid var(--divider);
-  transition: transform var(--transition-fast);
-  box-shadow: var(--shadow);
+
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .card:active {
@@ -369,34 +437,46 @@ img {
 /* 5. HOME DASHBOARD PAGE */
 
 /* --- Home Header --- */
+/* --- Home Header --- */
 .adv-header {
   display: flex;
   justify-content: space-between;
-  padding: 12px 20px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--divider);
+  align-items: center;
+  padding: 16px 20px;
+  /* Glass Sticky Header */
+  background: rgba(255, 255, 255, 0.05);
+  /* Very subtle fill */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
+  transition: all var(--transition-normal);
 }
 
+[data-theme="dark"] .adv-header {
+  background: rgba(15, 23, 42, 0.6);
+}
 
 .h-date {
   font-weight: 700;
   color: var(--text-secondary);
-  font-size: 14px;
-  /* Slider masking */
-  height: 20px;
+  font-size: 15px;
+  height: 24px;
+  /* Taller for better breathing */
   overflow: hidden;
   position: relative;
   display: block;
-  /* Ensure block for masking */
 }
 
 .h-loc {
-  font-weight: 700;
-  color: var(--text-secondary);
+  font-weight: 600;
+  color: var(--primary);
   font-size: 14px;
+  background: rgba(46, 126, 157, 0.1);
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
 }
 
 /* Date Slider Animation */
@@ -405,8 +485,8 @@ img {
 }
 
 .h-date-item {
-  height: 20px;
-  line-height: 20px;
+  height: 24px;
+  line-height: 24px;
   white-space: nowrap;
 }
 
@@ -419,7 +499,7 @@ img {
 
   50%,
   95% {
-    transform: translateY(-20px);
+    transform: translateY(-24px);
   }
 
   100% {
@@ -428,26 +508,45 @@ img {
 }
 
 
-/* --- Hero Section --- */
+/* --- Hero Section (Vibrant Gradient Card) --- */
 .hero-dash {
-  background: var(--surface);
+  background: var(--primary-gradient);
   margin: var(--space-md);
-  border-radius: 20px;
+  border-radius: 24px;
+  /* Larger radius */
   padding: var(--space-lg);
   display: grid;
   grid-template-columns: 1fr 120px;
   gap: var(--space-md);
   align-items: center;
-  border: 1px solid var(--divider);
-  box-shadow: var(--shadow);
+
+  /* Elevate */
+  box-shadow: var(--shadow-lg), 0 10px 40px -10px var(--primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
   position: relative;
   overflow: hidden;
+  color: #FFFFFF;
+  /* Force white text */
+}
+
+/* Glass Shine Effect on Hero */
+.hero-dash::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
 }
 
 .hero-left {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  z-index: 2;
 }
 
 /* Now / Status Line */
@@ -455,49 +554,54 @@ img {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
-  margin-bottom: var(--space-xs);
+  margin-bottom: 4px;
 }
 
 .h-status-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  /* Outer ring */
 }
 
 .h-status-dot.permissible {
-  background-color: var(--success);
-  box-shadow: 0 0 8px var(--success);
+  background-color: #10B981;
+  /* Explicit green */
+  box-shadow: 0 0 10px #10B981;
 }
 
 .h-status-dot.forbidden {
-  background-color: var(--alert);
-  box-shadow: 0 0 8px var(--alert);
+  background-color: #EF4444;
+  /* Explicit red */
+  box-shadow: 0 0 10px #EF4444;
   animation: pulse-red 2s infinite;
 }
 
 .h-label-sm {
   font-size: 14px;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .h-val-md {
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 700;
+  color: #FFFFFF;
 }
 
 /* Range & Info Grid */
 .f-range {
   font-size: 14px;
-  font-weight: 800;
-  color: var(--alert);
+  font-weight: 700;
+  color: #FCA5A5;
+  /* Light red */
 }
 
 .info-grid {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   margin-top: var(--space-xs);
 }
 
@@ -510,16 +614,16 @@ img {
 
 .info-label {
   font-size: 13px;
-  font-weight: 700;
-  color: var(--text-muted);
-  width: 100px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  width: 90px;
   flex-shrink: 0;
 }
 
 .info-val {
   font-size: 14px;
-  font-weight: 800;
-  color: var(--text-primary);
+  font-weight: 700;
+  color: #FFFFFF;
   white-space: nowrap;
 }
 
@@ -528,22 +632,26 @@ img {
   position: relative;
   width: 120px;
   height: 120px;
+  z-index: 2;
 }
 
+/* Update SVG strokes for dark bg */
 .c-bg {
   fill: none;
-  stroke: var(--divider);
+  stroke: rgba(255, 255, 255, 0.15);
   stroke-width: 6;
 }
 
 .c-fill {
   fill: none;
-  stroke: var(--primary);
+  stroke: #FFFFFF;
+  /* White progress */
   stroke-width: 6;
   stroke-linecap: round;
   transform: rotate(-90deg);
   transform-origin: center;
   transition: stroke-dashoffset 1s linear;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
 }
 
 .c-text {
@@ -557,22 +665,26 @@ img {
 }
 
 #adv-timer {
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--text-primary);
+  font-size: 19px;
+  font-weight: 700;
+  color: #FFFFFF;
   font-variant-numeric: tabular-nums;
   margin: 2px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .c-text small {
   font-size: 11px;
-  color: var(--text-primary);
-  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .c-dot {
-  fill: #000000;
+  fill: #FFFFFF;
   transition: all 1s linear;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
 }
 
 [data-theme="dark"] .c-dot {
@@ -580,45 +692,51 @@ img {
 }
 
 /* --- Prayer Timeline --- */
+/* --- Prayer Timeline --- */
 .adv-schedule {
   display: flex;
   justify-content: space-between;
   padding: 16px 20px;
-  background: var(--surface);
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
   margin: 0 16px;
-  border-radius: 14px;
-  border: 1px solid var(--divider);
+  border-radius: var(--radius-lg);
+  border: var(--glass-border);
+  box-shadow: var(--shadow-sm);
 }
 
 .s-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  transition: all var(--transition-normal);
-  filter: grayscale(1) opacity(0.7);
+  gap: 8px;
+  transition: all var(--transition-bounce);
+  opacity: 0.6;
+  transform: scale(0.9);
 }
 
 .s-item.active {
-  filter: none;
   opacity: 1;
+  transform: scale(1.1);
 }
 
 .s-name {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .s-time {
   font-size: 10px;
-  font-weight: 700;
-  color: var(--text-secondary);
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 .s-indicator {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--divider);
   transition: all var(--transition-normal);
@@ -626,8 +744,7 @@ img {
 
 .s-item.active .s-indicator {
   background: var(--primary);
-  box-shadow: 0 0 8px var(--primary);
-  transform: scale(1.2);
+  box-shadow: 0 0 12px var(--primary);
 }
 
 .s-item.active .s-name {
@@ -637,85 +754,108 @@ img {
 .adv-divider {
   height: 1px;
   background: var(--divider);
-  margin: 24px -16px;
+  margin: 24px var(--space-md);
+  opacity: 0.6;
 }
 
 /* --- Feature Grid --- */
 .adv-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 20px 12px;
   padding: 0 20px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .g-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
+  transition: transform var(--transition-bounce);
+}
+
+.g-item:hover {
+  transform: translateY(-4px);
+}
+
+.g-item:active {
+  transform: scale(0.95);
 }
 
 .g-icon {
-  width: 54px;
-  height: 54px;
-  background: var(--surface);
-  border-radius: 16px;
+  width: 56px;
+  height: 56px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  /* Squircle */
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--divider);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow: var(--shadow);
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
 }
 
-.g-item:active .g-icon {
-  transform: scale(0.92);
+[data-theme="dark"] .g-icon {
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .g-icon img {
   width: 32px;
   height: 32px;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
 .g-item span {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   text-align: center;
 }
 
 /* --- Prayer Tracker --- */
 .adv-tracker {
   margin: 16px 20px;
-  padding-bottom: 20px;
+  padding-bottom: 24px;
 }
 
 .t-header {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 -16px 16px -16px;
-  background: var(--surface-soft);
-  padding: 10px 16px;
-  border-left: 4px solid var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.t-header::before {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 16px;
+  background: var(--primary);
+  border-radius: 2px;
 }
 
 .t-row {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
 }
 
 .t-btn {
   flex: 1;
-  background: var(--surface);
-  border: 1px solid var(--divider);
-  padding: 10px 4px;
-  border-radius: 12px;
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  padding: 12px 4px;
+  border-radius: 16px;
   font-size: 11px;
   font-weight: 700;
   color: var(--text-secondary);
@@ -725,11 +865,24 @@ img {
   gap: 6px;
   transition: all var(--transition-fast);
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.t-btn:active {
+  transform: scale(0.95);
 }
 
 .t-btn i {
-  font-size: 16px;
-  color: var(--alert);
+  width: 18px;
+  height: 18px;
+  color: var(--text-disabled);
+}
+
+.t-btn.done {
+  background: rgba(16, 185, 129, 0.1);
+  /* Green tint */
+  border-color: rgba(16, 185, 129, 0.3);
+  color: var(--success);
 }
 
 .t-btn.done i {
@@ -737,13 +890,22 @@ img {
 }
 
 .t-btn.missed {
-  border-color: var(--alert);
+  background: rgba(239, 68, 68, 0.1);
+  /* Red tint */
+  border-color: rgba(239, 68, 68, 0.3);
+  color: var(--alert);
+}
+
+.t-btn.missed i {
   color: var(--alert);
 }
 
 .t-btn.upcoming {
-  opacity: 0.6;
+  opacity: 0.5;
   pointer-events: none;
+  background: transparent;
+  border: 1px dashed var(--divider);
+  box-shadow: none;
 }
 
 /* 6. QURAN & MODULES */
@@ -1638,29 +1800,35 @@ img {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.4);
+    /* Lighter dark overlay */
     z-index: 1000;
     padding: 20px;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
+    /* Stronger blur */
+    -webkit-backdrop-filter: blur(8px);
     /* Flex styling when visible */
     align-items: center;
     justify-content: center;
   }
 
   .modal-content {
-    background: var(--bg-primary);
-    border-radius: 20px;
-    /* More rounded */
+    background: var(--nav-bg);
+    /* Translucent */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: var(--glass-border);
+
+    border-radius: 24px;
     width: 100%;
     max-width: 480px;
     display: flex;
     flex-direction: column;
     max-height: 85vh;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+    box-shadow: var(--shadow-float);
+    animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     overflow: hidden;
-    /* Clean corners */
   }
 
   /* Onboarding / Input Styles (Shared) */

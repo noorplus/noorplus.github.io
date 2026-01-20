@@ -1315,37 +1315,39 @@ function initHomePage() {
     dateEl.textContent = `${d} ${m}, ${y}`;
     renderTracker();
 
-    // Get location with fallback
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          try {
-            // Save detected location coordinates for reuse
-            const coords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-            localStorage.setItem('userCoordinates', JSON.stringify(coords));
+    // Optimized Location Logic: Cache First
+    const savedCoords = JSON.parse(localStorage.getItem('userCoordinates') || 'null');
 
-            // Auto-configure based on location
-            await autoConfigureSettings(pos.coords.latitude, pos.coords.longitude);
+    if (savedCoords) {
+      console.log('Using saved location:', savedCoords);
+      fetchAdvPrayerTimes(savedCoords.lat, savedCoords.lon);
 
-            fetchAdvPrayerTimes(pos.coords.latitude, pos.coords.longitude);
-          } catch (e) {
-            console.error('Location fetch error:', e);
-            fetchAdvPrayerTimes(23.8103, 90.4125);
-          }
-        },
-        () => {
-          console.warn('Geolocation denied, trying saved or default');
-          const saved = JSON.parse(localStorage.getItem('userCoordinates') || 'null');
-          if (saved) {
-            fetchAdvPrayerTimes(saved.lat, saved.lon);
-          } else {
-            fetchAdvPrayerTimes(23.8103, 90.4125);
-          }
-        }
-      );
+      // Optional: Background refresh (only if older than 24h, for example)
+      // For now, we rely on manual "Datect Location" in settings for updates
     } else {
-      console.warn('Geolocation not available, using default');
-      fetchAdvPrayerTimes(23.8103, 90.4125);
+      console.log('No saved location, detecting...');
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            try {
+              const coords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+              localStorage.setItem('userCoordinates', JSON.stringify(coords));
+              await autoConfigureSettings(pos.coords.latitude, pos.coords.longitude);
+              fetchAdvPrayerTimes(pos.coords.latitude, pos.coords.longitude);
+            } catch (e) {
+              console.error('Location init error:', e);
+              fetchAdvPrayerTimes(23.8103, 90.4125); // Default (Dhaka/Mecca)
+            }
+          },
+          () => {
+            console.warn('Geolocation denied/failed, using default');
+            fetchAdvPrayerTimes(23.8103, 90.4125);
+          },
+          { timeout: 10000, enableHighAccuracy: false }
+        );
+      } else {
+        fetchAdvPrayerTimes(23.8103, 90.4125);
+      }
     }
 
     // Prayer tracker buttons
