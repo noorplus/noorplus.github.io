@@ -76,6 +76,70 @@ function clearAppCache() {
 }
 
 /* ===============================
+   SETTINGS MANAGER
+================================ */
+const SettingsManager = {
+  defaults: {
+    theme: 'light',
+    location: null,
+    coordinates: null, // {lat, lon}
+    calculationMethod: 'Karachi',
+    asrMethod: 'Shafi',
+    hijriAdjustment: 0,
+    highLatitudeRule: 0, // 0=None, 1=Midnight, 2=OneSeventh, 3=AngleBased
+    timeFormat: '12h'
+  },
+
+  get(key) {
+    try {
+      const val = localStorage.getItem(key);
+      if (val === null) return this.defaults[key];
+      // special handling for objects
+      if (key === 'coordinates') return JSON.parse(val);
+      return val;
+    } catch (e) {
+      console.error(`SettingsManager get error for ${key}:`, e);
+      return this.defaults[key];
+    }
+  },
+
+  set(key, value) {
+    try {
+      if (typeof value === 'object' && value !== null) {
+        localStorage.setItem(key, JSON.stringify(value));
+      } else {
+        localStorage.setItem(key, value);
+      }
+
+      // Sync legacy userPreferences object for backward compatibility if needed
+      this.syncLegacyPrefs();
+    } catch (e) {
+      console.error(`SettingsManager set error for ${key}:`, e);
+    }
+  },
+
+  getAll() {
+    const all = {};
+    Object.keys(this.defaults).forEach(k => all[k] = this.get(k));
+    return all;
+  },
+
+  syncLegacyPrefs() {
+    try {
+      const prefs = {
+        location: this.get('location'),
+        calculationMethod: this.get('calculationMethod'),
+        asrMethod: this.get('asrMethod'),
+        hijriAdjustment: this.get('hijriAdjustment'),
+        highLatitudeRule: this.get('highLatitudeRule'),
+        timeFormat: this.get('timeFormat')
+      };
+      localStorage.setItem('userPreferences', JSON.stringify(prefs));
+    } catch (e) { }
+  }
+};
+
+/* ===============================
    CORE UTILITIES
 ================================ */
 function formatTo12h(time24) {
@@ -257,21 +321,23 @@ function closePrayerSettingsModal() {
 
 function loadPrayerSettingsModal() {
   try {
-    const location = localStorage.getItem('userLocation') || 'Not set';
-    const calcMethod = localStorage.getItem('calculationMethod') || 'Karachi';
-    const asrMethod = localStorage.getItem('asrMethod') || 'Shafi';
+    const settings = SettingsManager.getAll();
 
     const locationInput = document.getElementById('settings-location-input');
     const currentLocationSpan = document.getElementById('current-location');
     const calcSelect = document.getElementById('settings-calculation-method');
     const asrRadios = document.querySelectorAll('input[name="settings-asr-method"]');
+    const hijriInput = document.getElementById('settings-hijri-adj');
+    const highLatSelect = document.getElementById('settings-high-lat');
 
-    if (locationInput) locationInput.value = location === 'Not set' ? '' : location;
-    if (currentLocationSpan) currentLocationSpan.textContent = location;
-    if (calcSelect) calcSelect.value = calcMethod;
+    if (locationInput) locationInput.value = settings.location === 'Not set' || !settings.location ? '' : settings.location;
+    if (currentLocationSpan) currentLocationSpan.textContent = settings.location || 'Not set';
+    if (calcSelect) calcSelect.value = settings.calculationMethod;
+    if (hijriInput) hijriInput.value = settings.hijriAdjustment;
+    if (highLatSelect) highLatSelect.value = settings.highLatitudeRule;
 
     asrRadios.forEach(radio => {
-      radio.checked = radio.value === asrMethod;
+      radio.checked = radio.value === settings.asrMethod;
     });
   } catch (e) {
     console.error('loadPrayerSettingsModal error:', e);
@@ -303,7 +369,7 @@ function detectPrayerSettingsLocation() {
               if (input) input.value = city;
 
               // Save coordinates
-              localStorage.setItem('userCoordinates', JSON.stringify({ lat: latitude, lon: longitude }));
+              SettingsManager.set('userCoordinates', { lat: latitude, lon: longitude });
 
               // SMART DEFAULT UPDATE FOR UI
               if (data.address?.country_code) {
@@ -358,6 +424,8 @@ function savePrayerSettings() {
     const locationInput = document.getElementById('settings-location-input');
     const calcSelect = document.getElementById('settings-calculation-method');
     const asrRadio = document.querySelector('input[name="settings-asr-method"]:checked');
+    const hijriInput = document.getElementById('settings-hijri-adj');
+    const highLatSelect = document.getElementById('settings-high-lat');
 
     const location = locationInput?.value.trim();
     if (!location) {
@@ -367,18 +435,15 @@ function savePrayerSettings() {
 
     const calcMethod = calcSelect?.value || 'Karachi';
     const asrMethod = asrRadio?.value || 'Shafi';
+    const hijriAdj = hijriInput?.value || '0';
+    const highLat = highLatSelect?.value || '0';
 
-    // Save to localStorage
-    localStorage.setItem('userLocation', location);
-    localStorage.setItem('calculationMethod', calcMethod);
-    localStorage.setItem('asrMethod', asrMethod);
-
-    // Update preferences
-    const prefs = JSON.parse(localStorage.getItem('userPreferences') || '{}');
-    prefs.location = location;
-    prefs.calculationMethod = calcMethod;
-    prefs.asrMethod = asrMethod;
-    localStorage.setItem('userPreferences', JSON.stringify(prefs));
+    // Save via SettingsManager
+    SettingsManager.set('userLocation', location);
+    SettingsManager.set('calculationMethod', calcMethod);
+    SettingsManager.set('asrMethod', asrMethod);
+    SettingsManager.set('hijriAdjustment', hijriAdj);
+    SettingsManager.set('highLatitudeRule', highLat);
 
     alert('Prayer settings saved successfully!');
     closePrayerSettingsModal();
@@ -1061,17 +1126,19 @@ const ASR_METHODS = {
 
 async function fetchAdvPrayerTimes(lat, lon) {
   try {
-    // get user preferences
-    const savedCalc = localStorage.getItem('calculationMethod') || 'Karachi';
-    const savedAsr = localStorage.getItem('asrMethod') || 'Shafi';
+    const settings = SettingsManager.getAll();
+    const savedCalc = settings.calculationMethod;
+    const savedAsr = settings.asrMethod;
+    const hijriAdj = settings.hijriAdjustment;
+    const highLat = settings.highLatitudeRule || 0; // New Setting
 
     // Map to API values
     const methodId = CALCULATION_METHODS[savedCalc] || 1;
     const schoolId = ASR_METHODS[savedAsr] || 0;
 
-    console.log(`Fetching prayer times for Lat: ${lat}, Lon: ${lon}, Method: ${methodId} (${savedCalc}), School: ${schoolId} (${savedAsr})`);
+    console.log(`Fetching prayer times for Lat: ${lat}, Lon: ${lon}, Method: ${methodId}, School: ${schoolId}, Adj: ${hijriAdj}, HighLat: ${highLat}`);
 
-    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=${methodId}&school=${schoolId}`);
+    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=${methodId}&school=${schoolId}&adjustment=${hijriAdj}&latitudeAdjustmentMethod=${highLat}`);
 
     if (!res.ok) throw new Error('Prayer times API error');
 
@@ -1080,13 +1147,23 @@ async function fetchAdvPrayerTimes(lat, lon) {
 
     const timings = json.data.timings;
     const meta = json.data.meta;
+    const dateData = json.data.date;
 
-    // Cache the latest timings for other pages to use
+    // Cache the latest timings
     window.latestPrayerData = { timings, meta, date: new Date() };
 
-    // Update Home Page Elements if they exist
+    // Update Home Page Elements
     const locEl = document.getElementById("adv-location");
-    if (locEl) locEl.textContent = meta.timezone.split("/")[1]?.replace(/_/g, " ") || "Location Detected";
+    // Use saved location name if available, else timezone
+    if (locEl) locEl.textContent = settings.userLocation || meta.timezone.split("/")[1]?.replace(/_/g, " ") || "Location Detected";
+
+    // Update Date with Hijri
+    const dateEl = document.getElementById("adv-date");
+    if (dateEl && dateData && dateData.hijri) {
+      const h = dateData.hijri;
+      const g = dateData.gregorian;
+      dateEl.innerHTML = `${h.day} ${h.month.en} ${h.year} <span style="opacity:0.6; margin: 0 6px;">•</span> ${g.day} ${g.month.en} ${g.year}`;
+    }
 
     const suhurEl = document.getElementById("adv-suhur");
     const iftarEl = document.getElementById("adv-iftar");
@@ -1101,7 +1178,6 @@ async function fetchAdvPrayerTimes(lat, lon) {
     startAdvCountdown(timings);
   } catch (err) {
     console.error("API Fetch Error:", err);
-    // Use mock times as fallback
     useFallbackPrayerTimes();
   }
 }
