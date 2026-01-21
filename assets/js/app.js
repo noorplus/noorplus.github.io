@@ -1648,17 +1648,13 @@ function updateCurrentPrayerDisplay(timings) {
 
         // 1. Detect Forbidden Time
         const currentForbidden = forbiddenList.find(f => nowStr >= f.start && nowStr < f.end);
-        const statusDot = document.getElementById("adv-status-dot");
-        const pNowEl = document.getElementById("adv-p-now");
-        const pStartEl = document.getElementById("adv-p-start");
-        const fRangeEl = document.getElementById("f-range");
-        const fCountdownEl = document.getElementById("f-countdown-text");
+        const sunriseEl = document.getElementById("adv-sunrise");
+        const sunsetEl = document.getElementById("adv-sunset");
+        if (sunriseEl && timings.Sunrise) sunriseEl.textContent = formatTo12h(timings.Sunrise);
+        if (sunsetEl && timings.Sunset) sunsetEl.textContent = formatTo12h(timings.Sunset);
 
         if (currentForbidden) {
-          if (pNowEl) pNowEl.textContent = "Forbidden";
-          if (statusDot) {
-            statusDot.className = "h-status-dot forbidden";
-          }
+          if (pNowEl) pNowEl.innerHTML = `Forbidden <span class="h-status-dot forbidden" id="adv-status-dot"></span>`;
           const fRow = document.getElementById("f-row");
           if (fRow) fRow.style.display = "flex";
           if (fRangeEl) {
@@ -1672,9 +1668,6 @@ function updateCurrentPrayerDisplay(timings) {
           // Neutralize Timeline
           document.querySelectorAll(".s-item").forEach(item => item.classList.remove("active"));
         } else {
-          if (statusDot) {
-            statusDot.className = "h-status-dot permissible";
-          }
           const fRow = document.getElementById("f-row");
           if (fRow) fRow.style.display = "none";
 
@@ -1688,7 +1681,7 @@ function updateCurrentPrayerDisplay(timings) {
           const currentP = prayerSchedule[currentIdx];
           const nextP = prayerSchedule[(currentIdx + 1) % 5];
 
-          if (pNowEl) pNowEl.textContent = currentP.name;
+          if (pNowEl) pNowEl.innerHTML = `${currentP.name} <span class="h-status-dot permissible" id="adv-status-dot"></span>`;
           if (pStartEl) pStartEl.textContent = formatTo12h(currentP.time);
           const pEndEl = document.getElementById("adv-p-end");
           if (pEndEl) pEndEl.textContent = formatTo12h(nextP.time);
