@@ -1,0 +1,71 @@
+<section class="page hadith">
+    <!-- Header -->
+    <header class="q-header sticky-header">
+        <div class="q-header-top">
+            <button class="icon-btn" onclick="loadPage('home')"><i data-lucide="chevron-left"></i></button>
+            <div class="q-header-info">
+                <h1 class="q-title">Al-Hadith</h1>
+                <small class="q-subtitle">Daily Wisdom & Guidance</small>
+            </div>
+            <button class="icon-btn" id="h-search-btn"><i data-lucide="search"></i></button>
+        </div>
+
+        <!-- Search Bar (Conditional) -->
+        <div class="h-search-bar" id="h-search-container" style="display:none;">
+            <input type="text" id="h-search-input" placeholder="Search hadith (e.g. prayer, fasting)...">
+        </div>
+    </header>
+
+    <div class="hadith-container">
+        <!-- Hadith of the Day Section -->
+        <div class="h-hero">
+            <div class="h-hero-card">
+                <div class="h-hero-badge">Hadith of the Day</div>
+                <div class="h-hero-arabic" id="h-day-arabic">...</div>
+                <div class="h-hero-text" id="h-day-text">Loading daily wisdom...</div>
+                <div class="h-hero-meta">
+                    <span id="h-day-ref">---</span>
+                    <button class="icon-btn-sm" id="h-copy-day"><i data-lucide="copy"></i></button>
+                    <button class="icon-btn-sm" id="h-share-day"><i data-lucide="share-2"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories Section -->
+        <div class="h-section-header">
+            <span>Explore Categories</span>
+            <button class="text-btn">View All</button>
+        </div>
+
+        <div class="h-categories-grid">
+            <div class="h-cat-item" data-cat="faith">
+                <div class="h-cat-icon"><i data-lucide="heart"></i></div>
+                <span>Faith (Iman)</span>
+            </div>
+            <div class="h-cat-item" data-cat="prayer">
+                <div class="h-cat-icon"><i data-lucide="clock"></i></div>
+                <span>Prayer (Salah)</span>
+            </div>
+            <div class="h-cat-item" data-cat="character">
+                <div class="h-cat-icon"><i data-lucide="smile"></i></div>
+                <span>Character</span>
+            </div>
+            <div class="h-cat-item" data-cat="knowledge">
+                <div class="h-cat-icon"><i data-lucide="book-open"></i></div>
+                <span>Knowledge</span>
+            </div>
+        </div>
+
+        <!-- Latest/Featured Feed -->
+        <div class="h-section-header">
+            <span>Featured Wisdom</span>
+        </div>
+
+        <div class="h-feed" id="h-featured-list">
+            <!-- Dynamic Hadith Cards -->
+            <div class="h-skeleton-card"></div>
+            <div class="h-skeleton-card"></div>
+        </div>
+
+    </div>
+</section>

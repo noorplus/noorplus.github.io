@@ -1,0 +1,32 @@
+<section class="page dua">
+    <!-- Header -->
+    <header class="q-header sticky-header">
+        <div class="q-header-top">
+            <button class="icon-btn" onclick="loadPage('home')"><i data-lucide="chevron-left"></i></button>
+            <div class="q-header-info">
+                <h1 class="q-title">Hisn al-Muslim</h1>
+                <small class="q-subtitle">Daily Supplications</small>
+            </div>
+            <button class="icon-btn" id="d-search-btn"><i data-lucide="search"></i></button>
+        </div>
+    </header>
+
+    <div class="dua-container">
+        <!-- Categories Horizontal Scroll -->
+        <div class="d-tabs-container">
+            <div class="d-tabs">
+                <button class="d-tab active" data-cat="morning">Morning</button>
+                <button class="d-tab" data-cat="evening">Evening</button>
+                <button class="d-tab" data-cat="travel">Travel</button>
+                <button class="d-tab" data-cat="health">Health</button>
+                <button class="d-tab" data-cat="protection">Protection</button>
+            </div>
+        </div>
+
+        <div class="d-feed" id="d-list">
+            <!-- Dynamic Dua Cards -->
+            <div class="h-skeleton-card"></div>
+            <div class="h-skeleton-card"></div>
+        </div>
+    </div>
+</section>

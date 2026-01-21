@@ -1,6 +1,15 @@
 const main = document.getElementById("app-main");
 const buttons = document.querySelectorAll(".bottom-nav button");
 
+/* Service Worker Registration */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('NoorPlus SW Registered'))
+      .catch(err => console.log('NoorPlus SW Error:', err));
+  });
+}
+
 // Cache for active intervals and tracking
 const activeIntervals = new Set();
 const activeSearchTimeouts = new Set();
@@ -263,6 +272,8 @@ function loadPage(page) {
         else if (page === "audio-quran") initAudioQuranPage();
         else if (page === "prayer-time") initPrayerTimePage();
         else if (page === "tasbih") initTasbihPage();
+        else if (page === "hadith") initHadithPage();
+        else if (page === "dua") initDuaPage();
         else if (page === "menu") initMenuPage();
       })
       .catch(err => {
@@ -2019,5 +2030,345 @@ function updateCurrentPrayer() {
     });
   } catch (e) {
     console.error('updateCurrentPrayer error:', e);
+  }
+}
+
+/* ===============================
+   TASBIH MODULE
+================================ */
+function initTasbihPage() {
+  try {
+    const tapArea = document.getElementById('t-tap-area');
+    const currentEl = document.getElementById('t-current-count');
+    const totalEl = document.getElementById('t-total-count');
+    const lapEl = document.getElementById('t-lap-count');
+    const resetBtn = document.getElementById('t-reset-btn');
+    const targetChips = document.querySelectorAll('.t-chip');
+    const vibrateToggle = document.getElementById('t-vibrate-toggle');
+    const soundToggle = document.getElementById('t-sound-toggle');
+    const ringCircle = document.querySelector('.t-ring-circle');
+
+    if (!tapArea) return;
+
+    // State Management
+    let current = parseInt(localStorage.getItem('tasbih_current') || '0');
+    let total = parseInt(localStorage.getItem('tasbih_total') || '0');
+    let lap = parseInt(localStorage.getItem('tasbih_lap') || '0');
+    let target = localStorage.getItem('tasbih_target') || '33';
+    let vibrateEnabled = localStorage.getItem('tasbih_vibrate') !== 'false';
+    let soundEnabled = localStorage.getItem('tasbih_sound') !== 'false';
+
+    const radius = 130;
+    const circumference = radius * 2 * Math.PI;
+
+    // Initial UI Update
+    updateUI();
+    updateToggles();
+
+    // Event Listeners
+    tapArea.addEventListener('click', () => {
+      increment();
+      triggerRipple();
+    });
+
+    resetBtn.onclick = () => {
+      if (confirm('Reset session and lap counts?')) {
+        current = 0;
+        lap = 0;
+        saveState();
+        updateUI();
+      }
+    };
+
+    targetChips.forEach(chip => {
+      chip.onclick = () => {
+        target = chip.dataset.target;
+        targetChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        localStorage.setItem('tasbih_target', target);
+        updateProgress();
+      };
+    });
+
+    vibrateToggle.onclick = () => {
+      vibrateEnabled = !vibrateEnabled;
+      localStorage.setItem('tasbih_vibrate', vibrateEnabled);
+      updateToggles();
+    };
+
+    soundToggle.onclick = () => {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem('tasbih_sound', soundEnabled);
+      updateToggles();
+    };
+
+    function increment() {
+      current++;
+      total++;
+
+      const targetVal = target === 'infinity' ? Infinity : parseInt(target);
+
+      if (current >= targetVal) {
+        lap++;
+        current = 0;
+        triggerFeedback(true); // Strong feedback for target hit
+      } else {
+        triggerFeedback(false); // Normal feedback for tap
+      }
+
+      saveState();
+      updateUI();
+    }
+
+    function updateUI() {
+      if (currentEl) currentEl.textContent = current;
+      if (totalEl) totalEl.textContent = total;
+      if (lapEl) lapEl.textContent = lap;
+      updateProgress();
+    }
+
+    function updateProgress() {
+      if (!ringCircle) return;
+      const targetVal = target === 'infinity' ? 100 : parseInt(target);
+      const progress = target === 'infinity' ? 1 : Math.min(current / targetVal, 1);
+      const offset = circumference - (progress * circumference);
+      ringCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+      ringCircle.style.strokeDashoffset = offset;
+    }
+
+    function updateToggles() {
+      if (vibrateToggle) {
+        vibrateToggle.classList.toggle('active', vibrateEnabled);
+        vibrateToggle.querySelector('i').setAttribute('data-lucide', vibrateEnabled ? 'vibrate' : 'vibrate-off');
+      }
+      if (soundToggle) {
+        soundToggle.classList.toggle('active', soundEnabled);
+        soundToggle.querySelector('i').setAttribute('data-lucide', soundEnabled ? 'volume-2' : 'volume-x');
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function triggerRipple() {
+      tapArea.classList.remove('pulsing');
+      void tapArea.offsetWidth; // Trigger reflow
+      tapArea.classList.add('pulsing');
+    }
+
+    function triggerFeedback(isTargetHit) {
+      if (vibrateEnabled && navigator.vibrate) {
+        navigator.vibrate(isTargetHit ? [100, 50, 100] : 40);
+      }
+      if (soundEnabled) {
+        const audio = new Audio('https://www.soundjay.com/buttons/button-16.mp3');
+        audio.volume = isTargetHit ? 0.8 : 0.4;
+        audio.play().catch(() => { });
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('tasbih_current', current);
+      localStorage.setItem('tasbih_total', total);
+      localStorage.setItem('tasbih_lap', lap);
+    }
+
+    // Set active target chip based on saved state
+    targetChips.forEach(chip => {
+      if (chip.dataset.target === target) chip.classList.add('active');
+      else chip.classList.remove('active');
+    });
+
+  } catch (e) {
+    console.error('initTasbihPage error:', e);
+  }
+}
+
+/* ===============================
+   HADITH MODULE
+================================ */
+const HadithDataService = {
+  async getHadithOfTheDay() {
+    const cached = JSON.parse(localStorage.getItem('noorplus_hadith_day') || 'null');
+    const today = new Date().toISOString().split('T')[0];
+    if (cached && cached.date === today) return cached.data;
+
+    try {
+      const res = await fetch('https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/eng-bukhari.json');
+      const data = await res.json();
+      const hadiths = data.hadiths;
+      const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+      const selection = hadiths[dayOfYear % hadiths.length];
+
+      const result = {
+        text: selection.text,
+        reference: `Sahih Bukhari, Hadith ${selection.hadithnumber}`
+      };
+
+      localStorage.setItem('noorplus_hadith_day', JSON.stringify({ date: today, data: result }));
+      return result;
+    } catch (e) {
+      return {
+        text: "The best among you are those who have the best manners and character.",
+        reference: "Sahih Bukhari 6035"
+      };
+    }
+  },
+
+  async getFeatured() {
+    return [
+      { text: "Take benefit of five before five: Your youth before your old age, your health before your sickness, your wealth before your poverty, your free time before your preoccupation, and your life before your death.", ref: "Al-Hakim" },
+      { text: "A good word is charity.", ref: "Sahih Bukhari" },
+      { text: "None of you truly believes until he loves for his brother what he loves for himself.", ref: "Sahih Bukhari" }
+    ];
+  }
+};
+
+async function initHadithPage() {
+  try {
+    const dayText = document.getElementById('h-day-text');
+    const dayRef = document.getElementById('h-day-ref');
+    const featuredList = document.getElementById('h-featured-list');
+    const searchBtn = document.getElementById('h-search-btn');
+    const searchContainer = document.getElementById('h-search-container');
+    const copyBtn = document.getElementById('h-copy-day');
+
+    // 1. Load Hadith of the Day
+    const daily = await HadithDataService.getHadithOfTheDay();
+    if (dayText) dayText.textContent = daily.text;
+    if (dayRef) dayRef.textContent = daily.reference;
+
+    // 2. Load Featured Feed
+    const featured = await HadithDataService.getFeatured();
+    if (featuredList) {
+      featuredList.innerHTML = featured.map(h => `
+        <div class="h-card">
+          <p class="h-card-text">${h.text}</p>
+          <div class="h-card-footer">
+            <span>${h.ref}</span>
+            <button class="icon-btn-sm" onclick="copyText('${h.text.replace(/'/g, "\\'")}')"><i data-lucide="copy"></i></button>
+          </div>
+        </div>
+      `).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // 3. Search Toggle
+    if (searchBtn && searchContainer) {
+      searchBtn.onclick = () => {
+        const isHidden = searchContainer.style.display === 'none';
+        searchContainer.style.display = isHidden ? 'block' : 'none';
+      };
+    }
+
+    if (copyBtn) {
+      copyBtn.onclick = () => copyText(`${daily.text} - ${daily.reference}`);
+    }
+
+  } catch (e) {
+    console.error('initHadithPage error:', e);
+  }
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast("Copied to clipboard!");
+  });
+}
+
+/* ===============================
+   DUA MODULE
+================================ */
+const DuaDataService = {
+  getDuasByCat(cat) {
+    const data = {
+      morning: [
+        {
+          title: "Upon Waking Up",
+          arabic: "الْحَمْدُ للهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
+          trans: "Alhamdu lillahil-ladhi ahyana ba'da ma amatana wa ilayhin-nushur.",
+          mean: "All praise is for Allah who gave us life after having taken it from us and unto Him is the resurrection."
+        },
+        {
+          title: "For protection",
+          arabic: "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
+          trans: "Bismillahil-ladhi la yadurru ma'as-mihi shay'un fil-ardi wa la fis-sama'i wa Huwas-Sami'ul-'Alim.",
+          mean: "In the Name of Allah, Who with His Name nothing can cause harm in the earth nor in the heavens, and He is the All-Hearing, the All-Knowing. (Recite 3 times)"
+        }
+      ],
+      evening: [
+        {
+          title: "Evening Supplication",
+          arabic: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلهِ وَالْحَمْدُ لِلهِ",
+          trans: "Amsayna wa amsal-mulku lillahi wal-hamdu lillah.",
+          mean: "We have reached the evening and at this very time unto Allah belongs all sovereignty, and all praise is for Allah."
+        }
+      ],
+      travel: [
+        {
+          title: "Travel Supplication",
+          arabic: "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ",
+          trans: "Subhanal-ladhi sakh-khara lana hadha wa ma kunna lahu muqrinina.",
+          mean: "Glory is to Him Who has provided this for us, though we could never have subdued it by ourselves."
+        }
+      ],
+      health: [
+        {
+          title: "For pain in the body",
+          arabic: "أَعُوذُ بِاللَّهِ وَقُدْرَتِهِ مِنْ شَرِّ مَا أَجِدُ وَأُحَاذِرُ",
+          trans: "A'udhu billahi wa qudratihi min sharri ma ajidu wa uhadhiru.",
+          mean: "I seek refuge with Allah and with His Power from the evil that I find and that I fear. (Recite 7 times)"
+        }
+      ],
+      protection: [
+        {
+          title: "Ayat al-Kursi",
+          arabic: "اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
+          trans: "Allahu la ilaha illa Huwal-Hayyul-Qayyum...",
+          mean: "Allah! There is no god but He, the Living, the Self-subsisting..."
+        }
+      ]
+    };
+    return data[cat] || data.morning;
+  }
+};
+
+function initDuaPage() {
+  try {
+    const tabs = document.querySelectorAll('.d-tab');
+    const duaList = document.getElementById('d-list');
+
+    if (!duaList) return;
+
+    // Default Load
+    renderDuas('morning');
+
+    tabs.forEach(tab => {
+      tab.onclick = () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        renderDuas(tab.dataset.cat);
+      };
+    });
+
+    function renderDuas(cat) {
+      const duas = DuaDataService.getDuasByCat(cat);
+      duaList.innerHTML = duas.map(d => `
+        <div class="d-card">
+          <div class="d-card-header">
+            <h3 class="d-card-title">${d.title}</h3>
+          </div>
+          <p class="d-card-arabic">${d.arabic}</p>
+          <p class="d-card-trans">${d.trans}</p>
+          <p class="d-card-mean">${d.mean}</p>
+          <div class="d-card-footer">
+             <button class="icon-btn-sm" onclick="copyText(\`${d.mean.replace(/'/g, "\\'")}\`)"><i data-lucide="copy"></i></button>
+             <button class="icon-btn-sm"><i data-lucide="share-2"></i></button>
+          </div>
+        </div>
+      `).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+  } catch (e) {
+    console.error('initDuaPage error:', e);
   }
 }
