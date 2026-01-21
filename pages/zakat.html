@@ -1,0 +1,71 @@
+<section class="page zakat">
+    <!-- Header -->
+    <header class="q-header sticky-header">
+        <div class="q-header-top">
+            <button class="icon-btn" onclick="loadPage('home')"><i data-lucide="chevron-left"></i></button>
+            <div class="q-header-info">
+                <h1 class="q-title">Zakat Calculator</h1>
+                <small class="q-subtitle">Purify your wealth</small>
+            </div>
+            <button class="icon-btn" id="z-reset-btn"><i data-lucide="rotate-ccw"></i></button>
+        </div>
+    </header>
+
+    <div class="zakat-container">
+        <!-- Result Card -->
+        <div class="z-result-card">
+            <div class="z-res-info">
+                <small>Total Zakat Due</small>
+                <h2 id="z-total-due">$ 0.00</h2>
+            </div>
+            <div class="z-res-badge">2.5%</div>
+        </div>
+
+        <!-- Input Sections -->
+        <div class="z-form">
+            <div class="z-section">
+                <h3>Cash & Receivables</h3>
+                <div class="z-input-group">
+                    <label>In Hand & Bank Accounts</label>
+                    <input type="number" id="z-cash" placeholder="0.00">
+                </div>
+                <div class="z-input-group">
+                    <label>Money owed to you</label>
+                    <input type="number" id="z-owed" placeholder="0.00">
+                </div>
+            </div>
+
+            <div class="z-section">
+                <h3>Gold & Silver</h3>
+                <div class="z-input-group">
+                    <label>Value of Gold</label>
+                    <input type="number" id="z-gold" placeholder="0.00">
+                </div>
+                <div class="z-input-group">
+                    <label>Value of Silver</label>
+                    <input type="number" id="z-silver" placeholder="0.00">
+                </div>
+            </div>
+
+            <div class="z-section">
+                <h3>Liabilities (Subtract)</h3>
+                <div class="z-input-group">
+                    <label>Debts to be paid</label>
+                    <input type="number" id="z-debts" placeholder="0.00">
+                </div>
+                <div class="z-input-group">
+                    <label>Expenses</label>
+                    <input type="number" id="z-expenses" placeholder="0.00">
+                </div>
+            </div>
+        </div>
+
+        <div class="z-footer">
+            <div class="z-nisab">
+                <i data-lucide="info"></i>
+                <span>Nisab (Estimated): ~$ 6,000 (Gold)</span>
+            </div>
+            <button class="action-btn" id="z-calc-btn">Calculate Now</button>
+        </div>
+    </div>
+</section>

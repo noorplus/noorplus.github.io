@@ -1,0 +1,63 @@
+<section class="page kitab">
+    <!-- Header -->
+    <header class="q-header sticky-header">
+        <div class="q-header-top">
+            <button class="icon-btn" onclick="loadPage('library')"><i data-lucide="chevron-left"></i></button>
+            <div class="q-header-info">
+                <h1 class="q-title">Kitab Store</h1>
+                <small class="q-subtitle">Knowledge Resources</small>
+            </div>
+            <button class="icon-btn" id="k-filter-btn"><i data-lucide="filter"></i></button>
+        </div>
+    </header>
+
+    <div class="kitab-container">
+        <!-- Categories -->
+        <div class="k-categories">
+            <div class="k-chip active">All</div>
+            <div class="k-chip">Fiqh</div>
+            <div class="k-chip">History</div>
+            <div class="k-chip">Spirituality</div>
+        </div>
+
+        <!-- Book List -->
+        <div class="k-list" id="kitab-list">
+            <!-- Dynamic items or static placeholders for now -->
+            <div class="k-item">
+                <div class="k-cover"><i data-lucide="book"></i></div>
+                <div class="k-info">
+                    <h4>Riyad as-Salihin</h4>
+                    <p>Al-Nawawi</p>
+                    <div class="k-meta">
+                        <span>The Meadows of the Righteous</span>
+                        <button class="icon-btn-sm"><i data-lucide="external-link"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="k-item">
+                <div class="k-cover"><i data-lucide="book"></i></div>
+                <div class="k-info">
+                    <h4>The Sealed Nectar</h4>
+                    <p>Safiur Rahman Mubarakpuri</p>
+                    <div class="k-meta">
+                        <span>Biography of the Prophet (PBUH)</span>
+                        <button class="icon-btn-sm"><i data-lucide="external-link"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="k-item">
+                <div class="k-cover"><i data-lucide="book"></i></div>
+                <div class="k-info">
+                    <h4>Al-Adab Al-Mufrad</h4>
+                    <p>Imam al-Bukhari</p>
+                    <div class="k-meta">
+                        <span>The Book of Islamic Manners</span>
+                        <button class="icon-btn-sm"><i data-lucide="external-link"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

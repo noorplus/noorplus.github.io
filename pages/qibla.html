@@ -1,0 +1,57 @@
+<section class="page qibla">
+    <!-- Header -->
+    <header class="q-header sticky-header">
+        <div class="q-header-top">
+            <button class="icon-btn" onclick="loadPage('home')"><i data-lucide="chevron-left"></i></button>
+            <div class="q-header-info">
+                <h1 class="q-title">Qibla Finder</h1>
+                <small class="q-subtitle">Locate the Kaaba</small>
+            </div>
+            <button class="icon-btn" id="q-refresh-btn"><i data-lucide="refresh-cw"></i></button>
+        </div>
+    </header>
+
+    <div class="qibla-container">
+        <!-- Compass -->
+        <div class="q-compass-box">
+            <div class="q-compass" id="q-compass">
+                <div class="q-ring"></div>
+                <div class="q-needle-makkah" id="q-needle-makkah">
+                    <i data-lucide="kaaba"></i>
+                </div>
+                <div class="q-needle-north">
+                    <span class="n-label">N</span>
+                </div>
+
+                <div class="q-cardinals">
+                    <span>N</span><span>E</span><span>S</span><span>W</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direction Info -->
+        <div class="q-info-card">
+            <div class="q-stat">
+                <span id="q-angle">0.0°</span>
+                <small>Qibla Direction</small>
+            </div>
+            <div class="q-divider"></div>
+            <div class="q-stat">
+                <span id="q-distance">0 km</span>
+                <small>Distance to Kaaba</small>
+            </div>
+        </div>
+
+        <!-- Guidance -->
+        <div class="q-guidance" id="q-guidance">
+            Rotate your device to find the Qibla.
+        </div>
+
+        <div class="q-warning">
+            <i data-lucide="info"></i>
+            For best results, keep device flat and away from magnets.
+        </div>
+
+        <button class="lib-btn" id="q-init-btn" style="margin: 20px auto; display: block;">Enable Compass</button>
+    </div>
+</section>

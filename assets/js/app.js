@@ -274,6 +274,14 @@ function loadPage(page) {
         else if (page === "tasbih") initTasbihPage();
         else if (page === "hadith") initHadithPage();
         else if (page === "dua") initDuaPage();
+        else if (page === "library") initLibraryPage();
+        else if (page === "kitab") initKitabPage();
+        else if (page === "qibla") initQiblaPage();
+        else if (page === "zakat") initZakatPage();
+        else if (page === "hijri") initHijriPage();
+        else if (page === "mosque") initMosquePage();
+        else if (page === "donate") initDonatePage();
+        else if (page === "community") initCommunityPage();
         else if (page === "menu") initMenuPage();
       })
       .catch(err => {
@@ -2370,5 +2378,224 @@ function initDuaPage() {
 
   } catch (e) {
     console.error('initDuaPage error:', e);
+  }
+}
+
+/* ===============================
+   MODULE INITIALIZATIONS
+================================ */
+function initLibraryPage() {
+  console.log("Library Page Initialized");
+}
+
+function initKitabPage() {
+  console.log("Kitab Page Initialized");
+}
+
+function initCommunityPage() {
+  console.log("Community Page Initialized");
+}
+
+function initHomePage() {
+  try {
+    console.log("Initializing Home Page...");
+
+    // 1. Hijri & Gregorian Dates
+    const hijriEl = document.getElementById('date-hijri');
+    const gregEl = document.getElementById('date-gregorian');
+    if (hijriEl && gregEl) {
+      const today = new Date();
+      gregEl.textContent = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+      // Basic Hijri Calculation (Placeholder/Simple Logic)
+      try {
+        const hijri = new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', {
+          day: 'numeric', month: 'long', year: 'numeric'
+        }).format(today);
+        hijriEl.textContent = hijri;
+      } catch (e) {
+        hijriEl.textContent = "Hijri Date Unavailable";
+      }
+    }
+
+    // 2. Feature Grid Clicks
+    document.querySelectorAll('.g-item').forEach(item => {
+      item.onclick = () => {
+        const page = item.dataset.page;
+        if (page) loadPage(page);
+      };
+    });
+
+    // 3. Prayer Tracker Initialization
+    if (typeof renderTracker === 'function') renderTracker();
+
+    // 4. Fetch Prayer Times
+    const coords = SettingsManager.get('userCoordinates');
+    if (coords) {
+      fetchAdvPrayerTimes(coords.lat, coords.lon);
+    } else {
+      detectHomeLocation();
+    }
+
+  } catch (e) {
+    console.error('initHomePage error:', e);
+  }
+}
+
+async function detectHomeLocation() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const { latitude, longitude } = pos.coords;
+      SettingsManager.set('userCoordinates', { lat: latitude, lon: longitude });
+      fetchAdvPrayerTimes(latitude, longitude);
+    },
+    (err) => console.warn("Location access denied", err)
+  );
+}
+
+/* ===============================
+   HIJRI CALENDAR MODULE
+================================ */
+let currentCalDate = new Date();
+
+function initHijriPage() {
+  renderHijriCalendar(currentCalDate);
+
+  document.getElementById('cal-prev').onclick = () => {
+    currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+    renderHijriCalendar(currentCalDate);
+  };
+
+  document.getElementById('cal-next').onclick = () => {
+    currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+    renderHijriCalendar(currentCalDate);
+  };
+
+  document.getElementById('h-cal-today').onclick = () => {
+    currentCalDate = new Date();
+    renderHijriCalendar(currentCalDate);
+  };
+}
+
+function renderHijriCalendar(date) {
+  const grid = document.getElementById('cal-grid');
+  const monthName = document.getElementById('cal-month-name');
+  if (!grid || !monthName) return;
+
+  const hijriFormatter = new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', {
+    month: 'long', year: 'numeric'
+  });
+  monthName.textContent = hijriFormatter.format(date);
+
+  grid.innerHTML = '';
+  // Basic grid logic: Get start of month, fill gaps, etc.
+  // Simplified for this phase: Show 30 days
+  for (let i = 1; i <= 30; i++) {
+    const day = document.createElement('div');
+    day.className = 'cal-day';
+    day.innerHTML = `<span class="h-day-num">${i}</span>`;
+    grid.appendChild(day);
+  }
+}
+
+/* ===============================
+   QIBLA FINDER MODULE
+================================ */
+function initQiblaPage() {
+  const angleEl = document.getElementById('q-angle');
+  const distanceEl = document.getElementById('q-distance');
+  const compass = document.getElementById('q-compass');
+  const initBtn = document.getElementById('q-init-btn');
+
+  if (!initBtn) return;
+
+  initBtn.onclick = () => {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission().then(response => {
+        if (response === 'granted') startCompass();
+      });
+    } else {
+      startCompass();
+    }
+    initBtn.style.display = 'none';
+  };
+
+  function startCompass() {
+    window.addEventListener('deviceorientationabsolute', handleOrientation);
+    // Calc Qibla
+    const coords = SettingsManager.get('userCoordinates');
+    if (coords) {
+      const qiblaAngle = calculateQibla(coords.lat, coords.lon);
+      if (angleEl) angleEl.textContent = qiblaAngle.toFixed(1) + '°';
+      const distance = calculateDistance(coords.lat, coords.lon, 21.4225, 39.8262);
+      if (distanceEl) distanceEl.textContent = Math.round(distance).toLocaleString() + ' km';
+    }
+  }
+
+  function handleOrientation(e) {
+    const compassHeading = e.webkitCompassHeading || e.alpha;
+    if (compassHeading && compass) {
+      compass.style.transform = `rotate(${-compassHeading}deg)`;
+    }
+  }
+}
+
+function calculateQibla(lat, lon) {
+  const phiK = 21.4225 * Math.PI / 180.0;
+  const lambdaK = 39.8262 * Math.PI / 180.0;
+  const phi = lat * Math.PI / 180.0;
+  const lambda = lon * Math.PI / 180.0;
+  const psi = Math.atan2(Math.sin(lambdaK - lambda), Math.cos(phi) * Math.tan(phiK) - Math.sin(phi) * Math.cos(lambdaK - lambda));
+  return psi * 180.0 / Math.PI;
+}
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/* ===============================
+   ZAKAT CALCULATOR MODULE
+================================ */
+function initZakatPage() {
+  const inputs = document.querySelectorAll('.z-input-group input');
+  const calcBtn = document.getElementById('z-calc-btn');
+  const totalEl = document.getElementById('z-total-due');
+
+  if (calcBtn) {
+    calcBtn.onclick = () => {
+      let assets = 0;
+      assets += parseFloat(document.getElementById('z-cash').value || 0);
+      assets += parseFloat(document.getElementById('z-owed').value || 0);
+      assets += parseFloat(document.getElementById('z-gold').value || 0);
+      assets += parseFloat(document.getElementById('z-silver').value || 0);
+
+      let liabilities = 0;
+      liabilities += parseFloat(document.getElementById('z-debts').value || 0);
+      liabilities += parseFloat(document.getElementById('z-expenses').value || 0);
+
+      const net = assets - liabilities;
+      const zakat = net > 0 ? net * 0.025 : 0;
+      if (totalEl) totalEl.textContent = '$ ' + zakat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+  }
+}
+
+/* ===============================
+   OTHER UTILITIES
+================================ */
+function initDonatePage() { console.log("Donate Page Init"); }
+function initMosquePage() {
+  const btn = document.getElementById('m-map-btn');
+  if (btn) {
+    btn.onclick = () => {
+      const coords = SettingsManager.get('userCoordinates');
+      const url = coords ? `https://www.google.com/maps/search/masjid/@${coords.lat},${coords.lon},14z` : `https://www.google.com/maps/search/masjid`;
+      window.open(url, '_blank');
+    };
   }
 }

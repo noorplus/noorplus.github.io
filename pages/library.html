@@ -1,0 +1,69 @@
+<section class="page library">
+    <!-- Header -->
+    <header class="q-header sticky-header">
+        <div class="q-header-top">
+            <h1 class="q-title">Islamic Library</h1>
+            <small class="q-subtitle">Explore Sacred Knowledge</small>
+        </div>
+    </header>
+
+    <div class="lib-container">
+        <!-- Quick Access Categories -->
+        <div class="lib-grid">
+            <div class="lib-card" onclick="loadPage('quran')">
+                <div class="lib-icon"><i data-lucide="book"></i></div>
+                <div class="lib-info">
+                    <h3>Al-Quran</h3>
+                    <p>Read & Listen</p>
+                </div>
+                <i data-lucide="chevron-right" class="lib-arrow"></i>
+            </div>
+
+            <div class="lib-card" onclick="loadPage('hadith')">
+                <div class="lib-icon"><i data-lucide="scroll"></i></div>
+                <div class="lib-info">
+                    <h3>Al-Hadith</h3>
+                    <p>Sunnah & Wisdom</p>
+                </div>
+                <i data-lucide="chevron-right" class="lib-arrow"></i>
+            </div>
+
+            <div class="lib-card" onclick="loadPage('dua')">
+                <div class="lib-icon"><i data-lucide="hands-praying"></i></div>
+                <div class="lib-info">
+                    <h3>Dua & Adhkar</h3>
+                    <p>Daily Supplications</p>
+                </div>
+                <i data-lucide="chevron-right" class="lib-arrow"></i>
+            </div>
+
+            <div class="lib-card" onclick="loadPage('kitab')">
+                <div class="lib-icon"><i data-lucide="library"></i></div>
+                <div class="lib-info">
+                    <h3>Kitab Store</h3>
+                    <p>Recommended Books</p>
+                </div>
+                <i data-lucide="chevron-right" class="lib-arrow"></i>
+            </div>
+        </div>
+
+        <!-- Featured Section -->
+        <div class="lib-section-header">
+            <span>Featured Reading</span>
+        </div>
+
+        <div class="lib-featured" id="lib-featured-book">
+            <div class="lib-book-card">
+                <div class="lib-book-cover">
+                    <i data-lucide="book-open"></i>
+                </div>
+                <div class="lib-book-details">
+                    <span class="lib-tag">Must Read</span>
+                    <h4>Fortress of the Muslim</h4>
+                    <p>Concise collection of authentic supplications for every occasion.</p>
+                    <button class="lib-btn" onclick="loadPage('dua')">Read Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

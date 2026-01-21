@@ -1,0 +1,46 @@
+<section class="page hijri">
+    <!-- Header -->
+    <header class="q-header sticky-header">
+        <div class="q-header-top">
+            <button class="icon-btn" onclick="loadPage('home')"><i data-lucide="chevron-left"></i></button>
+            <div class="q-header-info">
+                <h1 class="q-title">Hijri Calendar</h1>
+                <small class="q-subtitle" id="h-cal-date">---</small>
+            </div>
+            <button class="icon-btn" id="h-cal-today"><i data-lucide="calendar"></i></button>
+        </div>
+
+        <!-- Month Navigation -->
+        <div class="cal-nav">
+            <button class="icon-btn-sm" id="cal-prev"><i data-lucide="chevron-left"></i></button>
+            <h2 id="cal-month-name">---</h2>
+            <button class="icon-btn-sm" id="cal-next"><i data-lucide="chevron-right"></i></button>
+        </div>
+    </header>
+
+    <div class="cal-container">
+        <!-- Weekdays -->
+        <div class="cal-weekdays">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        </div>
+
+        <!-- Days Grid -->
+        <div class="cal-grid" id="cal-grid">
+            <!-- Dynamic Days -->
+        </div>
+
+        <!-- Events / Important Dates -->
+        <div class="cal-events">
+            <h3>Important Dates</h3>
+            <div id="cal-events-list">
+                <div class="cal-event-item">
+                    <span class="cal-event-dot"></span>
+                    <div class="cal-event-info">
+                        <strong>Ramadan</strong>
+                        <small>Month of Fasting</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

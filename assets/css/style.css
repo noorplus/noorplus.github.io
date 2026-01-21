@@ -3233,6 +3233,185 @@ img {
 }
 
 /* ===============================
+   LIBRARY & KITAB STYLES
+================================ */
+.lib-container,
+.kitab-container {
+  padding: var(--space-md);
+  padding-bottom: 100px;
+}
+
+.lib-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.lib-card {
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.lib-card:active {
+  transform: scale(0.98);
+  background: var(--surface-soft);
+}
+
+.lib-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(46, 126, 157, 0.1);
+  color: var(--primary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lib-info {
+  flex: 1;
+}
+
+.lib-info h3 {
+  font-size: var(--font-md);
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.lib-info p {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+}
+
+.lib-arrow {
+  color: var(--divider);
+}
+
+.lib-section-header {
+  font-size: var(--font-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.lib-book-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.lib-book-cover {
+  width: 80px;
+  height: 110px;
+  background: var(--primary-soft);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+
+.lib-book-details {
+  flex: 1;
+}
+
+.lib-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: rgba(46, 126, 157, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.lib-btn {
+  margin-top: var(--space-md);
+  padding: 8px 16px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Kitab Specific */
+.k-categories {
+  display: flex;
+  gap: var(--space-sm);
+  overflow-x: auto;
+  margin-bottom: var(--space-lg);
+  padding-bottom: 4px;
+}
+
+.k-chip {
+  padding: 6px 14px;
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  white-space: nowrap;
+}
+
+.k-chip.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.k-item {
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.k-cover {
+  width: 50px;
+  height: 70px;
+  background: var(--surface-soft);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.k-info {
+  flex: 1;
+}
+
+.k-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-xs);
+}
+
+.k-meta span {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ===============================
    DUA PAGE STYLES
 ================================ */
 .dua-container {
@@ -3404,4 +3583,308 @@ img {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* ===============================
+   HIJRI CALENDAR STYLES
+================================ */
+.cal-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+.cal-nav h2 {
+  font-size: var(--font-md);
+  color: var(--text-primary);
+}
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: var(--font-xs);
+  font-weight: 700;
+  color: var(--text-muted);
+  margin: var(--space-md) 0;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  padding: 0 var(--space-sm);
+}
+
+.cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-sm);
+  position: relative;
+  transition: all 0.2s;
+}
+
+.cal-day.today {
+  background: var(--primary);
+  color: #fff;
+}
+
+.cal-day.other-month {
+  opacity: 0.3;
+}
+
+.h-day-num {
+  font-weight: 700;
+}
+
+.g-day-num {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.cal-events {
+  margin-top: var(--space-xl);
+  padding: var(--space-md);
+}
+
+.cal-events h3 {
+  font-size: var(--font-md);
+  margin-bottom: var(--space-md);
+}
+
+.cal-event-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+}
+
+.cal-event-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+/* ===============================
+   QIBLA FINDER STYLES
+================================ */
+.qibla-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-lg);
+  padding-bottom: 100px;
+}
+
+.q-compass-box {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin: var(--space-xl) 0;
+}
+
+.q-compass {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 8px solid var(--divider);
+  position: relative;
+  transition: transform 0.1s ease-out;
+}
+
+.q-ring {
+  position: absolute;
+  inset: 10px;
+  border: 1px dashed var(--divider);
+  border-radius: 50%;
+}
+
+.q-needle-makkah {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 120px;
+  background: var(--primary);
+  transform-origin: bottom center;
+  transform: translate(-50%, -100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.q-needle-makkah i {
+  position: absolute;
+  top: -20px;
+  width: 24px;
+  height: 24px;
+  color: var(--primary);
+}
+
+.q-cardinals {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.q-cardinals span {
+  position: absolute;
+  font-weight: 700;
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+}
+
+.q-cardinals span:nth-child(1) {
+  top: 15px;
+}
+
+.q-cardinals span:nth-child(2) {
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.q-cardinals span:nth-child(3) {
+  bottom: 15px;
+}
+
+.q-cardinals span:nth-child(4) {
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.q-info-card {
+  display: flex;
+  width: 100%;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  border: 1px solid var(--glass-border);
+}
+
+.q-stat {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.q-stat span {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.q-stat small {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.q-guidance {
+  text-align: center;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.q-warning {
+  margin-top: var(--space-lg);
+  padding: var(--space-md);
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: var(--radius-md);
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  font-size: var(--font-xs);
+  color: #b8860b;
+}
+
+/* ===============================
+   ZAKAT CALCULATOR STYLES
+================================ */
+.z-result-card {
+  background: var(--primary);
+  color: #fff;
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.z-res-info small {
+  opacity: 0.8;
+}
+
+.z-res-info h2 {
+  font-size: 28px;
+  margin-top: 4px;
+}
+
+.z-res-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.z-section {
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.z-section h3 {
+  font-size: var(--font-sm);
+  margin-bottom: var(--space-md);
+  color: var(--text-primary);
+}
+
+.z-input-group {
+  margin-bottom: var(--space-sm);
+}
+
+.z-input-group label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.z-input-group input {
+  width: 100%;
+  background: var(--surface-soft);
+  border: 1px solid var(--divider);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+}
+
+.z-nisab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
 }
