@@ -67,7 +67,11 @@ function initCacheManagement() {
 }
 
 function clearAppCache() {
-  const keysToKeep = ['onboardingCompleted', 'userPreferences', 'theme', 'language', 'calculationMethod', 'hijriOffset', 'noorplus_tracker_strict', 'noorplus_cache_version', 'noorplus_cache_timestamp'];
+  const keysToKeep = [
+    'onboardingCompleted', 'userPreferences', 'theme', 'language',
+    'calculationMethod', 'hijriOffset', 'noorplus_tracker_strict',
+    'noorplus_cache_version', 'noorplus_cache_timestamp', 'noorplus_latest_prayer_times'
+  ];
   Object.keys(localStorage).forEach(key => {
     if (!keysToKeep.includes(key) && key.startsWith('noorplus_')) {
       localStorage.removeItem(key);
@@ -1398,6 +1402,18 @@ function initHomePage() {
     // Optimized Location Logic: Cache First
     const savedCoords = JSON.parse(localStorage.getItem('userCoordinates') || 'null');
 
+    // Load from cache for instant display
+    const cached = JSON.parse(localStorage.getItem('noorplus_latest_prayer_times') || 'null');
+    if (cached && cached.timings) {
+      window.latestPrayerData = cached;
+      // Populate basic list immediately
+      ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"].forEach(p => {
+        const el = document.getElementById(`s-${p}`);
+        if (el && cached.timings[p]) el.textContent = formatTo12h(cached.timings[p]);
+      });
+      startAdvCountdown(cached.timings);
+    }
+
     if (savedCoords) {
       console.log('Using saved location:', savedCoords);
       fetchAdvPrayerTimes(savedCoords.lat, savedCoords.lon);
@@ -1495,7 +1511,8 @@ async function fetchAdvPrayerTimes(lat, lon) {
     const dateData = json.data.date;
 
     // Cache the latest timings
-    window.latestPrayerData = { timings, meta, date: new Date() };
+    window.latestPrayerData = { timings, meta, date: new Date().toISOString() };
+    localStorage.setItem('noorplus_latest_prayer_times', JSON.stringify(window.latestPrayerData));
 
     // Update Home Page Elements
     const locEl = document.getElementById("adv-location");
@@ -1646,15 +1663,21 @@ function updateCurrentPrayerDisplay(timings) {
         const nowStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
         const forbiddenList = getForbiddenTimes(timings);
 
-        // 1. Detect Forbidden Time
-        const currentForbidden = forbiddenList.find(f => nowStr >= f.start && nowStr < f.end);
+        const pNowEl = document.getElementById("adv-p-now");
+        const pStartEl = document.getElementById("adv-p-start");
+        const statusDot = document.getElementById("adv-status-dot");
+        const fRangeEl = document.getElementById("f-range");
         const sunriseEl = document.getElementById("adv-sunrise");
         const sunsetEl = document.getElementById("adv-sunset");
+
         if (sunriseEl && timings.Sunrise) sunriseEl.textContent = formatTo12h(timings.Sunrise);
         if (sunsetEl && timings.Sunset) sunsetEl.textContent = formatTo12h(timings.Sunset);
 
         if (currentForbidden) {
-          if (pNowEl) pNowEl.innerHTML = `Forbidden <span class="h-status-dot forbidden" id="adv-status-dot"></span>`;
+          if (pNowEl) pNowEl.textContent = "Forbidden";
+          if (statusDot) {
+            statusDot.className = "h-status-dot forbidden";
+          }
           const fRow = document.getElementById("f-row");
           if (fRow) fRow.style.display = "flex";
           if (fRangeEl) {
@@ -1681,7 +1704,10 @@ function updateCurrentPrayerDisplay(timings) {
           const currentP = prayerSchedule[currentIdx];
           const nextP = prayerSchedule[(currentIdx + 1) % 5];
 
-          if (pNowEl) pNowEl.innerHTML = `${currentP.name} <span class="h-status-dot permissible" id="adv-status-dot"></span>`;
+          if (pNowEl) pNowEl.textContent = currentP.name;
+          if (statusDot) {
+            statusDot.className = "h-status-dot permissible";
+          }
           if (pStartEl) pStartEl.textContent = formatTo12h(currentP.time);
           const pEndEl = document.getElementById("adv-p-end");
           if (pEndEl) pEndEl.textContent = formatTo12h(nextP.time);
